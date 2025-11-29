@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,12 +24,14 @@ interface Order {
 
 const Reports = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [restaurantId, setRestaurantId] = useState<string>("");
   const [restaurantName, setRestaurantName] = useState<string>("");
+  
+  const restaurantId = searchParams.get("restaurant");
   
   const [filterType, setFilterType] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
@@ -38,8 +40,10 @@ const Reports = () => {
   const [selectedHour, setSelectedHour] = useState<string>("all");
 
   useEffect(() => {
-    checkAccess();
-  }, []);
+    if (restaurantId) {
+      checkAccess();
+    }
+  }, [restaurantId]);
 
   useEffect(() => {
     applyFilters();
@@ -53,7 +57,6 @@ const Reports = () => {
         return;
       }
 
-      const restaurantId = localStorage.getItem("selected_restaurant_id");
       if (!restaurantId) {
         toast({
           title: "Erro",
@@ -63,8 +66,6 @@ const Reports = () => {
         navigate("/dashboard");
         return;
       }
-
-      setRestaurantId(restaurantId);
       
       const { data: restaurant } = await supabase
         .from("restaurants")
