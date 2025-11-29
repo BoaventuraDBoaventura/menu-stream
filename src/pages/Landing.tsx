@@ -17,9 +17,9 @@ const Landing = () => {
             <a href="#features" className="text-sm font-medium hover:text-primary transition-smooth">
               Funcionalidades
             </a>
-            <a href="#pricing" className="text-sm font-medium hover:text-primary transition-smooth">
+            <Link to="/precos" className="text-sm font-medium hover:text-primary transition-smooth">
               Preços
-            </a>
+            </Link>
             <Link to="/login">
               <Button variant="ghost" size="sm">Entrar</Button>
             </Link>
@@ -133,73 +133,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Preço Simples e Transparente</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Um único plano com todas as funcionalidades
-            </p>
-          </div>
-          <div className="max-w-md mx-auto">
-            <Card className="border-2 border-primary shadow-elegant">
-              <CardHeader className="text-center pb-8 pt-12">
-                <CardTitle className="text-3xl mb-2">Plano Mensal</CardTitle>
-                <CardDescription className="text-lg">
-                  Tudo que você precisa para digitalizar seu restaurante
-                </CardDescription>
-                <div className="mt-8">
-                  <div className="inline-flex items-baseline gap-2 bg-primary px-8 py-4 rounded-lg">
-                    <span className="text-5xl font-bold text-white">
-                      1.500
-                    </span>
-                    <span className="text-xl text-white">MT/mês</span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6 pb-12">
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span>Menus digitais ilimitados</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span>Códigos QR para todas as mesas</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span>Gestão de pedidos em tempo real</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span>Painel de cozinha completo</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span>Relatórios e análises detalhadas</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span>Gestão de equipa e permissões</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span>Suporte técnico prioritário</span>
-                  </li>
-                </ul>
-                <Link to="/login" className="block">
-                  <Button className="w-full gradient-primary text-lg py-6">
-                    Começar Agora
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
@@ -235,9 +168,9 @@ const Landing = () => {
             <div>
               <h4 className="font-semibold mb-4">Produto</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-smooth">Funcionalidades</a></li>
-                <li><a href="#" className="hover:text-primary transition-smooth">Preços</a></li>
-                <li><a href="#" className="hover:text-primary transition-smooth">Demo</a></li>
+                <li><a href="#features" className="hover:text-primary transition-smooth">Funcionalidades</a></li>
+                <li><Link to="/precos" className="hover:text-primary transition-smooth">Preços</Link></li>
+                <li><Link to="/contato" className="hover:text-primary transition-smooth">Contato</Link></li>
               </ul>
             </div>
             <div>
