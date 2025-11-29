@@ -41,11 +41,10 @@ const Dashboard = () => {
 
       setProfile(profileData);
 
-      // Fetch user's restaurants
+      // Fetch user's restaurants (owned or with permissions)
       const { data: restaurantsData } = await supabase
         .from("restaurants")
         .select("*")
-        .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
 
       setRestaurants(restaurantsData || []);

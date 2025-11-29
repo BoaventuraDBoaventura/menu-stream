@@ -288,6 +288,42 @@ export type Database = {
         }
         Relationships: []
       }
+      restaurant_permissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          restaurant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          restaurant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          restaurant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_permissions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_permissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurants: {
         Row: {
           address: string | null
@@ -423,6 +459,11 @@ export type Database = {
           email: string
           id: string
         }[]
+      }
+      get_user_restaurants: { Args: { _user_id: string }; Returns: string[] }
+      has_restaurant_permission: {
+        Args: { _restaurant_id: string; _user_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
