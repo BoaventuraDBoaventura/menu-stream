@@ -16,6 +16,7 @@ const CustomerMenu = () => {
   const [menu, setMenu] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [table, setTable] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -47,6 +48,20 @@ const CustomerMenu = () => {
       }
 
       setRestaurant(restaurantData);
+
+      // Load table information if token is provided
+      if (tableToken) {
+        const { data: tableData, error: tableError } = await supabase
+          .from("tables")
+          .select("*")
+          .eq("qr_code_token", tableToken)
+          .eq("restaurant_id", restaurantData.id)
+          .single();
+
+        if (!tableError && tableData) {
+          setTable(tableData);
+        }
+      }
 
       // Load active menu
       const { data: menuData, error: menuError } = await supabase
@@ -133,7 +148,10 @@ const CustomerMenu = () => {
               )}
               <div>
                 <h1 className="text-xl font-bold">{restaurant.name}</h1>
-                {menu.description && (
+                {table && (
+                  <p className="text-sm text-primary font-medium">{table.name}</p>
+                )}
+                {menu.description && !table && (
                   <p className="text-sm text-muted-foreground">{menu.description}</p>
                 )}
               </div>
@@ -145,11 +163,6 @@ const CustomerMenu = () => {
         <main className="container mx-auto px-4 py-6">
           <div className="mb-6">
             <h2 className="text-3xl font-bold mb-2">{menu.title}</h2>
-            {tableToken && (
-              <p className="text-sm text-muted-foreground">
-                Viewing menu for your table
-              </p>
-            )}
           </div>
 
           {categories.length === 0 ? (
