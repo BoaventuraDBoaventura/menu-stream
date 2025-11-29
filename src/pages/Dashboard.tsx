@@ -47,7 +47,13 @@ const Dashboard = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      setRestaurants(restaurantsData || []);
+      // Add ownership info to each restaurant
+      const restaurantsWithOwnership = restaurantsData?.map(restaurant => ({
+        ...restaurant,
+        isOwner: restaurant.owner_id === user.id
+      })) || [];
+
+      setRestaurants(restaurantsWithOwnership);
     } catch (error) {
       console.error("Error checking user:", error);
     } finally {

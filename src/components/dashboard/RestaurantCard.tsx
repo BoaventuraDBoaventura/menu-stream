@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Store, Edit, QrCode } from "lucide-react";
+import { Store, Edit, QrCode, Crown, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface RestaurantCardProps {
@@ -12,6 +12,7 @@ interface RestaurantCardProps {
     address: string | null;
     is_active: boolean;
     logo_url: string | null;
+    isOwner?: boolean;
   };
 }
 
@@ -35,7 +36,20 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               </div>
             )}
             <div>
-              <CardTitle className="text-xl">{restaurant.name}</CardTitle>
+              <div className="flex items-center gap-2 mb-1">
+                <CardTitle className="text-xl">{restaurant.name}</CardTitle>
+                {restaurant.isOwner ? (
+                  <Badge variant="default" className="flex items-center gap-1">
+                    <Crown className="h-3 w-3" />
+                    Proprietário
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <UserCheck className="h-3 w-3" />
+                    Equipe
+                  </Badge>
+                )}
+              </div>
               <CardDescription>/{restaurant.slug}</CardDescription>
             </div>
           </div>
