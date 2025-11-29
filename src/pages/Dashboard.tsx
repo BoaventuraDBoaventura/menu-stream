@@ -242,19 +242,6 @@ const Dashboard = () => {
           )}
         </div>
       </div>
-
-      {/* Recent Orders */}
-      <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
-            <CardDescription>No orders yet. Once customers start ordering, they'll appear here.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No orders to display</p>
-            </div>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );
