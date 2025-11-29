@@ -212,8 +212,7 @@ const Dashboard = () => {
               action="Abrir Cozinha"
               onClick={() => {
                 if (restaurants.length > 0) {
-                  localStorage.setItem("selected_restaurant_id", restaurants[0].id);
-                  navigate("/kitchen");
+                  navigate(`/kitchen?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
                     title: "No restaurant found", 
@@ -231,8 +230,7 @@ const Dashboard = () => {
               action="Ver Relatórios"
               onClick={() => {
                 if (restaurants.length > 0) {
-                  localStorage.setItem("selected_restaurant_id", restaurants[0].id);
-                  navigate("/reports");
+                  navigate(`/reports?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
                     title: "No restaurant found", 
