@@ -80,18 +80,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 gradient-warm">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 gradient-warm">
       <Card className="w-full max-w-md shadow-medium">
-        <CardHeader className="space-y-2 text-center">
+        <CardHeader className="space-y-2 text-center px-4 sm:px-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <ChefHat className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">PratoDigital</span>
+            <ChefHat className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+            <span className="text-xl sm:text-2xl font-bold">PratoDigital</span>
           </div>
-          <CardTitle className="text-3xl">Bem-vindo de volta</CardTitle>
-          <CardDescription>Entre no painel do seu restaurante</CardDescription>
+          <CardTitle className="text-2xl sm:text-3xl">Bem-vindo de volta</CardTitle>
+          <CardDescription className="text-sm sm:text-base">Entre no painel do seu restaurante</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
