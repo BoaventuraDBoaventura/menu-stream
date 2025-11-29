@@ -67,8 +67,8 @@ export const CreateRestaurantForm = ({ onSuccess, onCancel }: CreateRestaurantFo
       address: "",
       phone: "",
       email: "",
-      timezone: "UTC",
-      currency: "USD",
+      timezone: "Africa/Maputo",
+      currency: "MZN",
     },
   });
 
@@ -399,9 +399,9 @@ export const CreateRestaurantForm = ({ onSuccess, onCancel }: CreateRestaurantFo
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="MZN">MZN - Mozambican Metical</SelectItem>
                       <SelectItem value="USD">USD - US Dollar</SelectItem>
                       <SelectItem value="EUR">EUR - Euro</SelectItem>
-                      <SelectItem value="MZN">MZN - Mozambican Metical</SelectItem>
                       <SelectItem value="AOA">AOA - Angolan Kwanza</SelectItem>
                       <SelectItem value="GBP">GBP - British Pound</SelectItem>
                       <SelectItem value="BRL">BRL - Brazilian Real</SelectItem>
