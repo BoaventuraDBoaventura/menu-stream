@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ChefHat, Clock, CheckCircle2, ArrowLeft, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -50,12 +51,27 @@ const Kitchen = () => {
   }, [user, restaurantId]);
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Auth error:", error);
+        toast({
+          title: "Erro de autenticação",
+          description: error.message,
+          variant: "destructive",
+        });
+        navigate("/login");
+        return;
+      }
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+      setUser(user);
+    } catch (error: any) {
+      console.error("Auth error:", error);
       navigate("/login");
-      return;
     }
-    setUser(user);
   };
 
   const loadOrders = async () => {
@@ -143,10 +159,50 @@ const Kitchen = () => {
   const readyOrders = useMemo(() => filterOrders(["ready"]), [orders]);
   const deliveredOrders = useMemo(() => filterOrders(["delivered"]), [orders]);
 
-  if (loading) {
+  if (!restaurantId) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <Card className="w-96">
+          <CardHeader>
+            <CardTitle>Erro</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Nenhum restaurante selecionado. Por favor, volte ao dashboard e selecione um restaurante.
+            </p>
+            <Button onClick={() => navigate("/dashboard")} className="w-full">
+              Voltar ao Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border bg-card">
+          <div className="container mx-auto px-4 py-4">
+            <Skeleton className="h-8 w-48" />
+          </div>
+        </header>
+        <main className="container mx-auto px-4 py-6">
+          <Skeleton className="h-12 w-full mb-6" />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <Skeleton className="h-6 w-32 mb-2" />
+                  <Skeleton className="h-4 w-48" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-20 w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
