@@ -47,14 +47,7 @@ const Dashboard = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      const userRestaurants = restaurantsData || [];
-      setRestaurants(userRestaurants);
-
-      // Auto-redirect to restaurant if user has exactly one restaurant
-      if (userRestaurants.length === 1 && !window.location.pathname.includes('/menu/editor')) {
-        const restaurant = userRestaurants[0];
-        navigate(`/menu/editor?restaurant=${restaurant.id}`);
-      }
+      setRestaurants(restaurantsData || []);
     } catch (error) {
       console.error("Error checking user:", error);
     } finally {
