@@ -30,7 +30,7 @@ const Register = () => {
             name,
             phone,
           },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: "https://prato-digital.netlify.app/dashboard",
         },
       });
 
