@@ -59,9 +59,9 @@ const AdminPanel = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-          <p className="text-muted-foreground mb-4">You don't have permission to access this page.</p>
-          <Button onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
+          <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
+          <p className="text-muted-foreground mb-4">Você não tem permissão para acessar esta página.</p>
+          <Button onClick={() => navigate("/dashboard")}>Ir para Dashboard</Button>
         </div>
       </div>
     );
@@ -79,7 +79,7 @@ const AdminPanel = () => {
             </div>
             <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
               <Crown className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Super Admin Panel</span>
+              <span className="text-sm font-medium text-primary">Painel Super Admin</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -97,19 +97,19 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Admin Panel</h1>
-          <p className="text-muted-foreground">Manage all users, restaurants, and platform settings</p>
+          <h1 className="text-4xl font-bold mb-2">Painel Administrativo</h1>
+          <p className="text-muted-foreground">Gerencie todos os usuários, restaurantes e configurações da plataforma</p>
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Users
+              Usuários
             </TabsTrigger>
             <TabsTrigger value="restaurants" className="flex items-center gap-2">
               <Store className="h-4 w-4" />
-              Restaurants
+              Restaurantes
             </TabsTrigger>
           </TabsList>
 
