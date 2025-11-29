@@ -292,18 +292,21 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          permissions: Json | null
           restaurant_id: string
           user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
+          permissions?: Json | null
           restaurant_id: string
           user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
+          permissions?: Json | null
           restaurant_id?: string
           user_id?: string
         }
