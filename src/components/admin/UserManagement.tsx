@@ -154,6 +154,9 @@ export const UserManagement = () => {
         throw new Error("Falha ao criar usuário");
       }
 
+      // Wait for profile to be created by trigger
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Update the role created by the trigger
       const { error: roleError } = await supabase
         .from("user_roles")
@@ -169,7 +172,10 @@ export const UserManagement = () => {
 
       setCreateDialogOpen(false);
       form.reset();
-      fetchUsers();
+      
+      // Wait a bit more before fetching to ensure all triggers completed
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await fetchUsers();
     } catch (error: any) {
       toast({
         title: "Erro ao criar usuário",
