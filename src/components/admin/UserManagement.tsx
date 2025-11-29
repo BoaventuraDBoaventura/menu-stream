@@ -154,13 +154,11 @@ export const UserManagement = () => {
         throw new Error("Falha ao criar usuário");
       }
 
-      // Assign role to the new user
+      // Update the role created by the trigger
       const { error: roleError } = await supabase
         .from("user_roles")
-        .insert({
-          user_id: authData.user.id,
-          role: values.role,
-        });
+        .update({ role: values.role })
+        .eq("user_id", authData.user.id);
 
       if (roleError) throw roleError;
 
