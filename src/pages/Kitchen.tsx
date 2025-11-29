@@ -16,8 +16,8 @@ const Kitchen = () => {
   const [user, setUser] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const restaurantId = searchParams.get("restaurant");
+  const [restaurantId, setRestaurantId] = useState<string | null>(null);
+  const [restaurantName, setRestaurantName] = useState<string>("");
 
   useEffect(() => {
     checkAuth();
@@ -68,6 +68,61 @@ const Kitchen = () => {
         return;
       }
       setUser(user);
+
+      // Get restaurant ID from URL or find user's accessible restaurant
+      let restaurantIdFromParams = searchParams.get("restaurant");
+      
+      if (!restaurantIdFromParams) {
+        // Fetch restaurants the user has access to
+        const { data: restaurants } = await supabase
+          .from("restaurants")
+          .select("id, name, owner_id")
+          .or(`owner_id.eq.${user.id}`)
+          .order("created_at", { ascending: false });
+
+        // Also check restaurant_permissions
+        const { data: permissions } = await supabase
+          .from("restaurant_permissions")
+          .select("restaurant_id, permissions")
+          .eq("user_id", user.id);
+
+        // Filter restaurants where user has kitchen permission
+        const accessibleRestaurants = restaurants?.filter(r => {
+          const isOwner = r.owner_id === user.id;
+          const hasPermission = permissions?.find(p => {
+            const perms = p.permissions as any;
+            return p.restaurant_id === r.id && perms?.kitchen;
+          });
+          return isOwner || hasPermission;
+        }) || [];
+
+        if (accessibleRestaurants.length === 0) {
+          toast({
+            title: "Sem acesso",
+            description: "Você não tem permissão para acessar a cozinha",
+            variant: "destructive",
+          });
+          navigate("/dashboard");
+          return;
+        }
+
+        // Use the first accessible restaurant
+        restaurantIdFromParams = accessibleRestaurants[0].id;
+        setRestaurantName(accessibleRestaurants[0].name);
+      } else {
+        // Get restaurant name
+        const { data: restaurant } = await supabase
+          .from("restaurants")
+          .select("name")
+          .eq("id", restaurantIdFromParams)
+          .single();
+        
+        if (restaurant) {
+          setRestaurantName(restaurant.name);
+        }
+      }
+
+      setRestaurantId(restaurantIdFromParams);
     } catch (error: any) {
       console.error("Auth error:", error);
       navigate("/login");
@@ -159,26 +214,6 @@ const Kitchen = () => {
   const readyOrders = useMemo(() => filterOrders(["ready"]), [orders]);
   const deliveredOrders = useMemo(() => filterOrders(["delivered"]), [orders]);
 
-  if (!restaurantId) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-96">
-          <CardHeader>
-            <CardTitle>Erro</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Nenhum restaurante selecionado. Por favor, volte ao dashboard e selecione um restaurante.
-            </p>
-            <Button onClick={() => navigate("/dashboard")} className="w-full">
-              Voltar ao Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -217,7 +252,12 @@ const Kitchen = () => {
             </Button>
             <div className="flex items-center gap-2">
               <ChefHat className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold">Cozinha</h1>
+              <div>
+                <h1 className="text-2xl font-bold">Cozinha</h1>
+                {restaurantName && (
+                  <p className="text-sm text-muted-foreground">{restaurantName}</p>
+                )}
+              </div>
             </div>
           </div>
           <Button variant="outline" size="icon" onClick={loadOrders}>
