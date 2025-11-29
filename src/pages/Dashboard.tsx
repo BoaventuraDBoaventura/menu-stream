@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [restaurantPermissions, setRestaurantPermissions] = useState<Record<string, any>>({});
   const { role, isSuperAdmin } = useUserRole(user?.id);
 
   useEffect(() => {
@@ -47,10 +48,26 @@ const Dashboard = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
+      // Fetch user permissions for each restaurant
+      const { data: permissionsData } = await supabase
+        .from("restaurant_permissions")
+        .select("restaurant_id, permissions")
+        .eq("user_id", user.id);
+
+      // Create permissions map
+      const permissionsMap: Record<string, any> = {};
+      permissionsData?.forEach(perm => {
+        permissionsMap[perm.restaurant_id] = perm.permissions;
+      });
+      setRestaurantPermissions(permissionsMap);
+
       // Add ownership info to each restaurant
       const restaurantsWithOwnership = restaurantsData?.map(restaurant => ({
         ...restaurant,
-        isOwner: restaurant.owner_id === user.id
+        isOwner: restaurant.owner_id === user.id,
+        permissions: restaurant.owner_id === user.id 
+          ? { menu_editor: true, qr_codes: true, orders: true, kitchen: true, settings: true }
+          : permissionsMap[restaurant.id] || {}
       })) || [];
 
       setRestaurants(restaurantsWithOwnership);
@@ -149,54 +166,60 @@ const Dashboard = () => {
             action="Get Started"
             onClick={() => navigate("/restaurant/create")}
           />
-          <DashboardCard
-            icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
-            title="Manage Menus"
-            description="Create and edit your digital menus with ease"
-            action="View Menus"
-            onClick={() => {
-              if (restaurants.length > 0) {
-                navigate(`/menu/editor?restaurant=${restaurants[0].id}`);
-              } else {
-                toast({ 
-                  title: "No restaurant found", 
-                  description: "Please create a restaurant first" 
-                });
-              }
-            }}
-          />
-          <DashboardCard
-            icon={<QrCode className="h-8 w-8 text-primary" />}
-            title="QR Codes"
-            description="Generate and download QR codes for your tables"
-            action="Generate"
-            onClick={() => {
-              if (restaurants.length > 0) {
-                navigate(`/qr-codes?restaurant=${restaurants[0].id}`);
-              } else {
-                toast({ 
-                  title: "No restaurant found", 
-                  description: "Please create a restaurant first" 
-                });
-              }
-            }}
-          />
-          <DashboardCard
-            icon={<ChefHat className="h-8 w-8 text-primary" />}
-            title="Cozinha"
-            description="Gerenciar pedidos e atualizar status de preparação"
-            action="Abrir Cozinha"
-            onClick={() => {
-              if (restaurants.length > 0) {
-                navigate(`/kitchen?restaurant=${restaurants[0].id}`);
-              } else {
-                toast({ 
-                  title: "No restaurant found", 
-                  description: "Please create a restaurant first" 
-                });
-              }
-            }}
-          />
+          {(isSuperAdmin || restaurants[0]?.permissions?.menu_editor) && (
+            <DashboardCard
+              icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
+              title="Manage Menus"
+              description="Create and edit your digital menus with ease"
+              action="View Menus"
+              onClick={() => {
+                if (restaurants.length > 0) {
+                  navigate(`/menu/editor?restaurant=${restaurants[0].id}`);
+                } else {
+                  toast({ 
+                    title: "No restaurant found", 
+                    description: "Please create a restaurant first" 
+                  });
+                }
+              }}
+            />
+          )}
+          {(isSuperAdmin || restaurants[0]?.permissions?.qr_codes) && (
+            <DashboardCard
+              icon={<QrCode className="h-8 w-8 text-primary" />}
+              title="QR Codes"
+              description="Generate and download QR codes for your tables"
+              action="Generate"
+              onClick={() => {
+                if (restaurants.length > 0) {
+                  navigate(`/qr-codes?restaurant=${restaurants[0].id}`);
+                } else {
+                  toast({ 
+                    title: "No restaurant found", 
+                    description: "Please create a restaurant first" 
+                  });
+                }
+              }}
+            />
+          )}
+          {(isSuperAdmin || restaurants[0]?.permissions?.kitchen) && (
+            <DashboardCard
+              icon={<ChefHat className="h-8 w-8 text-primary" />}
+              title="Cozinha"
+              description="Gerenciar pedidos e atualizar status de preparação"
+              action="Abrir Cozinha"
+              onClick={() => {
+                if (restaurants.length > 0) {
+                  navigate(`/kitchen?restaurant=${restaurants[0].id}`);
+                } else {
+                  toast({ 
+                    title: "No restaurant found", 
+                    description: "Please create a restaurant first" 
+                  });
+                }
+              }}
+            />
+          )}
         </div>
       </div>
 

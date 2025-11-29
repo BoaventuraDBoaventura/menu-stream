@@ -93,8 +93,30 @@ export const AddTeamMemberDialog = ({
         throw new Error("Falha ao criar usuário");
       }
 
-      // Wait for profile to be created by trigger
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for profile to be created by trigger and verify it exists
+      let profileExists = false;
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      while (!profileExists && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const { data: profileCheck } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("id", authData.user.id)
+          .maybeSingle();
+        
+        if (profileCheck) {
+          profileExists = true;
+        } else {
+          attempts++;
+        }
+      }
+
+      if (!profileExists) {
+        throw new Error("Falha ao criar perfil do usuário. Por favor, tente novamente.");
+      }
 
       // Update the role created by the trigger
       const { error: roleError } = await supabase

@@ -13,6 +13,13 @@ interface RestaurantCardProps {
     is_active: boolean;
     logo_url: string | null;
     isOwner?: boolean;
+    permissions?: {
+      menu_editor?: boolean;
+      qr_codes?: boolean;
+      orders?: boolean;
+      kitchen?: boolean;
+      settings?: boolean;
+    };
   };
 }
 
@@ -63,20 +70,24 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
           <p className="text-sm text-muted-foreground">{restaurant.address}</p>
         )}
         <div className="flex gap-2">
-          <Button 
-            className="flex-1 gradient-primary"
-            onClick={() => navigate(`/menu/editor?restaurant=${restaurant.id}`)}
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Menu
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={() => navigate(`/qr-codes?restaurant=${restaurant.id}`)}
-          >
-            <QrCode className="h-4 w-4 mr-2" />
-            QR Codes
-          </Button>
+          {(restaurant.isOwner || restaurant.permissions?.menu_editor) && (
+            <Button 
+              className="flex-1 gradient-primary"
+              onClick={() => navigate(`/menu/editor?restaurant=${restaurant.id}`)}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Menu
+            </Button>
+          )}
+          {(restaurant.isOwner || restaurant.permissions?.qr_codes) && (
+            <Button 
+              variant="outline"
+              onClick={() => navigate(`/qr-codes?restaurant=${restaurant.id}`)}
+            >
+              <QrCode className="h-4 w-4 mr-2" />
+              QR Codes
+            </Button>
+          )}
         </div>
         {restaurant.isOwner && (
           <Button 
