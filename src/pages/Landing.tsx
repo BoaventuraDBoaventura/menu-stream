@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { QrCode, Smartphone, TrendingUp, Zap, CheckCircle2, ChefHat } from "lucide-react";
 
@@ -126,6 +127,73 @@ const Landing = () => {
               title="Gestão de Cozinha"
               description="Imprima tickets automaticamente e atualize o status do pedido da preparação à entrega."
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold">Preço Simples e Transparente</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Um único plano com todas as funcionalidades
+            </p>
+          </div>
+          <div className="max-w-md mx-auto">
+            <Card className="border-2 border-primary shadow-elegant">
+              <CardHeader className="text-center pb-8 pt-12">
+                <CardTitle className="text-3xl mb-2">Plano Mensal</CardTitle>
+                <CardDescription className="text-lg">
+                  Tudo que você precisa para digitalizar seu restaurante
+                </CardDescription>
+                <div className="mt-8">
+                  <div className="flex items-baseline justify-center gap-2">
+                    <span className="text-6xl font-bold gradient-hero bg-clip-text text-transparent">
+                      1.500
+                    </span>
+                    <span className="text-2xl text-muted-foreground">MT/mês</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6 pb-12">
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>Menus digitais ilimitados</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>Códigos QR para todas as mesas</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>Gestão de pedidos em tempo real</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>Painel de cozinha completo</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>Relatórios e análises detalhadas</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>Gestão de equipa e permissões</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>Suporte técnico prioritário</span>
+                  </li>
+                </ul>
+                <Link to="/login" className="block">
+                  <Button className="w-full gradient-primary text-lg py-6">
+                    Começar Agora
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
