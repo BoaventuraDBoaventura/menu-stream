@@ -211,7 +211,7 @@ const Reports = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totals.total.toFixed(2)} €</div>
+              <div className="text-2xl font-bold">{totals.total.toFixed(2)} MT</div>
               <p className="text-xs text-muted-foreground">
                 {totals.count} pedidos
               </p>
@@ -251,7 +251,7 @@ const Reports = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {totals.count > 0 ? (totals.total / totals.count).toFixed(2) : "0.00"} €
+                {totals.count > 0 ? (totals.total / totals.count).toFixed(2) : "0.00"} MT
               </div>
               <p className="text-xs text-muted-foreground">
                 Por pedido
@@ -407,7 +407,7 @@ const Reports = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {Number(order.total_amount).toFixed(2)} €
+                        {Number(order.total_amount).toFixed(2)} MT
                       </TableCell>
                     </TableRow>
                   ))
