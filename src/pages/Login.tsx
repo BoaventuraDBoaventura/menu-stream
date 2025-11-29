@@ -128,6 +128,11 @@ const Login = () => {
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
+          <div className="mt-6 text-center">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
+              ← Voltar à página inicial
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
