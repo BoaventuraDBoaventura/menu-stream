@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { StatisticsDashboard } from "@/components/admin/StatisticsDashboard";
 
 const PlatformSettings = () => {
   const navigate = useNavigate();
@@ -125,12 +126,17 @@ const PlatformSettings = () => {
           <p className="text-muted-foreground">Gerencie configurações globais e preferências do sistema</p>
         </div>
 
-        <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+        <Tabs defaultValue="statistics" className="space-y-6">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+            <TabsTrigger value="statistics">Estatísticas</TabsTrigger>
             <TabsTrigger value="general">Geral</TabsTrigger>
             <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="system">Sistema</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="statistics" className="space-y-4">
+            <StatisticsDashboard />
+          </TabsContent>
 
           <TabsContent value="general" className="space-y-4">
             <Card>
