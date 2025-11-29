@@ -93,7 +93,7 @@ export const RestaurantManagement = () => {
       setRestaurants(restaurantsWithOwners);
     } catch (error: any) {
       toast({
-        title: "Error loading restaurants",
+        title: "Erro ao carregar restaurantes",
         description: error.message,
         variant: "destructive",
       });
@@ -112,14 +112,14 @@ export const RestaurantManagement = () => {
       if (error) throw error;
 
       toast({
-        title: currentStatus ? "Restaurant deactivated" : "Restaurant activated",
-        description: "Restaurant status has been updated.",
+        title: currentStatus ? "Restaurante desativado" : "Restaurante ativado",
+        description: "O status do restaurante foi atualizado.",
       });
 
       fetchRestaurants();
     } catch (error: any) {
       toast({
-        title: "Error updating restaurant",
+        title: "Erro ao atualizar restaurante",
         description: error.message,
         variant: "destructive",
       });
@@ -136,14 +136,14 @@ export const RestaurantManagement = () => {
       if (error) throw error;
 
       toast({
-        title: "Restaurant deleted",
-        description: "Restaurant has been permanently deleted.",
+        title: "Restaurante deletado",
+        description: "O restaurante foi deletado permanentemente.",
       });
 
       fetchRestaurants();
     } catch (error: any) {
       toast({
-        title: "Error deleting restaurant",
+        title: "Erro ao deletar restaurante",
         description: error.message,
         variant: "destructive",
       });
@@ -170,8 +170,8 @@ export const RestaurantManagement = () => {
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Store className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-lg font-medium mb-2">No restaurants yet</p>
-            <p className="text-sm text-muted-foreground">Restaurants will appear here once they're created</p>
+            <p className="text-lg font-medium mb-2">Nenhum restaurante ainda</p>
+            <p className="text-sm text-muted-foreground">Os restaurantes aparecerão aqui quando forem criados</p>
           </div>
         </CardContent>
       </Card>
@@ -181,20 +181,20 @@ export const RestaurantManagement = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Restaurant Management</CardTitle>
-        <CardDescription>View and manage all restaurants on the platform</CardDescription>
+        <CardTitle>Gestão de Restaurantes</CardTitle>
+        <CardDescription>Visualize e gerencie todos os restaurantes na plataforma</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Contact</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Proprietário</TableHead>
+                <TableHead>Contato</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>Criado</TableHead>
+                <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -213,7 +213,7 @@ export const RestaurantManagement = () => {
                         <p className="text-sm text-muted-foreground">{restaurant.owner.email}</p>
                       </div>
                     ) : (
-                      <span className="text-muted-foreground">No owner</span>
+                      <span className="text-muted-foreground">Sem proprietário</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -227,7 +227,7 @@ export const RestaurantManagement = () => {
                   </TableCell>
                   <TableCell>
                     <Badge variant={restaurant.is_active ? "default" : "secondary"}>
-                      {restaurant.is_active ? "Active" : "Inactive"}
+                      {restaurant.is_active ? "Ativo" : "Inativo"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
@@ -240,7 +240,7 @@ export const RestaurantManagement = () => {
                         size="sm"
                         onClick={() => handleToggleActive(restaurant.id, restaurant.is_active)}
                       >
-                        {restaurant.is_active ? "Deactivate" : "Activate"}
+                        {restaurant.is_active ? "Desativar" : "Ativar"}
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -250,19 +250,19 @@ export const RestaurantManagement = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Restaurant?</AlertDialogTitle>
+                            <AlertDialogTitle>Deletar Restaurante?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will permanently delete {restaurant.name} and all associated data including
-                              menus, items, tables, and orders. This action cannot be undone.
+                              Isso irá deletar permanentemente {restaurant.name} e todos os dados associados incluindo
+                              menus, items, mesas e pedidos. Esta ação não pode ser desfeita.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(restaurant.id)}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
-                              Delete
+                              Deletar
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
