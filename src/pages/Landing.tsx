@@ -22,13 +22,10 @@ const Landing = () => {
             <Link to="/login">
               <Button variant="ghost" size="sm">Entrar</Button>
             </Link>
-            <Link to="/register">
-              <Button size="sm" className="gradient-primary shadow-glow">Começar</Button>
-            </Link>
           </nav>
           <div className="md:hidden">
-            <Link to="/register">
-              <Button size="sm" className="gradient-primary">Começar Grátis</Button>
+            <Link to="/login">
+              <Button size="sm" className="gradient-primary">Entrar</Button>
             </Link>
           </div>
         </div>
@@ -53,9 +50,9 @@ const Landing = () => {
                 Gerencie tudo a partir de um painel poderoso.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/register">
+                <Link to="/login">
                   <Button size="lg" className="gradient-primary shadow-glow text-lg px-8 w-full sm:w-auto">
-                    Começar Teste Grátis
+                    Entrar
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="text-lg px-8 w-full sm:w-auto">
@@ -143,9 +140,9 @@ const Landing = () => {
             <p className="text-xl mb-8 opacity-90">
               Junte-se a centenas de restaurantes que já usam PratoDigital
             </p>
-            <Link to="/register">
+            <Link to="/login">
               <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8">
-                Começar Seu Teste Grátis
+                Entrar Agora
               </Button>
             </Link>
           </div>
