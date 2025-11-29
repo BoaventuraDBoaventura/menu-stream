@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Store, Edit, QrCode, Crown, UserCheck } from "lucide-react";
+import { Store, Edit, QrCode, Users, Crown, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface RestaurantCardProps {
@@ -78,6 +78,16 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             QR Codes
           </Button>
         </div>
+        {restaurant.isOwner && (
+          <Button 
+            variant="secondary"
+            className="w-full"
+            onClick={() => navigate(`/team-management?restaurant=${restaurant.id}`)}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Gerenciar Equipe
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
