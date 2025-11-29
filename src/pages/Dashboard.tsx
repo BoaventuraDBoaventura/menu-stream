@@ -138,7 +138,7 @@ const Dashboard = () => {
                 title="Platform Settings"
                 description="Configure global settings and system preferences"
                 action="Settings"
-                onClick={() => toast({ title: "Coming soon!", description: "Platform settings will be available soon." })}
+                onClick={() => navigate("/platform-settings")}
               />
             </>
           )}

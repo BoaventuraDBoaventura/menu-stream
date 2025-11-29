@@ -16,6 +16,7 @@ import Checkout from "./pages/Checkout";
 import OrderStatus from "./pages/OrderStatus";
 import Kitchen from "./pages/Kitchen";
 import NotFound from "./pages/NotFound";
+import PlatformSettings from "./pages/PlatformSettings";
 import { CartProvider } from "./contexts/CartContext";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/platform-settings" element={<PlatformSettings />} />
           <Route path="/restaurant/create" element={<CreateRestaurant />} />
           <Route path="/menu/editor" element={<MenuEditor />} />
           <Route path="/qr-codes" element={<QRCodeManager />} />
