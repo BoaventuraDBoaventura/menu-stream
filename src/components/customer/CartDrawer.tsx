@@ -43,9 +43,8 @@ export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken }: CartD
   };
 
   const handleCheckout = () => {
-    // Navigate to checkout page (to be implemented)
     onOpenChange(false);
-    // TODO: Implement checkout navigation
+    navigate(`/checkout?restaurant=${restaurant.id}&table=${tableToken || ""}&currency=${restaurant.currency || "USD"}`);
   };
 
   if (items.length === 0) {

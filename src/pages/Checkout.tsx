@@ -1,0 +1,251 @@
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/contexts/CartContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const Checkout = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+  const { items, getTotalPrice, clearCart } = useCart();
+  
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const restaurantId = searchParams.get("restaurant");
+  const tableToken = searchParams.get("table");
+  const currency = searchParams.get("currency") || "USD";
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(price);
+  };
+
+  const handleSubmitOrder = async () => {
+    if (!customerName.trim() || !customerPhone.trim()) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha seu nome e telefone",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!restaurantId) {
+      toast({
+        title: "Erro",
+        description: "Restaurante não identificado",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Get table_id if tableToken exists
+      let tableId = null;
+      if (tableToken) {
+        const { data: tableData } = await supabase
+          .from("tables")
+          .select("id")
+          .eq("qr_code_token", tableToken)
+          .eq("restaurant_id", restaurantId)
+          .single();
+        
+        tableId = tableData?.id;
+      }
+
+      // Generate order number
+      const { data: orderNumberData } = await supabase
+        .rpc("generate_order_number", { restaurant_id: restaurantId });
+
+      // Create order
+      const { data: orderData, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          restaurant_id: restaurantId,
+          table_id: tableId,
+          customer_name: customerName.trim(),
+          customer_phone: customerPhone.trim(),
+          notes: notes.trim() || null,
+          order_number: orderNumberData,
+          total_amount: getTotalPrice(),
+          order_status: "new",
+          payment_status: "pending",
+          payment_method: "cash",
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = items.map(item => ({
+        order_id: orderData.id,
+        menu_item_id: item.menuItemId,
+        quantity: item.quantity,
+        price: item.price,
+        options: item.selectedOptions || null,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // Clear cart
+      clearCart();
+
+      toast({
+        title: "Pedido enviado!",
+        description: `Número do pedido: ${orderData.order_number}`,
+      });
+
+      // Navigate to order status page
+      navigate(`/order-status?order=${orderData.order_number}&restaurant=${restaurantId}`);
+    } catch (error: any) {
+      console.error("Error submitting order:", error);
+      toast({
+        title: "Erro ao enviar pedido",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Carrinho Vazio</h1>
+          <p className="text-muted-foreground mb-4">
+            Adicione itens ao carrinho antes de finalizar
+          </p>
+          <Button onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar ao Menu
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-8">
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+
+        <h1 className="text-3xl font-bold mb-6">Finalizar Pedido</h1>
+
+        {/* Customer Information */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Suas Informações</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="name">Nome *</Label>
+              <Input
+                id="name"
+                placeholder="Seu nome"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">Telefone *</Label>
+              <Input
+                id="phone"
+                placeholder="(00) 00000-0000"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="notes">Observações</Label>
+              <Textarea
+                id="notes"
+                placeholder="Alguma observação sobre seu pedido?"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Order Summary */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumo do Pedido</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {items.map((item) => {
+                let itemTotal = item.price;
+                if (item.selectedOptions?.size) {
+                  itemTotal += item.selectedOptions.size.price;
+                }
+                if (item.selectedOptions?.extras) {
+                  itemTotal += item.selectedOptions.extras.reduce((sum, e) => sum + e.price, 0);
+                }
+                itemTotal *= item.quantity;
+
+                return (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <span>
+                      {item.quantity}x {item.name}
+                    </span>
+                    <span className="font-medium">{formatPrice(itemTotal)}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="flex justify-between text-lg font-bold">
+              <span>Total</span>
+              <span>{formatPrice(getTotalPrice())}</span>
+            </div>
+
+            <Button
+              onClick={handleSubmitOrder}
+              disabled={loading}
+              className="w-full mt-6 gradient-primary py-6 text-lg"
+              size="lg"
+            >
+              {loading ? "Enviando..." : "Enviar Pedido"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default Checkout;

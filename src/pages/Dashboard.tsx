@@ -175,6 +175,22 @@ const Dashboard = () => {
               }
             }}
           />
+          <DashboardCard
+            icon={<ChefHat className="h-8 w-8 text-primary" />}
+            title="Cozinha"
+            description="Gerenciar pedidos e atualizar status de preparação"
+            action="Abrir Cozinha"
+            onClick={() => {
+              if (restaurants.length > 0) {
+                navigate(`/kitchen?restaurant=${restaurants[0].id}`);
+              } else {
+                toast({ 
+                  title: "No restaurant found", 
+                  description: "Please create a restaurant first" 
+                });
+              }
+            }}
+          />
         </div>
       </div>
 
