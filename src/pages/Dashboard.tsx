@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChefHat, Plus, QrCode, LayoutDashboard, LogOut, Crown, Users, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
+import { RestaurantCard } from "@/components/dashboard/RestaurantCard";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [restaurants, setRestaurants] = useState<any[]>([]);
   const { role, isSuperAdmin } = useUserRole(user?.id);
 
   useEffect(() => {
@@ -38,6 +40,15 @@ const Dashboard = () => {
         .single();
 
       setProfile(profileData);
+
+      // Fetch user's restaurants
+      const { data: restaurantsData } = await supabase
+        .from("restaurants")
+        .select("*")
+        .eq("owner_id", user.id)
+        .order("created_at", { ascending: false });
+
+      setRestaurants(restaurantsData || []);
     } catch (error) {
       console.error("Error checking user:", error);
     } finally {
@@ -92,7 +103,22 @@ const Dashboard = () => {
           <p className="text-muted-foreground">Manage your restaurant's digital presence</p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* My Restaurants Section */}
+        {restaurants.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">My Restaurants</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {restaurants.map((restaurant) => (
+                <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isSuperAdmin && (
             <>
               <DashboardCard
@@ -133,8 +159,10 @@ const Dashboard = () => {
             onClick={() => toast({ title: "Coming soon!", description: "QR code generation will be available soon." })}
           />
         </div>
+      </div>
 
-        <Card className="mt-8">
+      {/* Recent Orders */}
+      <Card className="mt-8">
           <CardHeader>
             <CardTitle>Recent Orders</CardTitle>
             <CardDescription>No orders yet. Once customers start ordering, they'll appear here.</CardDescription>

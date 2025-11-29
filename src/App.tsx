@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import CreateRestaurant from "./pages/CreateRestaurant";
+import MenuEditor from "./pages/MenuEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/restaurant/create" element={<CreateRestaurant />} />
+          <Route path="/menu/editor" element={<MenuEditor />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
