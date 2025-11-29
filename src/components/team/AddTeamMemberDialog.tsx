@@ -93,6 +93,29 @@ export const AddTeamMemberDialog = ({
         throw new Error("Falha ao criar usuário");
       }
 
+      // Check if this was a repeated signup (user already exists)
+      const { data: existingPermission } = await supabase
+        .from("restaurant_permissions")
+        .select("id")
+        .eq("user_id", authData.user.id)
+        .eq("restaurant_id", restaurantId)
+        .maybeSingle();
+
+      if (existingPermission) {
+        throw new Error("Este email já está cadastrado como membro desta equipe.");
+      }
+
+      // Check if user already has a role (meaning they were created before)
+      const { data: existingRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", authData.user.id)
+        .maybeSingle();
+
+      if (existingRole) {
+        throw new Error("Este email já está cadastrado no sistema. Use um email diferente.");
+      }
+
       // Wait for profile to be created by trigger and verify it exists
       let profileExists = false;
       let attempts = 0;
