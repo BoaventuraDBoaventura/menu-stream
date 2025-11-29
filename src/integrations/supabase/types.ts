@@ -412,6 +412,10 @@ export type Database = {
         Args: { restaurant_id: string }
         Returns: string
       }
+      generate_restaurant_slug: {
+        Args: { restaurant_name: string }
+        Returns: string
+      }
       get_all_users_for_admin: {
         Args: never
         Returns: {
