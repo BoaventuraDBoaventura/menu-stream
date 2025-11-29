@@ -16,6 +16,7 @@ import Checkout from "./pages/Checkout";
 import OrderStatus from "./pages/OrderStatus";
 import Kitchen from "./pages/Kitchen";
 import NotFound from "./pages/NotFound";
+import { CartProvider } from "./contexts/CartContext";
 
 const queryClient = new QueryClient();
 
@@ -34,8 +35,16 @@ const App = () => (
           <Route path="/restaurant/create" element={<CreateRestaurant />} />
           <Route path="/menu/editor" element={<MenuEditor />} />
           <Route path="/qr-codes" element={<QRCodeManager />} />
-          <Route path="/menu/:slug" element={<CustomerMenu />} />
-          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/menu/:slug" element={
+            <CartProvider>
+              <CustomerMenu />
+            </CartProvider>
+          } />
+          <Route path="/checkout" element={
+            <CartProvider>
+              <Checkout />
+            </CartProvider>
+          } />
           <Route path="/order-status" element={<OrderStatus />} />
           <Route path="/kitchen" element={<Kitchen />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

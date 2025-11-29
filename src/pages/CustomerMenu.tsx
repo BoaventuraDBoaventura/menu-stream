@@ -5,7 +5,6 @@ import { ChefHat } from "lucide-react";
 import { CategorySection } from "@/components/customer/CategorySection";
 import { CartButton } from "@/components/customer/CartButton";
 import { CartDrawer } from "@/components/customer/CartDrawer";
-import { CartProvider } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 
 const CustomerMenu = () => {
@@ -143,8 +142,7 @@ const CustomerMenu = () => {
   }
 
   return (
-    <CartProvider>
-      <div className="min-h-screen bg-gradient-warm pb-24">
+    <div className="min-h-screen bg-gradient-warm pb-24">
         {/* Header */}
         <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-sm border-b border-border shadow-soft">
           <div className="container mx-auto px-4 py-4">
@@ -224,7 +222,6 @@ const CustomerMenu = () => {
           tableToken={tableToken}
         />
       </div>
-    </CartProvider>
   );
 };
 
