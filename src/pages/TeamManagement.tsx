@@ -33,6 +33,7 @@ interface TeamMember {
     orders: boolean;
     kitchen: boolean;
     settings: boolean;
+    reports: boolean;
   };
 }
 
@@ -156,6 +157,7 @@ const TeamManagement = () => {
             orders: perms.orders ?? true,
             kitchen: perms.kitchen ?? true,
             settings: perms.settings ?? false,
+            reports: perms.reports ?? false,
           },
         };
       });
@@ -308,6 +310,9 @@ const TeamManagement = () => {
                             )}
                             {member.permissions.settings && (
                               <Badge variant="outline" className="text-xs">Config</Badge>
+                            )}
+                            {member.permissions.reports && (
+                              <Badge variant="outline" className="text-xs">Relatórios</Badge>
                             )}
                           </div>
                         </TableCell>

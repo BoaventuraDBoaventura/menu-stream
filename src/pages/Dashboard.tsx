@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChefHat, Plus, QrCode, LayoutDashboard, LogOut, Crown, Users, Settings } from "lucide-react";
+import { ChefHat, Plus, QrCode, LayoutDashboard, LogOut, Crown, Users, Settings, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { RestaurantCard } from "@/components/dashboard/RestaurantCard";
@@ -66,7 +66,7 @@ const Dashboard = () => {
         ...restaurant,
         isOwner: restaurant.owner_id === user.id,
         permissions: restaurant.owner_id === user.id 
-          ? { menu_editor: true, qr_codes: true, orders: true, kitchen: true, settings: true }
+          ? { menu_editor: true, qr_codes: true, orders: true, kitchen: true, settings: true, reports: true }
           : permissionsMap[restaurant.id] || {}
       })) || [];
 
@@ -212,7 +212,27 @@ const Dashboard = () => {
               action="Abrir Cozinha"
               onClick={() => {
                 if (restaurants.length > 0) {
-                  navigate(`/kitchen?restaurant=${restaurants[0].id}`);
+                  localStorage.setItem("selected_restaurant_id", restaurants[0].id);
+                  navigate("/kitchen");
+                } else {
+                  toast({ 
+                    title: "No restaurant found", 
+                    description: "Please create a restaurant first" 
+                  });
+                }
+              }}
+            />
+          )}
+          {(isSuperAdmin || restaurants[0]?.permissions?.reports) && (
+            <DashboardCard
+              icon={<BarChart3 className="h-8 w-8 text-primary" />}
+              title="Relatórios"
+              description="Visualize relatórios de vendas com filtros por período"
+              action="Ver Relatórios"
+              onClick={() => {
+                if (restaurants.length > 0) {
+                  localStorage.setItem("selected_restaurant_id", restaurants[0].id);
+                  navigate("/reports");
                 } else {
                   toast({ 
                     title: "No restaurant found", 

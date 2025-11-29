@@ -26,6 +26,7 @@ interface TeamMember {
     orders: boolean;
     kitchen: boolean;
     settings: boolean;
+    reports: boolean;
   };
 }
 
@@ -158,6 +159,21 @@ export const EditPermissionsDialog = ({
               checked={permissions.settings}
               onCheckedChange={(checked) =>
                 setPermissions({ ...permissions, settings: checked })
+              }
+            />
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Relatórios</Label>
+              <p className="text-sm text-muted-foreground">
+                Pode visualizar relatórios de vendas
+              </p>
+            </div>
+            <Switch
+              checked={permissions.reports}
+              onCheckedChange={(checked) =>
+                setPermissions({ ...permissions, reports: checked })
               }
             />
           </div>
