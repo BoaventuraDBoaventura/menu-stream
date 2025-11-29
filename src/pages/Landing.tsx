@@ -33,14 +33,14 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="pt-32 pb-20 px-4 overflow-hidden">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-block px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
                 <span className="text-sm font-medium text-primary">🚀 Transforme Seu Restaurante</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
                 Menus Digitais,{" "}
                 <span className="gradient-hero bg-clip-text text-transparent">
                   Sem Complicação
