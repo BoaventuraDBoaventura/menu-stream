@@ -156,7 +156,16 @@ const Dashboard = () => {
             title="QR Codes"
             description="Generate and download QR codes for your tables"
             action="Generate"
-            onClick={() => toast({ title: "Coming soon!", description: "QR code generation will be available soon." })}
+            onClick={() => {
+              if (restaurants.length > 0) {
+                navigate(`/qr-codes?restaurant=${restaurants[0].id}`);
+              } else {
+                toast({ 
+                  title: "No restaurant found", 
+                  description: "Please create a restaurant first" 
+                });
+              }
+            }}
           />
         </div>
       </div>

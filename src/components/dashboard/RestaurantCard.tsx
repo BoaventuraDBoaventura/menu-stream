@@ -56,7 +56,10 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             <Edit className="h-4 w-4 mr-2" />
             Edit Menu
           </Button>
-          <Button variant="outline">
+          <Button 
+            variant="outline"
+            onClick={() => navigate(`/qr-codes?restaurant=${restaurant.id}`)}
+          >
             <QrCode className="h-4 w-4 mr-2" />
             QR Codes
           </Button>

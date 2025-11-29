@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import CreateRestaurant from "./pages/CreateRestaurant";
 import MenuEditor from "./pages/MenuEditor";
+import QRCodeManager from "./pages/QRCodeManager";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/restaurant/create" element={<CreateRestaurant />} />
           <Route path="/menu/editor" element={<MenuEditor />} />
+          <Route path="/qr-codes" element={<QRCodeManager />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
