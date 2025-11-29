@@ -52,10 +52,12 @@ const createUserSchema = z.object({
   phone: z.string().optional(),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   role: z.enum(["super_admin", "restaurant_admin", "staff"]),
+  restaurantIds: z.array(z.string()).optional(),
 });
 
 export const UserManagement = () => {
   const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [restaurants, setRestaurants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -71,12 +73,32 @@ export const UserManagement = () => {
       phone: "",
       password: "",
       role: "restaurant_admin",
+      restaurantIds: [],
     },
   });
 
   useEffect(() => {
     fetchUsers();
+    fetchRestaurants();
   }, []);
+
+  const fetchRestaurants = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("restaurants")
+        .select("id, name, slug")
+        .order("name");
+
+      if (error) throw error;
+      setRestaurants(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao carregar restaurantes",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -163,6 +185,20 @@ export const UserManagement = () => {
         });
 
       if (roleError) throw roleError;
+
+      // If restaurant_admin or staff, assign restaurant permissions
+      if ((values.role === "restaurant_admin" || values.role === "staff") && values.restaurantIds && values.restaurantIds.length > 0) {
+        const permissionsToInsert = values.restaurantIds.map(restaurantId => ({
+          user_id: authData.user.id,
+          restaurant_id: restaurantId,
+        }));
+
+        const { error: permissionsError } = await supabase
+          .from("restaurant_permissions")
+          .insert(permissionsToInsert);
+
+        if (permissionsError) throw permissionsError;
+      }
 
       toast({
         title: "Usuário criado",
@@ -389,6 +425,47 @@ export const UserManagement = () => {
                       </FormItem>
                     )}
                   />
+                  {(form.watch("role") === "restaurant_admin" || form.watch("role") === "staff") && (
+                    <FormField
+                      control={form.control}
+                      name="restaurantIds"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Restaurantes</FormLabel>
+                          <FormControl>
+                            <div className="space-y-2">
+                              {restaurants.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">Nenhum restaurante disponível</p>
+                              ) : (
+                                restaurants.map((restaurant) => (
+                                  <div key={restaurant.id} className="flex items-center space-x-2">
+                                    <input
+                                      type="checkbox"
+                                      id={restaurant.id}
+                                      checked={field.value?.includes(restaurant.id)}
+                                      onChange={(e) => {
+                                        const currentValues = field.value || [];
+                                        if (e.target.checked) {
+                                          field.onChange([...currentValues, restaurant.id]);
+                                        } else {
+                                          field.onChange(currentValues.filter((id) => id !== restaurant.id));
+                                        }
+                                      }}
+                                      className="h-4 w-4 rounded border-input"
+                                    />
+                                    <Label htmlFor={restaurant.id} className="text-sm font-normal cursor-pointer">
+                                      {restaurant.name}
+                                    </Label>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                   <DialogFooter>
                     <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
                       Cancelar
