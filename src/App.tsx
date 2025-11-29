@@ -12,6 +12,9 @@ import CreateRestaurant from "./pages/CreateRestaurant";
 import MenuEditor from "./pages/MenuEditor";
 import QRCodeManager from "./pages/QRCodeManager";
 import CustomerMenu from "./pages/CustomerMenu";
+import Checkout from "./pages/Checkout";
+import OrderStatus from "./pages/OrderStatus";
+import Kitchen from "./pages/Kitchen";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +35,9 @@ const App = () => (
           <Route path="/menu/editor" element={<MenuEditor />} />
           <Route path="/qr-codes" element={<QRCodeManager />} />
           <Route path="/menu/:slug" element={<CustomerMenu />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-status" element={<OrderStatus />} />
+          <Route path="/kitchen" element={<Kitchen />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
