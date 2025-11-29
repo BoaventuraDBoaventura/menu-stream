@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, Plus, QrCode, LayoutDashboard, LogOut } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ChefHat, Plus, QrCode, LayoutDashboard, LogOut, Crown, Users, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { role, isSuperAdmin } = useUserRole(user?.id);
 
   useEffect(() => {
     checkUser();
@@ -65,7 +68,15 @@ const Dashboard = () => {
             <span className="text-xl font-bold">PratoDigital</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Welcome, {profile?.name}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Welcome, {profile?.name}</span>
+              {isSuperAdmin && (
+                <Badge className="gradient-primary text-white">
+                  <Crown className="h-3 w-3 mr-1" />
+                  Super Admin
+                </Badge>
+              )}
+            </div>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -82,6 +93,24 @@ const Dashboard = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {isSuperAdmin && (
+            <>
+              <DashboardCard
+                icon={<Users className="h-8 w-8 text-primary" />}
+                title="Manage Users"
+                description="View and manage all platform users and their roles"
+                action="View Users"
+                onClick={() => toast({ title: "Coming soon!", description: "User management will be available soon." })}
+              />
+              <DashboardCard
+                icon={<Settings className="h-8 w-8 text-primary" />}
+                title="Platform Settings"
+                description="Configure global settings and system preferences"
+                action="Settings"
+                onClick={() => toast({ title: "Coming soon!", description: "Platform settings will be available soon." })}
+              />
+            </>
+          )}
           <DashboardCard
             icon={<Plus className="h-8 w-8 text-primary" />}
             title="Create Restaurant"
