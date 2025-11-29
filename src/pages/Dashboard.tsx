@@ -97,10 +97,10 @@ const Dashboard = () => {
             <>
               <DashboardCard
                 icon={<Users className="h-8 w-8 text-primary" />}
-                title="Manage Users"
-                description="View and manage all platform users and their roles"
-                action="View Users"
-                onClick={() => toast({ title: "Coming soon!", description: "User management will be available soon." })}
+                title="Admin Panel"
+                description="Manage all platform users, restaurants, and assign roles"
+                action="Open Admin Panel"
+                onClick={() => navigate("/admin")}
               />
               <DashboardCard
                 icon={<Settings className="h-8 w-8 text-primary" />}
