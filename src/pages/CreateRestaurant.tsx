@@ -17,7 +17,7 @@ const CreateRestaurant = () => {
           </div>
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Voltar ao Painel
           </Button>
         </div>
       </header>

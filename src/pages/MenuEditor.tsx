@@ -56,8 +56,8 @@ const MenuEditor = () => {
       
       if (!restaurantData) {
         toast({
-          title: "Restaurant not found",
-          description: "The restaurant could not be found.",
+          title: "Restaurante não encontrado",
+          description: "O restaurante não pôde ser encontrado.",
           variant: "destructive",
         });
         navigate("/dashboard");
@@ -78,8 +78,8 @@ const MenuEditor = () => {
       
       if (!menuData) {
         toast({
-          title: "No menu found",
-          description: "Please create a menu first.",
+          title: "Nenhum menu encontrado",
+          description: "Por favor, crie um menu primeiro.",
           variant: "destructive",
         });
         navigate("/dashboard");
@@ -112,7 +112,7 @@ const MenuEditor = () => {
       }
     } catch (error: any) {
       toast({
-        title: "Error loading data",
+        title: "Erro ao carregar dados",
         description: error.message,
         variant: "destructive",
       });
@@ -135,7 +135,7 @@ const MenuEditor = () => {
       setMenuItems(data || []);
     } catch (error: any) {
       toast({
-        title: "Error loading items",
+        title: "Erro ao carregar itens",
         description: error.message,
         variant: "destructive",
       });
@@ -152,14 +152,14 @@ const MenuEditor = () => {
       if (error) throw error;
 
       toast({
-        title: available ? "Item enabled" : "Item disabled",
-        description: available ? "Item is now available." : "Item is now unavailable.",
+        title: available ? "Item ativado" : "Item desativado",
+        description: available ? "O item está agora disponível." : "O item está agora indisponível.",
       });
 
       fetchMenuItems();
     } catch (error: any) {
       toast({
-        title: "Error updating item",
+        title: "Erro ao atualizar item",
         description: error.message,
         variant: "destructive",
       });
@@ -176,14 +176,14 @@ const MenuEditor = () => {
       if (error) throw error;
 
       toast({
-        title: "Item deleted",
-        description: "Menu item has been removed.",
+        title: "Item excluído",
+        description: "O item do menu foi removido.",
       });
 
       fetchMenuItems();
     } catch (error: any) {
       toast({
-        title: "Error deleting item",
+        title: "Erro ao excluir item",
         description: error.message,
         variant: "destructive",
       });
@@ -211,12 +211,12 @@ const MenuEditor = () => {
             <ChefHat className="h-7 w-7 text-primary" />
             <div>
               <h1 className="text-xl font-bold">{restaurant.name}</h1>
-              <p className="text-sm text-muted-foreground">Menu Editor</p>
+              <p className="text-sm text-muted-foreground">Editor de Menu</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Voltar ao Painel
           </Button>
         </div>
       </header>
@@ -229,7 +229,7 @@ const MenuEditor = () => {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Categories</CardTitle>
+                  <CardTitle>Categorias</CardTitle>
                   <Button 
                     size="sm" 
                     onClick={() => {
@@ -238,10 +238,10 @@ const MenuEditor = () => {
                     }}
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add
+                    Adicionar
                   </Button>
                 </div>
-                <CardDescription>Drag to reorder</CardDescription>
+                <CardDescription>Arraste para reordenar</CardDescription>
               </CardHeader>
               <CardContent>
                 <CategoryList
@@ -265,9 +265,9 @@ const MenuEditor = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Menu Items</CardTitle>
+                    <CardTitle>Itens do Menu</CardTitle>
                     <CardDescription>
-                      {categories.find((c) => c.id === selectedCategoryId)?.name || "Select a category"}
+                      {categories.find((c) => c.id === selectedCategoryId)?.name || "Selecione uma categoria"}
                     </CardDescription>
                   </div>
                   {selectedCategoryId && (
@@ -279,7 +279,7 @@ const MenuEditor = () => {
                       className="gradient-primary"
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Item
+                      Adicionar Item
                     </Button>
                   )}
                 </div>
@@ -287,11 +287,11 @@ const MenuEditor = () => {
               <CardContent>
                 {!selectedCategoryId ? (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground">Select a category to view items</p>
+                    <p className="text-muted-foreground">Selecione uma categoria para ver os itens</p>
                   </div>
                 ) : menuItems.length === 0 ? (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground mb-4">No items in this category yet</p>
+                    <p className="text-muted-foreground mb-4">Ainda não há itens nesta categoria</p>
                     <Button 
                       onClick={() => {
                         setEditingItem(null);
@@ -300,7 +300,7 @@ const MenuEditor = () => {
                       variant="outline"
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Add First Item
+                      Adicionar Primeiro Item
                     </Button>
                   </div>
                 ) : (

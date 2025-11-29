@@ -102,7 +102,7 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Welcome, {profile?.name}</span>
+              <span className="text-sm text-muted-foreground">Bem-vindo, {profile?.name}</span>
               {isSuperAdmin && (
                 <Badge className="gradient-primary text-white">
                   <Crown className="h-3 w-3 mr-1" />
@@ -112,7 +112,7 @@ const Dashboard = () => {
             </div>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
-              Logout
+              Sair
             </Button>
           </div>
         </div>
@@ -121,14 +121,14 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Manage your restaurant's digital presence</p>
+          <h1 className="text-4xl font-bold mb-2">Painel</h1>
+          <p className="text-muted-foreground">Gerencie a presença digital do seu restaurante</p>
         </div>
 
         {/* My Restaurants Section */}
         {restaurants.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">My Restaurants</h2>
+            <h2 className="text-2xl font-bold mb-4">Meus Restaurantes</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {restaurants.map((restaurant) => (
                 <RestaurantCard key={restaurant.id} restaurant={restaurant} />
@@ -139,22 +139,22 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
+          <h2 className="text-2xl font-bold mb-4">Ações Rápidas</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isSuperAdmin && (
             <>
               <DashboardCard
                 icon={<Users className="h-8 w-8 text-primary" />}
-                title="Admin Panel"
-                description="Manage all platform users, restaurants, and assign roles"
-                action="Open Admin Panel"
+                title="Painel Admin"
+                description="Gerencie todos os usuários, restaurantes e atribua funções"
+                action="Abrir Painel Admin"
                 onClick={() => navigate("/admin")}
               />
               <DashboardCard
                 icon={<Settings className="h-8 w-8 text-primary" />}
-                title="Platform Settings"
-                description="Configure global settings and system preferences"
-                action="Settings"
+                title="Configurações da Plataforma"
+                description="Configure definições globais e preferências do sistema"
+                action="Configurações"
                 onClick={() => navigate("/platform-settings")}
               />
             </>
@@ -162,25 +162,25 @@ const Dashboard = () => {
           {(isSuperAdmin || role === 'restaurant_admin') && (
             <DashboardCard
               icon={<Plus className="h-8 w-8 text-primary" />}
-              title="Create Restaurant"
-              description="Set up your restaurant profile and start creating menus"
-              action="Get Started"
+              title="Criar Restaurante"
+              description="Configure o perfil do seu restaurante e comece a criar menus"
+              action="Começar"
               onClick={() => navigate("/restaurant/create")}
             />
           )}
           {(isSuperAdmin || restaurants[0]?.permissions?.menu_editor) && (
             <DashboardCard
               icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
-              title="Manage Menus"
-              description="Create and edit your digital menus with ease"
-              action="View Menus"
+              title="Gerir Menus"
+              description="Crie e edite seus menus digitais com facilidade"
+              action="Ver Menus"
               onClick={() => {
                 if (restaurants.length > 0) {
                   navigate(`/menu/editor?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
-                    title: "No restaurant found", 
-                    description: "Please create a restaurant first" 
+                    title: "Nenhum restaurante encontrado", 
+                    description: "Por favor, crie um restaurante primeiro" 
                   });
                 }
               }}
@@ -189,16 +189,16 @@ const Dashboard = () => {
           {(isSuperAdmin || restaurants[0]?.permissions?.qr_codes) && (
             <DashboardCard
               icon={<QrCode className="h-8 w-8 text-primary" />}
-              title="QR Codes"
-              description="Generate and download QR codes for your tables"
-              action="Generate"
+              title="Códigos QR"
+              description="Gere e baixe códigos QR para suas mesas"
+              action="Gerar"
               onClick={() => {
                 if (restaurants.length > 0) {
                   navigate(`/qr-codes?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
-                    title: "No restaurant found", 
-                    description: "Please create a restaurant first" 
+                    title: "Nenhum restaurante encontrado", 
+                    description: "Por favor, crie um restaurante primeiro" 
                   });
                 }
               }}

@@ -37,14 +37,14 @@ const Register = () => {
       if (error) throw error;
 
       toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account.",
+        title: "Conta criada!",
+        description: "Por favor, verifique seu email para confirmar sua conta.",
       });
 
       navigate("/login");
     } catch (error: any) {
       toast({
-        title: "Registration failed",
+        title: "Falha no registro",
         description: error.message,
         variant: "destructive",
       });
@@ -61,17 +61,17 @@ const Register = () => {
             <ChefHat className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold">PratoDigital</span>
           </div>
-          <CardTitle className="text-3xl">Create your account</CardTitle>
-          <CardDescription>Start your 14-day free trial today</CardDescription>
+          <CardTitle className="text-3xl">Crie sua conta</CardTitle>
+          <CardDescription>Comece seu teste grátis de 14 dias hoje</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Nome Completo</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="John Doe"
+                placeholder="João Silva"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -82,14 +82,14 @@ const Register = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="your@email.com"
+                placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">Telefone</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -99,7 +99,7 @@ const Register = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -110,13 +110,13 @@ const Register = () => {
               />
             </div>
             <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create Account"}
+              {isLoading ? "Criando conta..." : "Criar Conta"}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Already have an account? </span>
+            <span className="text-muted-foreground">Já tem uma conta? </span>
             <Link to="/login" className="text-primary font-medium hover:underline">
-              Sign in
+              Entrar
             </Link>
           </div>
         </CardContent>
