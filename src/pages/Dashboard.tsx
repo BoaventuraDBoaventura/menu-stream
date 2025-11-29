@@ -116,7 +116,7 @@ const Dashboard = () => {
             title="Create Restaurant"
             description="Set up your restaurant profile and start creating menus"
             action="Get Started"
-            onClick={() => toast({ title: "Coming soon!", description: "Restaurant creation will be available soon." })}
+            onClick={() => navigate("/restaurant/create")}
           />
           <DashboardCard
             icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
