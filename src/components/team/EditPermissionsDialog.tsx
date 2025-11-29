@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { FormDescription } from "@/components/ui/form";
 
 interface TeamMember {
   id: string;
@@ -91,9 +90,9 @@ export const EditPermissionsDialog = ({
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-base">Editor de Menu</Label>
-              <FormDescription>
+              <p className="text-sm text-muted-foreground">
                 Pode criar e editar itens do menu, categorias
-              </FormDescription>
+              </p>
             </div>
             <Switch
               checked={permissions.menu_editor}
@@ -106,9 +105,9 @@ export const EditPermissionsDialog = ({
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-base">Códigos QR</Label>
-              <FormDescription>
+              <p className="text-sm text-muted-foreground">
                 Pode gerar e gerenciar QR codes das mesas
-              </FormDescription>
+              </p>
             </div>
             <Switch
               checked={permissions.qr_codes}
@@ -121,9 +120,9 @@ export const EditPermissionsDialog = ({
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-base">Pedidos</Label>
-              <FormDescription>
+              <p className="text-sm text-muted-foreground">
                 Pode visualizar e gerenciar pedidos
-              </FormDescription>
+              </p>
             </div>
             <Switch
               checked={permissions.orders}
@@ -136,9 +135,9 @@ export const EditPermissionsDialog = ({
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-base">Cozinha</Label>
-              <FormDescription>
+              <p className="text-sm text-muted-foreground">
                 Pode acessar a tela da cozinha
-              </FormDescription>
+              </p>
             </div>
             <Switch
               checked={permissions.kitchen}
@@ -151,9 +150,9 @@ export const EditPermissionsDialog = ({
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-base">Configurações</Label>
-              <FormDescription>
+              <p className="text-sm text-muted-foreground">
                 Pode editar configurações do restaurante
-              </FormDescription>
+              </p>
             </div>
             <Switch
               checked={permissions.settings}
