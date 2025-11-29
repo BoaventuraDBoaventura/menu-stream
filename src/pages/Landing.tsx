@@ -42,7 +42,7 @@ const Landing = () => {
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
                 Menus Digitais,{" "}
-                <span className="gradient-hero bg-clip-text text-transparent">
+                <span className="text-primary">
                   Sem Complicação
                 </span>
               </h1>
