@@ -268,8 +268,6 @@ export type Database = {
           id: string
           name: string
           phone: string | null
-          restaurant_id: string | null
-          role: string
           updated_at: string | null
         }
         Insert: {
@@ -278,8 +276,6 @@ export type Database = {
           id: string
           name: string
           phone?: string | null
-          restaurant_id?: string | null
-          role: string
           updated_at?: string | null
         }
         Update: {
@@ -288,8 +284,6 @@ export type Database = {
           id?: string
           name?: string
           phone?: string | null
-          restaurant_id?: string | null
-          role?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -388,6 +382,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -397,9 +412,17 @@ export type Database = {
         Args: { restaurant_id: string }
         Returns: string
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "restaurant_admin" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -526,6 +549,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "restaurant_admin", "staff"],
+    },
   },
 } as const

@@ -29,8 +29,8 @@ const Register = () => {
           data: {
             name,
             phone,
-            role: "restaurant_admin",
           },
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
