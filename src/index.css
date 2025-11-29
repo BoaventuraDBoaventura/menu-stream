@@ -44,6 +44,14 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    
+    --success: 142 71% 45%;
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(14 88% 56%), hsl(20 90% 62%));
     --gradient-warm: linear-gradient(180deg, hsl(30 40% 98%), hsl(30 35% 96%));
@@ -95,6 +103,22 @@ All colors MUST be HSL.
     --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.24);
     --shadow-medium: 0 8px 24px -8px hsl(0 0% 0% / 0.32);
     --shadow-glow: 0 0 32px hsl(14 88% 56% / 0.32);
+    
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    
+    --success: 142 71% 45%;
+    
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    
+    --success: 142 71% 45%;
   }
 }
 
