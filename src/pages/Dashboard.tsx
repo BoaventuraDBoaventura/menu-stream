@@ -159,13 +159,15 @@ const Dashboard = () => {
               />
             </>
           )}
-          <DashboardCard
-            icon={<Plus className="h-8 w-8 text-primary" />}
-            title="Create Restaurant"
-            description="Set up your restaurant profile and start creating menus"
-            action="Get Started"
-            onClick={() => navigate("/restaurant/create")}
-          />
+          {(isSuperAdmin || role === 'restaurant_admin') && (
+            <DashboardCard
+              icon={<Plus className="h-8 w-8 text-primary" />}
+              title="Create Restaurant"
+              description="Set up your restaurant profile and start creating menus"
+              action="Get Started"
+              onClick={() => navigate("/restaurant/create")}
+            />
+          )}
           {(isSuperAdmin || restaurants[0]?.permissions?.menu_editor) && (
             <DashboardCard
               icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
