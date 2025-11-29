@@ -149,7 +149,16 @@ const Dashboard = () => {
             title="Manage Menus"
             description="Create and edit your digital menus with ease"
             action="View Menus"
-            onClick={() => toast({ title: "Coming soon!", description: "Menu management will be available soon." })}
+            onClick={() => {
+              if (restaurants.length > 0) {
+                navigate(`/menu/editor?restaurant=${restaurants[0].id}`);
+              } else {
+                toast({ 
+                  title: "No restaurant found", 
+                  description: "Please create a restaurant first" 
+                });
+              }
+            }}
           />
           <DashboardCard
             icon={<QrCode className="h-8 w-8 text-primary" />}
