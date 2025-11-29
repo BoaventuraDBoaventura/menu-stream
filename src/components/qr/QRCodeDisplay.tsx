@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Edit, Trash2 } from "lucide-react";
+import { Download, Edit, Trash2, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -133,6 +133,16 @@ export const QRCodeDisplay = ({ table, restaurant, onEdit, onDelete }: QRCodeDis
 
       {/* Action buttons */}
       <div className="space-y-2">
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => window.open(qrUrl, '_blank')}
+          className="w-full"
+        >
+          <ExternalLink className="h-4 w-4 mr-2" />
+          Abrir Link do Menu
+        </Button>
+
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
