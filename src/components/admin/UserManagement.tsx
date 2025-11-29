@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Crown, Shield, User, Loader2, Plus, Trash2 } from "lucide-react";
+import { Crown, Shield, User, Loader2, Plus, Trash2, Building2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -33,6 +33,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { RestaurantPermissionsDialog } from "./RestaurantPermissionsDialog";
 
 type UserRole = "super_admin" | "restaurant_admin" | "staff";
 
@@ -58,6 +59,8 @@ export const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string } | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof createUserSchema>>({
@@ -448,6 +451,19 @@ export const UserManagement = () => {
                           <SelectItem value="staff">Staff</SelectItem>
                         </SelectContent>
                       </Select>
+                      {(user.role === "restaurant_admin" || user.role === "staff") && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedUser({ id: user.id, name: user.name });
+                            setPermissionsDialogOpen(true);
+                          }}
+                          title="Gerenciar permissões de restaurante"
+                        >
+                          <Building2 className="h-4 w-4" />
+                        </Button>
+                      )}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="outline" size="sm">
@@ -480,6 +496,15 @@ export const UserManagement = () => {
             </TableBody>
           </Table>
         </div>
+
+        {selectedUser && (
+          <RestaurantPermissionsDialog
+            open={permissionsDialogOpen}
+            onOpenChange={setPermissionsDialogOpen}
+            userId={selectedUser.id}
+            userName={selectedUser.name}
+          />
+        )}
       </CardContent>
     </Card>
   );
