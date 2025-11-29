@@ -50,9 +50,20 @@ const MenuEditor = () => {
         .from("restaurants")
         .select("*")
         .eq("id", restaurantId)
-        .single();
+        .maybeSingle();
 
       if (restaurantError) throw restaurantError;
+      
+      if (!restaurantData) {
+        toast({
+          title: "Restaurant not found",
+          description: "The restaurant could not be found.",
+          variant: "destructive",
+        });
+        navigate("/dashboard");
+        return;
+      }
+      
       setRestaurant(restaurantData);
 
       // Fetch menu
