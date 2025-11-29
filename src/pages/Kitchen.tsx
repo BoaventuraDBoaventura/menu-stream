@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,11 @@ const Kitchen = () => {
   const loadOrders = async () => {
     try {
       setLoading(true);
+      
+      // Get date from 24 hours ago to limit the query
+      const yesterday = new Date();
+      yesterday.setHours(yesterday.getHours() - 24);
+      
       const { data, error } = await supabase
         .from("orders")
         .select(`
@@ -75,7 +80,10 @@ const Kitchen = () => {
           )
         `)
         .eq("restaurant_id", restaurantId)
-        .order("created_at", { ascending: false });
+        .in("order_status", ["new", "preparing", "ready", "delivered"])
+        .gte("created_at", yesterday.toISOString())
+        .order("created_at", { ascending: false })
+        .limit(100);
 
       if (error) throw error;
       setOrders(data || []);
@@ -129,6 +137,12 @@ const Kitchen = () => {
     return orders.filter(order => status.includes(order.order_status));
   };
 
+  // Memoize filtered orders to avoid recalculating on every render
+  const newOrders = useMemo(() => filterOrders(["new"]), [orders]);
+  const preparingOrders = useMemo(() => filterOrders(["preparing"]), [orders]);
+  const readyOrders = useMemo(() => filterOrders(["ready"]), [orders]);
+  const deliveredOrders = useMemo(() => filterOrders(["delivered"]), [orders]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -160,22 +174,22 @@ const Kitchen = () => {
         <Tabs defaultValue="new" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="new">
-              Novos ({filterOrders(["new"]).length})
+              Novos ({newOrders.length})
             </TabsTrigger>
             <TabsTrigger value="preparing">
-              Preparando ({filterOrders(["preparing"]).length})
+              Preparando ({preparingOrders.length})
             </TabsTrigger>
             <TabsTrigger value="ready">
-              Prontos ({filterOrders(["ready"]).length})
+              Prontos ({readyOrders.length})
             </TabsTrigger>
             <TabsTrigger value="completed">
-              Finalizados ({filterOrders(["delivered"]).length})
+              Finalizados ({deliveredOrders.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="new">
             <OrdersList
-              orders={filterOrders(["new"])}
+              orders={newOrders}
               onUpdateStatus={updateOrderStatus}
               nextStatus="preparing"
               nextStatusLabel="Iniciar Preparo"
@@ -184,7 +198,7 @@ const Kitchen = () => {
 
           <TabsContent value="preparing">
             <OrdersList
-              orders={filterOrders(["preparing"])}
+              orders={preparingOrders}
               onUpdateStatus={updateOrderStatus}
               nextStatus="ready"
               nextStatusLabel="Marcar como Pronto"
@@ -193,7 +207,7 @@ const Kitchen = () => {
 
           <TabsContent value="ready">
             <OrdersList
-              orders={filterOrders(["ready"])}
+              orders={readyOrders}
               onUpdateStatus={updateOrderStatus}
               nextStatus="delivered"
               nextStatusLabel="Marcar como Entregue"
@@ -202,7 +216,7 @@ const Kitchen = () => {
 
           <TabsContent value="completed">
             <OrdersList
-              orders={filterOrders(["delivered"])}
+              orders={deliveredOrders}
               onUpdateStatus={updateOrderStatus}
             />
           </TabsContent>
