@@ -14,21 +14,21 @@ const Landing = () => {
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium hover:text-primary transition-smooth">
-              Features
+              Funcionalidades
             </a>
             <a href="#pricing" className="text-sm font-medium hover:text-primary transition-smooth">
-              Pricing
+              Preços
             </a>
             <Link to="/login">
-              <Button variant="ghost" size="sm">Login</Button>
+              <Button variant="ghost" size="sm">Entrar</Button>
             </Link>
             <Link to="/register">
-              <Button size="sm" className="gradient-primary shadow-glow">Get Started</Button>
+              <Button size="sm" className="gradient-primary shadow-glow">Começar</Button>
             </Link>
           </nav>
           <div className="md:hidden">
             <Link to="/register">
-              <Button size="sm" className="gradient-primary">Start Free</Button>
+              <Button size="sm" className="gradient-primary">Começar Grátis</Button>
             </Link>
           </div>
         </div>
@@ -40,36 +40,36 @@ const Landing = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-block px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-                <span className="text-sm font-medium text-primary">🚀 Transform Your Restaurant</span>
+                <span className="text-sm font-medium text-primary">🚀 Transforme Seu Restaurante</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-                Digital Menus,{" "}
+                Menus Digitais,{" "}
                 <span className="gradient-hero bg-clip-text text-transparent">
-                  Zero Hassle
+                  Sem Complicação
                 </span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Create stunning digital menus, generate QR codes for tables, and receive orders directly from customers. 
-                Manage everything from one powerful dashboard.
+                Crie menus digitais deslumbrantes, gere códigos QR para mesas e receba pedidos diretamente dos clientes. 
+                Gerencie tudo a partir de um painel poderoso.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/register">
                   <Button size="lg" className="gradient-primary shadow-glow text-lg px-8 w-full sm:w-auto">
-                    Start Free Trial
+                    Começar Teste Grátis
                   </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="text-lg px-8 w-full sm:w-auto">
-                  View Demo
+                  Ver Demo
                 </Button>
               </div>
               <div className="flex items-center gap-8 pt-4">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-accent" />
-                  <span className="text-sm text-muted-foreground">No credit card</span>
+                  <span className="text-sm text-muted-foreground">Sem cartão de crédito</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-accent" />
-                  <span className="text-sm text-muted-foreground">14-day trial</span>
+                  <span className="text-sm text-muted-foreground">14 dias de teste</span>
                 </div>
               </div>
             </div>
@@ -78,7 +78,7 @@ const Landing = () => {
                 <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center">
                   <div className="text-center space-y-4 p-8">
                     <Smartphone className="h-24 w-24 text-primary mx-auto animate-pulse" />
-                    <p className="text-lg font-semibold">Interactive Menu Preview</p>
+                    <p className="text-lg font-semibold">Visualização Interativa do Menu</p>
                   </div>
                 </div>
               </div>
@@ -93,41 +93,41 @@ const Landing = () => {
       <section id="features" className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Everything You Need</h2>
+            <h2 className="text-4xl md:text-5xl font-bold">Tudo Que Você Precisa</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Powerful features designed specifically for modern restaurants
+              Funcionalidades poderosas projetadas especificamente para restaurantes modernos
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
               icon={<QrCode className="h-10 w-10 text-primary" />}
-              title="QR Code Menus"
-              description="Generate unique QR codes for each table. Customers scan and order instantly without waiting for staff."
+              title="Menus com QR Code"
+              description="Gere códigos QR únicos para cada mesa. Os clientes escaneiam e fazem pedidos instantaneamente sem esperar pelo atendimento."
             />
             <FeatureCard
               icon={<Smartphone className="h-10 w-10 text-primary" />}
-              title="Mobile-First Design"
-              description="Beautiful, responsive menus that work perfectly on any device. No app installation required."
+              title="Design Mobile-First"
+              description="Menus bonitos e responsivos que funcionam perfeitamente em qualquer dispositivo. Sem necessidade de instalar aplicativo."
             />
             <FeatureCard
               icon={<Zap className="h-10 w-10 text-primary" />}
-              title="Real-Time Orders"
-              description="Receive orders instantly in your dashboard with live updates. Never miss an order again."
+              title="Pedidos em Tempo Real"
+              description="Receba pedidos instantaneamente no seu painel com atualizações ao vivo. Nunca mais perca um pedido."
             />
             <FeatureCard
               icon={<TrendingUp className="h-10 w-10 text-primary" />}
-              title="Analytics & Reports"
-              description="Track your best-selling items, peak hours, and revenue with detailed analytics."
+              title="Análises e Relatórios"
+              description="Acompanhe seus itens mais vendidos, horários de pico e receita com análises detalhadas."
             />
             <FeatureCard
               icon={<CheckCircle2 className="h-10 w-10 text-primary" />}
-              title="Easy Menu Updates"
-              description="Update prices, add items, or mark dishes as unavailable in seconds from anywhere."
+              title="Atualizações Fáceis do Menu"
+              description="Atualize preços, adicione itens ou marque pratos como indisponíveis em segundos de qualquer lugar."
             />
             <FeatureCard
               icon={<ChefHat className="h-10 w-10 text-primary" />}
-              title="Kitchen Management"
-              description="Print tickets automatically and update order status from preparation to delivery."
+              title="Gestão de Cozinha"
+              description="Imprima tickets automaticamente e atualize o status do pedido da preparação à entrega."
             />
           </div>
         </div>
@@ -138,14 +138,14 @@ const Landing = () => {
         <div className="container mx-auto max-w-4xl">
           <div className="rounded-3xl gradient-hero p-12 text-center text-white shadow-2xl">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Go Digital?
+              Pronto para Digitalizar?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Join hundreds of restaurants already using PratoDigital
+              Junte-se a centenas de restaurantes que já usam PratoDigital
             </p>
             <Link to="/register">
               <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8">
-                Start Your Free Trial
+                Começar Seu Teste Grátis
               </Button>
             </Link>
           </div>
@@ -162,35 +162,35 @@ const Landing = () => {
                 <span className="font-bold">PratoDigital</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Modern digital menu solutions for restaurants.
+                Soluções modernas de menu digital para restaurantes.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-4">Produto</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-smooth">Features</a></li>
-                <li><a href="#" className="hover:text-primary transition-smooth">Pricing</a></li>
+                <li><a href="#" className="hover:text-primary transition-smooth">Funcionalidades</a></li>
+                <li><a href="#" className="hover:text-primary transition-smooth">Preços</a></li>
                 <li><a href="#" className="hover:text-primary transition-smooth">Demo</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">Empresa</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-smooth">About</a></li>
-                <li><a href="#" className="hover:text-primary transition-smooth">Contact</a></li>
-                <li><a href="#" className="hover:text-primary transition-smooth">Support</a></li>
+                <li><a href="#" className="hover:text-primary transition-smooth">Sobre</a></li>
+                <li><a href="#" className="hover:text-primary transition-smooth">Contacto</a></li>
+                <li><a href="#" className="hover:text-primary transition-smooth">Suporte</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-smooth">Privacy</a></li>
-                <li><a href="#" className="hover:text-primary transition-smooth">Terms</a></li>
+                <li><a href="#" className="hover:text-primary transition-smooth">Privacidade</a></li>
+                <li><a href="#" className="hover:text-primary transition-smooth">Termos</a></li>
               </ul>
             </div>
           </div>
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 PratoDigital. All rights reserved.</p>
+            <p>&copy; 2024 PratoDigital. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

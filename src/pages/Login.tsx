@@ -28,14 +28,14 @@ const Login = () => {
       if (error) throw error;
 
       toast({
-        title: "Welcome back!",
-        description: "You've successfully logged in.",
+        title: "Bem-vindo de volta!",
+        description: "Login realizado com sucesso.",
       });
 
       navigate("/dashboard");
     } catch (error: any) {
       toast({
-        title: "Login failed",
+        title: "Falha no login",
         description: error.message,
         variant: "destructive",
       });
@@ -52,8 +52,8 @@ const Login = () => {
             <ChefHat className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold">PratoDigital</span>
           </div>
-          <CardTitle className="text-3xl">Welcome back</CardTitle>
-          <CardDescription>Sign in to your restaurant dashboard</CardDescription>
+          <CardTitle className="text-3xl">Bem-vindo de volta</CardTitle>
+          <CardDescription>Entre no painel do seu restaurante</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -69,7 +69,7 @@ const Login = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -80,13 +80,13 @@ const Login = () => {
               />
             </div>
             <Button type="submit" className="w-full gradient-primary" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
+            <span className="text-muted-foreground">Não tem uma conta? </span>
             <Link to="/register" className="text-primary font-medium hover:underline">
-              Sign up
+              Registrar
             </Link>
           </div>
         </CardContent>
