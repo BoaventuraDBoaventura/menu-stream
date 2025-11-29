@@ -56,11 +56,11 @@ const Landing = () => {
                     Entrar
                   </Button>
                 </Link>
-                <a href="#contato">
+                <Link to="/contato">
                   <Button size="lg" variant="outline" className="text-lg px-8 w-full sm:w-auto">
                     Ver Demo
                   </Button>
-                </a>
+                </Link>
               </div>
               <div className="flex items-center gap-8 pt-4">
                 <div className="flex items-center gap-2">
@@ -200,77 +200,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contato" className="py-20 px-4 bg-muted/30">
-        <div className="container mx-auto max-w-2xl">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold">Entre em Contato</h2>
-            <p className="text-xl text-muted-foreground">
-              Preencha o formulário e entraremos em contato em breve
-            </p>
-          </div>
-          <Card className="border-2">
-            <CardContent className="pt-6">
-              <form className="space-y-6">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium">Nome</label>
-                  <input
-                    id="name"
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="Seu nome"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="seu@email.com"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="phone" className="text-sm font-medium">Telefone</label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="+258 XX XXX XXXX"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="restaurant" className="text-sm font-medium">Nome do Restaurante</label>
-                  <input
-                    id="restaurant"
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="Nome do seu restaurante"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium">Mensagem</label>
-                  <textarea
-                    id="message"
-                    rows={4}
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background resize-none"
-                    placeholder="Conte-nos sobre o seu restaurante..."
-                    required
-                  />
-                </div>
-                <Button type="submit" size="lg" className="w-full gradient-primary text-lg">
-                  Enviar Mensagem
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
@@ -315,7 +244,7 @@ const Landing = () => {
               <h4 className="font-semibold mb-4">Empresa</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#" className="hover:text-primary transition-smooth">Sobre</a></li>
-                <li><a href="#" className="hover:text-primary transition-smooth">Contacto</a></li>
+                <li><Link to="/contato" className="hover:text-primary transition-smooth">Contacto</Link></li>
                 <li><a href="#" className="hover:text-primary transition-smooth">Suporte</a></li>
               </ul>
             </div>
