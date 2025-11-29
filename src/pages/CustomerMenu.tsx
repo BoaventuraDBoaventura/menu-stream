@@ -29,6 +29,7 @@ const CustomerMenu = () => {
   const loadMenuData = async () => {
     try {
       setLoading(true);
+      console.log("Loading menu for slug:", slug);
 
       // Load restaurant
       const { data: restaurantData, error: restaurantError } = await supabase
@@ -36,12 +37,14 @@ const CustomerMenu = () => {
         .select("*")
         .eq("slug", slug)
         .eq("is_active", true)
-        .single();
+        .maybeSingle();
+
+      console.log("Restaurant data:", restaurantData, "Error:", restaurantError);
 
       if (restaurantError) throw restaurantError;
       if (!restaurantData) {
         toast({
-          title: "Restaurant not found",
+          title: "Restaurante não encontrado",
           variant: "destructive",
         });
         return;
@@ -69,9 +72,20 @@ const CustomerMenu = () => {
         .select("*")
         .eq("restaurant_id", restaurantData.id)
         .eq("is_active", true)
-        .single();
+        .maybeSingle();
 
-      if (menuError) throw menuError;
+      console.log("Menu data:", menuData, "Error:", menuError);
+
+      if (menuError) {
+        console.error("Menu error details:", menuError);
+        toast({
+          title: "Menu não encontrado",
+          description: "Este restaurante ainda não tem um menu ativo. Por favor, crie um menu primeiro.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       setMenu(menuData);
 
       // Load categories
