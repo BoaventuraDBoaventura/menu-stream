@@ -148,11 +148,11 @@ const Landing = () => {
                   Tudo que você precisa para digitalizar seu restaurante
                 </CardDescription>
                 <div className="mt-8">
-                  <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-6xl font-bold gradient-hero bg-clip-text text-transparent">
+                  <div className="inline-flex items-baseline gap-2 bg-primary px-8 py-4 rounded-lg">
+                    <span className="text-5xl font-bold text-white">
                       1.500
                     </span>
-                    <span className="text-2xl text-muted-foreground">MT/mês</span>
+                    <span className="text-xl text-white">MT/mês</span>
                   </div>
                 </div>
               </CardHeader>
