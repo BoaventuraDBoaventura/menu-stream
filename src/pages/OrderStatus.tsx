@@ -13,6 +13,7 @@ const OrderStatus = () => {
   const { toast } = useToast();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currency, setCurrency] = useState<string>("USD");
 
   const orderNumber = searchParams.get("order");
   const restaurantId = searchParams.get("restaurant");
@@ -50,6 +51,17 @@ const OrderStatus = () => {
 
   const loadOrder = async () => {
     try {
+      // Load restaurant to get currency
+      const { data: restaurantData } = await supabase
+        .from("restaurants")
+        .select("currency")
+        .eq("id", restaurantId)
+        .single();
+
+      if (restaurantData) {
+        setCurrency(restaurantData.currency || "USD");
+      }
+
       const { data, error } = await supabase
         .from("orders")
         .select("*, tables(name)")
@@ -69,6 +81,13 @@ const OrderStatus = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(price);
   };
 
   const getStatusMessage = (status: string) => {
@@ -213,7 +232,7 @@ const OrderStatus = () => {
             <div className="flex justify-between">
               <span className="text-muted-foreground">Total:</span>
               <span className="font-medium text-lg">
-                ${parseFloat(order.total_amount).toFixed(2)}
+                {formatPrice(parseFloat(order.total_amount))}
               </span>
             </div>
           </CardContent>
