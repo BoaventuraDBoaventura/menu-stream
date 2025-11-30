@@ -88,6 +88,30 @@ const RestaurantSettings = () => {
 
       if (error) throw error;
 
+      // Update default menu title based on language
+      const { data: menus } = await supabase
+        .from("menus")
+        .select("id, title")
+        .eq("restaurant_id", restaurantId)
+        .eq("is_active", true);
+
+      if (menus && menus.length > 0) {
+        // Only update if it's still the default menu title
+        const menu = menus[0];
+        if (menu.title === "Main Menu" || menu.title === "Menu Principal") {
+          const newTitle = formData.language === "pt" ? "Menu Principal" : "Main Menu";
+          const newDescription = formData.language === "pt" ? "Nosso delicioso menu" : "Our delicious menu";
+          
+          await supabase
+            .from("menus")
+            .update({
+              title: newTitle,
+              description: newDescription
+            })
+            .eq("id", menu.id);
+        }
+      }
+
       // Update language in context
       setLanguage(formData.language as "pt" | "en");
 
