@@ -8,21 +8,25 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import pt from "@/locales/pt";
+import en from "@/locales/en";
 
 interface CartDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   restaurant: any;
   tableToken: string | null;
+  language: "pt" | "en";
 }
 
-export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken }: CartDrawerProps) => {
+export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken, language }: CartDrawerProps) => {
   const navigate = useNavigate();
   const { items, updateQuantity, removeItem, getTotalPrice } = useCart();
+  
+  const t = language === "pt" ? pt : en;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -52,13 +56,13 @@ export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken }: CartD
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="w-full sm:max-w-lg">
           <SheetHeader>
-            <SheetTitle>Your Cart</SheetTitle>
-            <SheetDescription>Your cart is empty</SheetDescription>
+            <SheetTitle>{t.cart.title}</SheetTitle>
+            <SheetDescription>{t.cart.empty}</SheetDescription>
           </SheetHeader>
           <div className="flex flex-col items-center justify-center h-[60vh]">
             <ShoppingBag className="h-20 w-20 text-muted-foreground mb-4" />
             <p className="text-muted-foreground text-center">
-              Add some delicious items to get started!
+              {t.cart.emptyMessage}
             </p>
           </div>
         </SheetContent>
@@ -70,8 +74,8 @@ export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken }: CartD
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader>
-          <SheetTitle>Your Cart</SheetTitle>
-          <SheetDescription>{items.length} items</SheetDescription>
+          <SheetTitle>{t.cart.title}</SheetTitle>
+          <SheetDescription>{items.length} {t.cart.items}</SheetDescription>
         </SheetHeader>
 
         <ScrollArea className="flex-1 -mx-6 px-6 my-4">
@@ -91,10 +95,10 @@ export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken }: CartD
                   {/* Options */}
                   <div className="text-sm text-muted-foreground mt-1 space-y-1">
                     {item.selectedOptions?.size && (
-                      <p>Size: {item.selectedOptions.size.name}</p>
+                      <p>{t.cart.size}: {item.selectedOptions.size.name}</p>
                     )}
                     {item.selectedOptions?.extras && item.selectedOptions.extras.length > 0 && (
-                      <p>Extras: {item.selectedOptions.extras.map((e: any) => e.name).join(", ")}</p>
+                      <p>{t.cart.extras}: {item.selectedOptions.extras.map((e: any) => e.name).join(", ")}</p>
                     )}
                   </div>
 
@@ -145,7 +149,7 @@ export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken }: CartD
         <div className="space-y-4 border-t border-border pt-4">
           {/* Total */}
           <div className="flex items-center justify-between text-lg font-bold">
-            <span>Total</span>
+            <span>{t.cart.total}</span>
             <span>{formatPrice(getTotalPrice())}</span>
           </div>
 
@@ -155,7 +159,7 @@ export const CartDrawer = ({ open, onOpenChange, restaurant, tableToken }: CartD
             className="w-full gradient-primary py-6 text-lg"
             size="lg"
           >
-            Proceed to Checkout
+            {t.cart.checkout}
           </Button>
         </div>
       </SheetContent>
