@@ -30,6 +30,7 @@ const Reports = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [restaurantName, setRestaurantName] = useState<string>("");
+  const [currency, setCurrency] = useState<string>("MZN");
   
   const restaurantId = searchParams.get("restaurant");
   
@@ -69,12 +70,13 @@ const Reports = () => {
       
       const { data: restaurant } = await supabase
         .from("restaurants")
-        .select("name")
+        .select("name, currency")
         .eq("id", restaurantId)
         .single();
 
       if (restaurant) {
         setRestaurantName(restaurant.name);
+        setCurrency(restaurant.currency || "MZN");
       }
 
       await fetchOrders(restaurantId);
@@ -152,6 +154,13 @@ const Reports = () => {
     setFilteredOrders(filtered);
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(price);
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
@@ -212,7 +221,7 @@ const Reports = () => {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totals.total.toFixed(2)} MT</div>
+              <div className="text-2xl font-bold">{formatPrice(totals.total)}</div>
               <p className="text-xs text-muted-foreground">
                 {totals.count} pedidos
               </p>
@@ -252,7 +261,7 @@ const Reports = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {totals.count > 0 ? (totals.total / totals.count).toFixed(2) : "0.00"} MT
+                {totals.count > 0 ? formatPrice(totals.total / totals.count) : formatPrice(0)}
               </div>
               <p className="text-xs text-muted-foreground">
                 Por pedido
@@ -408,7 +417,7 @@ const Reports = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {Number(order.total_amount).toFixed(2)} MT
+                        {formatPrice(Number(order.total_amount))}
                       </TableCell>
                     </TableRow>
                   ))
