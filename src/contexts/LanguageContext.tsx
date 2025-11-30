@@ -10,14 +10,17 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const defaultContextValue: LanguageContextType = {
+  language: "pt",
+  setLanguage: () => {},
+  setActiveRestaurant: () => {},
+  t: (key: string) => key,
+};
+
+const LanguageContext = createContext<LanguageContextType>(defaultContextValue);
 
 export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
-  }
-  return context;
+  return useContext(LanguageContext);
 };
 
 interface LanguageProviderProps {
