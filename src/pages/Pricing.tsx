@@ -60,19 +60,27 @@ const Pricing = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Códigos QR para mesas</span>
+                    <span className="text-sm">Códigos QR para todas as mesas</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Gestão de pedidos</span>
+                    <span className="text-sm">Gestão de pedidos em tempo real</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Painel de cozinha</span>
+                    <span className="text-sm">Painel de cozinha completo</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Suporte técnico</span>
+                    <span className="text-sm">Relatórios e análises detalhadas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Gestão de equipa e permissões</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Suporte técnico prioritário</span>
                   </li>
                 </ul>
                 <Link to="/login" className="block">
@@ -100,30 +108,38 @@ const Pricing = () => {
                     </span>
                     <span className="text-base text-white">MT/mês</span>
                   </div>
-                  <p className="text-sm text-primary font-semibold mt-3">3 Restaurantes</p>
+                  <p className="text-sm text-white font-semibold mt-3">3 Restaurantes</p>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4 pb-8 px-4">
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Tudo do plano Básico</span>
+                    <span className="text-sm">Menus digitais ilimitados</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Relatórios avançados</span>
+                    <span className="text-sm">Códigos QR para todas as mesas</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Gestão de equipa</span>
+                    <span className="text-sm">Gestão de pedidos em tempo real</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Suporte prioritário</span>
+                    <span className="text-sm">Painel de cozinha completo</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Análises detalhadas</span>
+                    <span className="text-sm">Relatórios e análises detalhadas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Gestão de equipa e permissões</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Suporte técnico prioritário</span>
                   </li>
                 </ul>
                 <Link to="/login" className="block">
@@ -155,23 +171,31 @@ const Pricing = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Tudo do plano Crescimento</span>
+                    <span className="text-sm">Menus digitais ilimitados</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Integrações avançadas</span>
+                    <span className="text-sm">Códigos QR para todas as mesas</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">API personalizada</span>
+                    <span className="text-sm">Gestão de pedidos em tempo real</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Dashboard executivo</span>
+                    <span className="text-sm">Painel de cozinha completo</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Treinamento incluído</span>
+                    <span className="text-sm">Relatórios e análises detalhadas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Gestão de equipa e permissões</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Suporte técnico prioritário</span>
                   </li>
                 </ul>
                 <Link to="/login" className="block">
@@ -203,23 +227,31 @@ const Pricing = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Tudo do plano Profissional</span>
+                    <span className="text-sm">Menus digitais ilimitados</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Restaurantes ilimitados</span>
+                    <span className="text-sm">Códigos QR para todas as mesas</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Gerente de conta dedicado</span>
+                    <span className="text-sm">Gestão de pedidos em tempo real</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">SLA garantido 99.9%</span>
+                    <span className="text-sm">Painel de cozinha completo</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Suporte 24/7</span>
+                    <span className="text-sm">Relatórios e análises detalhadas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Gestão de equipa e permissões</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Suporte técnico prioritário</span>
                   </li>
                 </ul>
                 <Link to="/login" className="block">
