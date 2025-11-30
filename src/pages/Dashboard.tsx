@@ -13,7 +13,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, setActiveRestaurant } = useLanguage();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -83,6 +83,11 @@ const Dashboard = () => {
       })) || [];
 
       setRestaurants(restaurantsWithOwnership);
+
+      // Set the first restaurant as active to load its language
+      if (restaurantsWithOwnership.length > 0) {
+        setActiveRestaurant(restaurantsWithOwnership[0].id);
+      }
     } catch (error) {
       console.error("Error checking user:", error);
     } finally {

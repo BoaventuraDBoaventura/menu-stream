@@ -6,6 +6,7 @@ type Language = "pt" | "en";
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
+  setActiveRestaurant: (restaurantId: string) => void;
   t: (key: string) => string;
 }
 
@@ -26,11 +27,18 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>("pt");
   const [translations, setTranslations] = useState<Record<string, any>>({});
+  const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null);
 
   useEffect(() => {
     loadTranslations();
     loadUserLanguagePreference();
   }, []);
+
+  useEffect(() => {
+    if (activeRestaurantId) {
+      loadRestaurantLanguage(activeRestaurantId);
+    }
+  }, [activeRestaurantId]);
 
   const loadTranslations = async () => {
     try {
@@ -53,11 +61,13 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       // Get user's first restaurant
       const { data: restaurants } = await supabase
         .from("restaurants")
-        .select("settings")
+        .select("id, settings")
         .or(`owner_id.eq.${user.id}`)
         .limit(1);
 
       if (restaurants && restaurants.length > 0) {
+        // Set the first restaurant as active
+        setActiveRestaurantId(restaurants[0].id);
         const settings = restaurants[0].settings as { language?: string } | null;
         const userLang = settings?.language as Language;
         if (userLang && (userLang === "pt" || userLang === "en")) {
@@ -67,6 +77,30 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     } catch (error) {
       console.error("Error loading language preference:", error);
     }
+  };
+
+  const loadRestaurantLanguage = async (restaurantId: string) => {
+    try {
+      const { data: restaurant } = await supabase
+        .from("restaurants")
+        .select("settings")
+        .eq("id", restaurantId)
+        .single();
+
+      if (restaurant) {
+        const settings = restaurant.settings as { language?: string } | null;
+        const restaurantLang = settings?.language as Language;
+        if (restaurantLang && (restaurantLang === "pt" || restaurantLang === "en")) {
+          setLanguageState(restaurantLang);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading restaurant language:", error);
+    }
+  };
+
+  const setActiveRestaurant = (restaurantId: string) => {
+    setActiveRestaurantId(restaurantId);
   };
 
   const setLanguage = (lang: Language) => {
@@ -90,7 +124,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, setActiveRestaurant, t }}>
       {children}
     </LanguageContext.Provider>
   );

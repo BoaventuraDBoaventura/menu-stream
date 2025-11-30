@@ -14,7 +14,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const RestaurantSettings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t, setLanguage } = useLanguage();
+  const { t, setLanguage, setActiveRestaurant } = useLanguage();
   const [searchParams] = useSearchParams();
   const restaurantId = searchParams.get("restaurant");
   
@@ -29,6 +29,7 @@ const RestaurantSettings = () => {
 
   useEffect(() => {
     if (restaurantId) {
+      setActiveRestaurant(restaurantId);
       fetchRestaurant();
     } else {
       toast({
