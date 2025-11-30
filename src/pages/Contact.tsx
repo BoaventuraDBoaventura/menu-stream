@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChefHat } from "lucide-react";
+import { ChefHat, Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -77,97 +77,151 @@ const Contact = () => {
 
       {/* Contact Section */}
       <section className="pt-32 pb-20 px-4">
-        <div className="container mx-auto max-w-2xl">
+        <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-4 mb-12">
             <h1 className="text-4xl md:text-5xl font-bold">Entre em Contato</h1>
             <p className="text-xl text-muted-foreground">
-              Preencha o formulário e entraremos em contato em breve
+              Estamos aqui para ajudar o seu restaurante
             </p>
           </div>
-          <Card className="border-2">
-            <CardContent className="pt-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium">
-                    Nome *
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="Seu nome"
-                    required
-                    maxLength={100}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium">
-                    Email *
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="seu@email.com"
-                    required
-                    maxLength={255}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="phone" className="text-sm font-medium">
-                    Telefone *
-                  </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="+258 XX XXX XXXX"
-                    required
-                    maxLength={20}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="restaurant" className="text-sm font-medium">
-                    Nome do Restaurante *
-                  </label>
-                  <input
-                    id="restaurant"
-                    name="restaurant"
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background"
-                    placeholder="Nome do seu restaurante"
-                    required
-                    maxLength={100}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium">
-                    Mensagem *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background resize-none"
-                    placeholder="Conte-nos sobre o seu restaurante..."
-                    required
-                    maxLength={1000}
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  size="lg" 
-                  className="w-full gradient-primary text-lg"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Contact Information */}
+            <div className="space-y-6">
+              <Card className="border-2">
+                <CardContent className="pt-6 space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-4">Informações de Contato</h2>
+                    <p className="text-muted-foreground mb-6">
+                      Entre em contato conosco através de qualquer um dos canais abaixo.
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-lg bg-primary/10">
+                        <Phone className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold mb-1">Telefone</h3>
+                        <a href="tel:+258846004801" className="text-muted-foreground hover:text-primary transition-smooth block">
+                          +258 84 600 4801
+                        </a>
+                        <a href="tel:+258869464474" className="text-muted-foreground hover:text-primary transition-smooth block">
+                          +258 86 946 4474
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-lg bg-primary/10">
+                        <Mail className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold mb-1">Email</h3>
+                        <a href="mailto:boaven00@gmail.com" className="text-muted-foreground hover:text-primary transition-smooth">
+                          boaven00@gmail.com
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">
+                      Horário de atendimento: Segunda a Sexta, 9h às 18h
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Contact Form */}
+            <Card className="border-2">
+              <CardContent className="pt-6">
+                <h2 className="text-2xl font-bold mb-6">Envie uma Mensagem</h2>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      Nome *
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background"
+                      placeholder="Seu nome"
+                      required
+                      maxLength={100}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium">
+                      Email *
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background"
+                      placeholder="seu@email.com"
+                      required
+                      maxLength={255}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="phone" className="text-sm font-medium">
+                      Telefone *
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background"
+                      placeholder="+258 XX XXX XXXX"
+                      required
+                      maxLength={20}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="restaurant" className="text-sm font-medium">
+                      Nome do Restaurante *
+                    </label>
+                    <input
+                      id="restaurant"
+                      name="restaurant"
+                      type="text"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background"
+                      placeholder="Nome do seu restaurante"
+                      required
+                      maxLength={100}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="message" className="text-sm font-medium">
+                      Mensagem *
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background resize-none"
+                      placeholder="Conte-nos sobre o seu restaurante..."
+                      required
+                      maxLength={1000}
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    className="w-full gradient-primary text-lg"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
     </div>
