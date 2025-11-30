@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowLeft, ArrowRight, Check, Upload, Loader2, X } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 
@@ -58,6 +59,7 @@ export const CreateRestaurantForm = ({ onSuccess, onCancel }: CreateRestaurantFo
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, language } = useLanguage();
 
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(restaurantSchema),
@@ -145,7 +147,7 @@ export const CreateRestaurantForm = ({ onSuccess, onCancel }: CreateRestaurantFo
       // Upload logo if provided
       const logoUrl = await uploadLogo(user.id);
 
-      // Create restaurant
+      // Create restaurant with language settings
       const { data: restaurant, error: restaurantError } = await supabase
         .from("restaurants")
         .insert({
@@ -158,19 +160,22 @@ export const CreateRestaurantForm = ({ onSuccess, onCancel }: CreateRestaurantFo
           logo_url: logoUrl,
           timezone: data.timezone,
           currency: data.currency,
+          settings: {
+            language: language,
+          },
         })
         .select()
         .single();
 
       if (restaurantError) throw restaurantError;
 
-      // Create default menu
+      // Create default menu in the restaurant's language
       const { error: menuError } = await supabase
         .from("menus")
         .insert({
           restaurant_id: restaurant.id,
-          title: "Main Menu",
-          description: "Our delicious menu",
+          title: t("defaultMenu.title"),
+          description: t("defaultMenu.description"),
           is_active: true,
         });
 

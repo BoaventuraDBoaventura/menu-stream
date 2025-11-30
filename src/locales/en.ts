@@ -94,6 +94,10 @@ export default {
     updateFailed: "Could not update settings",
     backToDashboard: "Back to Dashboard",
   },
+  defaultMenu: {
+    title: "Main Menu",
+    description: "Our delicious menu",
+  },
   menu: {
     title: "Menu Editor",
     categories: "Categories",
