@@ -44,6 +44,7 @@ interface UserWithRole {
   phone: string | null;
   created_at: string;
   role: UserRole | null;
+  max_restaurants: number | null;
 }
 
 const createUserSchema = z.object({
@@ -93,7 +94,7 @@ export const UserManagement = () => {
       // Fetch all user roles
       const { data: roles, error: rolesError } = await supabase
         .from("user_roles")
-        .select("user_id, role");
+        .select("user_id, role, max_restaurants");
 
       if (rolesError) throw rolesError;
 
@@ -117,6 +118,7 @@ export const UserManagement = () => {
           phone: profile.phone,
           created_at: profile.created_at,
           role: userRole?.role as UserRole || null,
+          max_restaurants: userRole?.max_restaurants ?? null,
         };
       });
 
@@ -285,6 +287,32 @@ export const UserManagement = () => {
     }
   };
 
+  const handleMaxRestaurantsChange = async (userId: string, maxRestaurants: string) => {
+    try {
+      const value = maxRestaurants === "" ? null : parseInt(maxRestaurants);
+      
+      const { error } = await supabase
+        .from("user_roles")
+        .update({ max_restaurants: value })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Limite atualizado",
+        description: "Limite de restaurantes atualizado com sucesso.",
+      });
+
+      fetchUsers();
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar limite",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Card>
@@ -417,6 +445,7 @@ export const UserManagement = () => {
                 <TableHead>Email</TableHead>
                 <TableHead>Telefone</TableHead>
                 <TableHead>Função</TableHead>
+                <TableHead>Max. Restaurantes</TableHead>
                 <TableHead>Registrado</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
@@ -435,6 +464,20 @@ export const UserManagement = () => {
                       </Badge>
                     ) : (
                       <Badge variant="outline">No role</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {user.role === "restaurant_admin" ? (
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="Ilimitado"
+                        className="w-24"
+                        value={user.max_restaurants ?? ""}
+                        onChange={(e) => handleMaxRestaurantsChange(user.id, e.target.value)}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground">N/A</span>
                     )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">

@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [restaurantPermissions, setRestaurantPermissions] = useState<Record<string, any>>({});
+  const [maxRestaurants, setMaxRestaurants] = useState<number | null>(null);
   const { role, isSuperAdmin } = useUserRole(user?.id);
 
   useEffect(() => {
@@ -41,6 +42,15 @@ const Dashboard = () => {
         .single();
 
       setProfile(profileData);
+
+      // Fetch user's max_restaurants limit
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("max_restaurants")
+        .eq("user_id", user.id)
+        .single();
+      
+      setMaxRestaurants(roleData?.max_restaurants ?? null);
 
       // Fetch user's restaurants (owned or with permissions)
       const { data: restaurantsData } = await supabase
@@ -159,15 +169,26 @@ const Dashboard = () => {
               />
             </>
           )}
-          {(isSuperAdmin || role === 'restaurant_admin') && (
-            <DashboardCard
-              icon={<Plus className="h-8 w-8 text-primary" />}
-              title="Criar Restaurante"
-              description="Configure o perfil do seu restaurante e comece a criar menus"
-              action="Começar"
-              onClick={() => navigate("/restaurant/create")}
-            />
-          )}
+          {(isSuperAdmin || role === 'restaurant_admin') && (() => {
+            // Count restaurants owned by the user
+            const ownedRestaurantsCount = restaurants.filter(r => r.owner_id === user?.id).length;
+            const canCreateMore = maxRestaurants === null || ownedRestaurantsCount < maxRestaurants;
+            
+            // Only show create button if user can create more restaurants
+            if (!canCreateMore && !isSuperAdmin) {
+              return null;
+            }
+            
+            return (
+              <DashboardCard
+                icon={<Plus className="h-8 w-8 text-primary" />}
+                title="Criar Restaurante"
+                description="Configure o perfil do seu restaurante e comece a criar menus"
+                action="Começar"
+                onClick={() => navigate("/restaurant/create")}
+              />
+            );
+          })()}
           {(isSuperAdmin || restaurants[0]?.permissions?.menu_editor) && (
             <DashboardCard
               icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
