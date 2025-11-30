@@ -15,20 +15,25 @@ import { Badge } from "@/components/ui/badge";
 import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import pt from "@/locales/pt";
+import en from "@/locales/en";
 
 interface AddToCartDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   item: any;
   currency: string;
+  language: "pt" | "en";
 }
 
-export const AddToCartDialog = ({ open, onOpenChange, item, currency }: AddToCartDialogProps) => {
+export const AddToCartDialog = ({ open, onOpenChange, item, currency, language }: AddToCartDialogProps) => {
   const { addItem } = useCart();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<any>(null);
   const [selectedExtras, setSelectedExtras] = useState<any[]>([]);
+  
+  const t = language === "pt" ? pt : en;
 
   const options = item.options || [];
   const sizes = options.filter((opt: any) => opt.type === "size");
@@ -62,7 +67,7 @@ export const AddToCartDialog = ({ open, onOpenChange, item, currency }: AddToCar
     });
 
     toast({
-      title: "Added to cart",
+      title: t.cart.addedToCart,
       description: `${quantity}x ${item.name}`,
     });
 
@@ -95,7 +100,7 @@ export const AddToCartDialog = ({ open, onOpenChange, item, currency }: AddToCar
           {/* Size Options */}
           {sizes.length > 0 && (
             <div>
-              <Label className="text-base font-semibold mb-3 block">Select Size</Label>
+              <Label className="text-base font-semibold mb-3 block">{t.cart.selectSize}</Label>
               <RadioGroup value={selectedSize?.name} onValueChange={(value) => {
                 const size = sizes.find((s: any) => s.name === value);
                 setSelectedSize(size);
@@ -122,7 +127,7 @@ export const AddToCartDialog = ({ open, onOpenChange, item, currency }: AddToCar
           {/* Extra Options */}
           {extras.length > 0 && (
             <div>
-              <Label className="text-base font-semibold mb-3 block">Add Extras</Label>
+              <Label className="text-base font-semibold mb-3 block">{t.cart.addExtras}</Label>
               <div className="space-y-2">
                 {extras.map((extra: any) => (
                   <div key={extra.name} className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-smooth">
@@ -151,7 +156,7 @@ export const AddToCartDialog = ({ open, onOpenChange, item, currency }: AddToCar
 
           {/* Quantity Selector */}
           <div>
-            <Label className="text-base font-semibold mb-3 block">Quantity</Label>
+            <Label className="text-base font-semibold mb-3 block">{t.cart.quantity}</Label>
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
@@ -178,7 +183,7 @@ export const AddToCartDialog = ({ open, onOpenChange, item, currency }: AddToCar
             onClick={handleAddToCart}
             className="w-full gradient-primary text-lg py-6"
           >
-            Add to Cart • {formatPrice(calculateTotal())}
+            {t.cart.addToCart} • {formatPrice(calculateTotal())}
           </Button>
         </DialogFooter>
       </DialogContent>

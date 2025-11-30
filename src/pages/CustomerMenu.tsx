@@ -19,6 +19,7 @@ const CustomerMenu = () => {
   const [loading, setLoading] = useState(true);
   const [cartOpen, setCartOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [language, setLanguage] = useState<"pt" | "en">("pt");
 
   const tableToken = searchParams.get("table");
 
@@ -51,6 +52,11 @@ const CustomerMenu = () => {
       }
 
       setRestaurant(restaurantData);
+
+      // Get restaurant language
+      const settings = restaurantData.settings as { language?: string } | null;
+      const restaurantLang = (settings?.language || "pt") as "pt" | "en";
+      setLanguage(restaurantLang);
 
       // Load table information if token is provided
       if (tableToken) {
@@ -243,6 +249,7 @@ const CustomerMenu = () => {
                         key={item.id}
                         item={item}
                         currency={restaurant.currency || "USD"}
+                        language={language}
                       />
                     ))
                 : filteredItems.map((item) => (
@@ -250,6 +257,7 @@ const CustomerMenu = () => {
                       key={item.id}
                       item={item}
                       currency={restaurant.currency || "USD"}
+                      language={language}
                     />
                   ))}
             </div>
@@ -265,6 +273,7 @@ const CustomerMenu = () => {
           onOpenChange={setCartOpen}
           restaurant={restaurant}
           tableToken={tableToken}
+          language={language}
         />
       </div>
   );

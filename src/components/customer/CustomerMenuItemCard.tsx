@@ -8,9 +8,10 @@ import { AddToCartDialog } from "./AddToCartDialog";
 interface CustomerMenuItemCardProps {
   item: any;
   currency: string;
+  language: "pt" | "en";
 }
 
-export const CustomerMenuItemCard = ({ item, currency }: CustomerMenuItemCardProps) => {
+export const CustomerMenuItemCard = ({ item, currency, language }: CustomerMenuItemCardProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const formatPrice = (price: number) => {
@@ -71,6 +72,7 @@ export const CustomerMenuItemCard = ({ item, currency }: CustomerMenuItemCardPro
         onOpenChange={setDialogOpen}
         item={item}
         currency={currency}
+        language={language}
       />
     </>
   );
