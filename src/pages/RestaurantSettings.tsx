@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChefHat, ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const RestaurantSettings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, setLanguage } = useLanguage();
   const [searchParams] = useSearchParams();
   const restaurantId = searchParams.get("restaurant");
   
@@ -30,7 +32,7 @@ const RestaurantSettings = () => {
       fetchRestaurant();
     } else {
       toast({
-        title: "Erro",
+        title: t("restaurantSettings.error"),
         description: "ID do restaurante não fornecido",
         variant: "destructive"
       });
@@ -58,8 +60,8 @@ const RestaurantSettings = () => {
     } catch (error) {
       console.error("Error fetching restaurant:", error);
       toast({
-        title: "Erro",
-        description: "Não foi possível carregar as configurações do restaurante",
+        title: t("restaurantSettings.error"),
+        description: t("restaurantSettings.updateFailed"),
         variant: "destructive"
       });
     } finally {
@@ -85,17 +87,20 @@ const RestaurantSettings = () => {
 
       if (error) throw error;
 
+      // Update language in context
+      setLanguage(formData.language as "pt" | "en");
+
       toast({
-        title: "Sucesso",
-        description: "Configurações atualizadas com sucesso"
+        title: t("restaurantSettings.success"),
+        description: t("restaurantSettings.settingsUpdated")
       });
       
       navigate("/dashboard");
     } catch (error) {
       console.error("Error updating restaurant:", error);
       toast({
-        title: "Erro",
-        description: "Não foi possível atualizar as configurações",
+        title: t("restaurantSettings.error"),
+        description: t("restaurantSettings.updateFailed"),
         variant: "destructive"
       });
     } finally {
@@ -123,7 +128,7 @@ const RestaurantSettings = () => {
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar ao Painel
+              {t("restaurantSettings.backToDashboard")}
             </Button>
           </Link>
         </div>
@@ -132,69 +137,69 @@ const RestaurantSettings = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Configurações do Restaurante</h1>
+          <h1 className="text-4xl font-bold mb-2">{t("restaurantSettings.title")}</h1>
           <p className="text-muted-foreground">
-            Configure as preferências do seu restaurante
+            {t("restaurantSettings.subtitle")}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Informações Gerais</CardTitle>
+            <CardTitle>{t("restaurantSettings.generalInfo")}</CardTitle>
             <CardDescription>
-              Atualize o nome, idioma e moeda do seu restaurante
+              {t("restaurantSettings.generalInfoDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Restaurant Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">Nome do Restaurante *</Label>
+              <Label htmlFor="name">{t("restaurantSettings.restaurantName")} *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Digite o nome do restaurante"
+                placeholder={t("restaurantSettings.restaurantNamePlaceholder")}
                 maxLength={100}
               />
             </div>
 
             {/* Language */}
             <div className="space-y-2">
-              <Label htmlFor="language">Idioma do Sistema *</Label>
+              <Label htmlFor="language">{t("restaurantSettings.language")} *</Label>
               <Select
                 value={formData.language}
                 onValueChange={(value) => setFormData({ ...formData, language: value })}
               >
                 <SelectTrigger id="language">
-                  <SelectValue placeholder="Selecione o idioma" />
+                  <SelectValue placeholder={t("restaurantSettings.selectLanguage")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pt">Português</SelectItem>
-                  <SelectItem value="en">Inglês</SelectItem>
+                  <SelectItem value="pt">{t("restaurantSettings.portuguese")}</SelectItem>
+                  <SelectItem value="en">{t("restaurantSettings.english")}</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground">
-                O idioma em que o sistema será exibido para você
+                {t("restaurantSettings.languageDescription")}
               </p>
             </div>
 
             {/* Currency */}
             <div className="space-y-2">
-              <Label htmlFor="currency">Moeda *</Label>
+              <Label htmlFor="currency">{t("restaurantSettings.currency")} *</Label>
               <Select
                 value={formData.currency}
                 onValueChange={(value) => setFormData({ ...formData, currency: value })}
               >
                 <SelectTrigger id="currency">
-                  <SelectValue placeholder="Selecione a moeda" />
+                  <SelectValue placeholder={t("restaurantSettings.selectCurrency")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="MZN">Metical (MZN)</SelectItem>
-                  <SelectItem value="ZAR">Rand (ZAR)</SelectItem>
+                  <SelectItem value="MZN">{t("restaurantSettings.metical")}</SelectItem>
+                  <SelectItem value="ZAR">{t("restaurantSettings.rand")}</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground">
-                A moeda em que os preços serão exibidos
+                {t("restaurantSettings.currencyDescription")}
               </p>
             </div>
 
@@ -206,14 +211,14 @@ const RestaurantSettings = () => {
                 className="gradient-primary"
               >
                 <Save className="h-4 w-4 mr-2" />
-                {saving ? "Salvando..." : "Salvar Configurações"}
+                {saving ? t("restaurantSettings.saving") : t("restaurantSettings.saveSettings")}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate("/dashboard")}
                 disabled={saving}
               >
-                Cancelar
+                {t("common.cancel")}
               </Button>
             </div>
           </CardContent>
