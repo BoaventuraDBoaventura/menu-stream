@@ -94,6 +94,10 @@ export default {
     updateFailed: "Não foi possível atualizar as configurações",
     backToDashboard: "Voltar ao Painel",
   },
+  defaultMenu: {
+    title: "Menu Principal",
+    description: "Nosso delicioso menu",
+  },
   menu: {
     title: "Editor de Menu",
     categories: "Categorias",
