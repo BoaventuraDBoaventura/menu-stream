@@ -23,6 +23,9 @@ const Landing = () => {
             <Link to="/precos" className="text-sm font-medium hover:text-primary transition-smooth">
               Preços
             </Link>
+            <Link to="/contato" className="text-sm font-medium hover:text-primary transition-smooth">
+              Contato
+            </Link>
             <Link to="/login">
               <Button variant="ghost" size="sm">Entrar</Button>
             </Link>
@@ -59,6 +62,13 @@ const Landing = () => {
                 className="text-sm font-medium hover:text-primary transition-smooth py-2"
               >
                 Preços
+              </Link>
+              <Link
+                to="/contato"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-sm font-medium hover:text-primary transition-smooth py-2"
+              >
+                Contato
               </Link>
             </nav>
           </div>
