@@ -261,6 +261,24 @@ const Dashboard = () => {
               }}
             />
           )}
+          {(isSuperAdmin || restaurants[0]?.permissions?.settings) && (
+            <DashboardCard
+              icon={<Settings className="h-8 w-8 text-primary" />}
+              title="Configurações"
+              description="Configure nome, idioma e moeda do restaurante"
+              action="Configurar"
+              onClick={() => {
+                if (restaurants.length > 0) {
+                  navigate(`/restaurant/settings?restaurant=${restaurants[0].id}`);
+                } else {
+                  toast({ 
+                    title: "Nenhum restaurante encontrado", 
+                    description: "Por favor, crie um restaurante primeiro" 
+                  });
+                }
+              }}
+            />
+          )}
         </div>
       </div>
       </main>

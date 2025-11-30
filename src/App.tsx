@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import PlatformSettings from "./pages/PlatformSettings";
 import TeamManagement from "./pages/TeamManagement";
 import Reports from "./pages/Reports";
+import RestaurantSettings from "./pages/RestaurantSettings";
 import { CartProvider } from "./contexts/CartContext";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/team-management" element={<TeamManagement />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/restaurant/create" element={<CreateRestaurant />} />
+          <Route path="/restaurant/settings" element={<RestaurantSettings />} />
           <Route path="/menu/editor" element={<MenuEditor />} />
           <Route path="/qr-codes" element={<QRCodeManager />} />
           <Route path="/menu/:slug" element={
