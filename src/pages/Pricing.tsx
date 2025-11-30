@@ -26,62 +26,204 @@ const Pricing = () => {
 
       {/* Pricing Section */}
       <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4">
-        <div className="container mx-auto max-w-6xl">
+        <div className="container mx-auto max-w-7xl">
           <div className="text-center space-y-3 sm:space-y-4 mb-10 sm:mb-16">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold px-4">Preço Simples e Transparente</h1>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
-              Um único plano com todas as funcionalidades
+              Escolha o plano ideal para o seu negócio
             </p>
           </div>
-          <div className="max-w-md mx-auto">
-            <Card className="border-2 border-primary shadow-elegant">
-              <CardHeader className="text-center pb-6 sm:pb-8 pt-8 sm:pt-12 px-4 sm:px-6">
-                <CardTitle className="text-2xl sm:text-3xl mb-2">Plano Mensal</CardTitle>
-                <CardDescription className="text-base sm:text-lg">
-                  Tudo que você precisa para digitalizar seu restaurante
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {/* Plano Básico */}
+            <Card className="border-2 border-border hover:border-primary transition-all shadow-sm hover:shadow-elegant">
+              <CardHeader className="text-center pb-6 pt-8 px-4">
+                <CardTitle className="text-xl sm:text-2xl mb-2">Básico</CardTitle>
+                <CardDescription className="text-sm">
+                  Perfeito para começar
                 </CardDescription>
-                <div className="mt-6 sm:mt-8">
-                  <div className="inline-flex items-baseline gap-2 bg-primary px-6 sm:px-8 py-3 sm:py-4 rounded-lg">
-                    <span className="text-4xl sm:text-5xl font-bold text-white">
+                <div className="mt-6">
+                  <div className="inline-flex items-baseline gap-2 bg-muted px-4 py-3 rounded-lg">
+                    <span className="text-3xl sm:text-4xl font-bold">
                       1.500
                     </span>
-                    <span className="text-lg sm:text-xl text-white">MT/mês</span>
+                    <span className="text-base text-muted-foreground">MT/mês</span>
                   </div>
+                  <p className="text-sm text-primary font-semibold mt-3">1 Restaurante</p>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4 sm:space-y-6 pb-8 sm:pb-12 px-4 sm:px-6">
-                <ul className="space-y-3 sm:space-y-4">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base">Menus digitais ilimitados</span>
+              <CardContent className="space-y-4 pb-8 px-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Menus digitais ilimitados</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base">Códigos QR para todas as mesas</span>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Códigos QR para mesas</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base">Gestão de pedidos em tempo real</span>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Gestão de pedidos</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base">Painel de cozinha completo</span>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Painel de cozinha</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base">Relatórios e análises detalhadas</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base">Gestão de equipa e permissões</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base">Suporte técnico prioritário</span>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Suporte técnico</span>
                   </li>
                 </ul>
                 <Link to="/login" className="block">
-                  <Button className="w-full gradient-primary text-base sm:text-lg py-5 sm:py-6">
+                  <Button className="w-full gradient-primary text-sm py-5">
+                    Começar Agora
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Plano Crescimento */}
+            <Card className="border-2 border-primary shadow-elegant relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-xs font-semibold">
+                Popular
+              </div>
+              <CardHeader className="text-center pb-6 pt-8 px-4">
+                <CardTitle className="text-xl sm:text-2xl mb-2">Crescimento</CardTitle>
+                <CardDescription className="text-sm">
+                  Para negócios em expansão
+                </CardDescription>
+                <div className="mt-6">
+                  <div className="inline-flex items-baseline gap-2 bg-primary px-4 py-3 rounded-lg">
+                    <span className="text-3xl sm:text-4xl font-bold text-white">
+                      2.000
+                    </span>
+                    <span className="text-base text-white">MT/mês</span>
+                  </div>
+                  <p className="text-sm text-primary font-semibold mt-3">3 Restaurantes</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pb-8 px-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Tudo do plano Básico</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Relatórios avançados</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Gestão de equipa</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Suporte prioritário</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Análises detalhadas</span>
+                  </li>
+                </ul>
+                <Link to="/login" className="block">
+                  <Button className="w-full gradient-primary text-sm py-5">
+                    Começar Agora
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Plano Profissional */}
+            <Card className="border-2 border-border hover:border-primary transition-all shadow-sm hover:shadow-elegant">
+              <CardHeader className="text-center pb-6 pt-8 px-4">
+                <CardTitle className="text-xl sm:text-2xl mb-2">Profissional</CardTitle>
+                <CardDescription className="text-sm">
+                  Para redes estabelecidas
+                </CardDescription>
+                <div className="mt-6">
+                  <div className="inline-flex items-baseline gap-2 bg-muted px-4 py-3 rounded-lg">
+                    <span className="text-3xl sm:text-4xl font-bold">
+                      2.500
+                    </span>
+                    <span className="text-base text-muted-foreground">MT/mês</span>
+                  </div>
+                  <p className="text-sm text-primary font-semibold mt-3">5 Restaurantes</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pb-8 px-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Tudo do plano Crescimento</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Integrações avançadas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">API personalizada</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Dashboard executivo</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Treinamento incluído</span>
+                  </li>
+                </ul>
+                <Link to="/login" className="block">
+                  <Button className="w-full gradient-primary text-sm py-5">
+                    Começar Agora
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Plano Enterprise */}
+            <Card className="border-2 border-accent shadow-elegant">
+              <CardHeader className="text-center pb-6 pt-8 px-4">
+                <CardTitle className="text-xl sm:text-2xl mb-2">Enterprise</CardTitle>
+                <CardDescription className="text-sm">
+                  Para grandes operações
+                </CardDescription>
+                <div className="mt-6">
+                  <div className="inline-flex items-baseline gap-2 bg-accent px-4 py-3 rounded-lg">
+                    <span className="text-3xl sm:text-4xl font-bold text-accent-foreground">
+                      5.000
+                    </span>
+                    <span className="text-base text-accent-foreground">MT/mês</span>
+                  </div>
+                  <p className="text-sm text-accent font-semibold mt-3">Restaurantes Ilimitados</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pb-8 px-4">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Tudo do plano Profissional</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Restaurantes ilimitados</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Gerente de conta dedicado</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">SLA garantido 99.9%</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-sm">Suporte 24/7</span>
+                  </li>
+                </ul>
+                <Link to="/login" className="block">
+                  <Button className="w-full gradient-primary text-sm py-5">
                     Começar Agora
                   </Button>
                 </Link>
