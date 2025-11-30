@@ -8,10 +8,12 @@ import { ChefHat, Plus, QrCode, LayoutDashboard, LogOut, Crown, Users, Settings,
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { RestaurantCard } from "@/components/dashboard/RestaurantCard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -112,17 +114,17 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Bem-vindo, {profile?.name}</span>
+              <span className="text-sm text-muted-foreground">{t("common.welcome")}, {profile?.name}</span>
               {isSuperAdmin && (
                 <Badge className="gradient-primary text-white">
                   <Crown className="h-3 w-3 mr-1" />
-                  Super Admin
+                  {t("dashboard.superAdmin")}
                 </Badge>
               )}
             </div>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
-              Sair
+              {t("common.logout")}
             </Button>
           </div>
         </div>
@@ -131,14 +133,14 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Painel</h1>
-          <p className="text-muted-foreground">Gerencie a presença digital do seu restaurante</p>
+          <h1 className="text-4xl font-bold mb-2">{t("dashboard.title")}</h1>
+          <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
         </div>
 
         {/* My Restaurants Section */}
         {restaurants.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Meus Restaurantes</h2>
+            <h2 className="text-2xl font-bold mb-4">{t("dashboard.myRestaurants")}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {restaurants.map((restaurant) => (
                 <RestaurantCard key={restaurant.id} restaurant={restaurant} />
@@ -149,22 +151,22 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Ações Rápidas</h2>
+          <h2 className="text-2xl font-bold mb-4">{t("dashboard.quickActions")}</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isSuperAdmin && (
             <>
               <DashboardCard
                 icon={<Users className="h-8 w-8 text-primary" />}
-                title="Painel Admin"
-                description="Gerencie todos os usuários, restaurantes e atribua funções"
-                action="Abrir Painel Admin"
+                title={t("dashboard.adminPanel.title")}
+                description={t("dashboard.adminPanel.description")}
+                action={t("dashboard.adminPanel.action")}
                 onClick={() => navigate("/admin")}
               />
               <DashboardCard
                 icon={<Settings className="h-8 w-8 text-primary" />}
-                title="Configurações da Plataforma"
-                description="Configure definições globais e preferências do sistema"
-                action="Configurações"
+                title={t("dashboard.platformSettings.title")}
+                description={t("dashboard.platformSettings.description")}
+                action={t("dashboard.platformSettings.action")}
                 onClick={() => navigate("/platform-settings")}
               />
             </>
@@ -182,9 +184,9 @@ const Dashboard = () => {
             return (
               <DashboardCard
                 icon={<Plus className="h-8 w-8 text-primary" />}
-                title="Criar Restaurante"
-                description="Configure o perfil do seu restaurante e comece a criar menus"
-                action="Começar"
+                title={t("dashboard.createRestaurant.title")}
+                description={t("dashboard.createRestaurant.description")}
+                action={t("dashboard.createRestaurant.action")}
                 onClick={() => navigate("/restaurant/create")}
               />
             );
@@ -192,16 +194,16 @@ const Dashboard = () => {
           {(isSuperAdmin || restaurants[0]?.permissions?.menu_editor) && (
             <DashboardCard
               icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
-              title="Gerir Menus"
-              description="Crie e edite seus menus digitais com facilidade"
-              action="Ver Menus"
+              title={t("dashboard.manageMenus.title")}
+              description={t("dashboard.manageMenus.description")}
+              action={t("dashboard.manageMenus.action")}
               onClick={() => {
                 if (restaurants.length > 0) {
                   navigate(`/menu/editor?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
-                    title: "Nenhum restaurante encontrado", 
-                    description: "Por favor, crie um restaurante primeiro" 
+                    title: t("dashboard.noRestaurant"), 
+                    description: t("dashboard.createRestaurantFirst")
                   });
                 }
               }}
@@ -210,16 +212,16 @@ const Dashboard = () => {
           {(isSuperAdmin || restaurants[0]?.permissions?.qr_codes) && (
             <DashboardCard
               icon={<QrCode className="h-8 w-8 text-primary" />}
-              title="Códigos QR"
-              description="Gere e baixe códigos QR para suas mesas"
-              action="Gerar"
+              title={t("dashboard.qrCodes.title")}
+              description={t("dashboard.qrCodes.description")}
+              action={t("dashboard.qrCodes.action")}
               onClick={() => {
                 if (restaurants.length > 0) {
                   navigate(`/qr-codes?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
-                    title: "Nenhum restaurante encontrado", 
-                    description: "Por favor, crie um restaurante primeiro" 
+                    title: t("dashboard.noRestaurant"), 
+                    description: t("dashboard.createRestaurantFirst")
                   });
                 }
               }}
@@ -228,16 +230,16 @@ const Dashboard = () => {
           {(isSuperAdmin || restaurants[0]?.permissions?.kitchen) && (
             <DashboardCard
               icon={<ChefHat className="h-8 w-8 text-primary" />}
-              title="Cozinha"
-              description="Gerenciar pedidos e atualizar status de preparação"
-              action="Abrir Cozinha"
+              title={t("dashboard.kitchen.title")}
+              description={t("dashboard.kitchen.description")}
+              action={t("dashboard.kitchen.action")}
               onClick={() => {
                 if (restaurants.length > 0) {
                   navigate(`/kitchen?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
-                    title: "No restaurant found", 
-                    description: "Please create a restaurant first" 
+                    title: t("dashboard.noRestaurant"), 
+                    description: t("dashboard.createRestaurantFirst")
                   });
                 }
               }}
@@ -246,16 +248,16 @@ const Dashboard = () => {
           {(isSuperAdmin || restaurants[0]?.permissions?.reports) && (
             <DashboardCard
               icon={<BarChart3 className="h-8 w-8 text-primary" />}
-              title="Relatórios"
-              description="Visualize relatórios de vendas com filtros por período"
-              action="Ver Relatórios"
+              title={t("dashboard.reports.title")}
+              description={t("dashboard.reports.description")}
+              action={t("dashboard.reports.action")}
               onClick={() => {
                 if (restaurants.length > 0) {
                   navigate(`/reports?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
-                    title: "No restaurant found", 
-                    description: "Please create a restaurant first" 
+                    title: t("dashboard.noRestaurant"), 
+                    description: t("dashboard.createRestaurantFirst")
                   });
                 }
               }}
@@ -264,16 +266,16 @@ const Dashboard = () => {
           {(isSuperAdmin || restaurants[0]?.permissions?.settings) && (
             <DashboardCard
               icon={<Settings className="h-8 w-8 text-primary" />}
-              title="Configurações"
-              description="Configure nome, idioma e moeda do restaurante"
-              action="Configurar"
+              title={t("dashboard.restaurantSettings.title")}
+              description={t("dashboard.restaurantSettings.description")}
+              action={t("dashboard.restaurantSettings.action")}
               onClick={() => {
                 if (restaurants.length > 0) {
                   navigate(`/restaurant/settings?restaurant=${restaurants[0].id}`);
                 } else {
                   toast({ 
-                    title: "Nenhum restaurante encontrado", 
-                    description: "Por favor, crie um restaurante primeiro" 
+                    title: t("dashboard.noRestaurant"), 
+                    description: t("dashboard.createRestaurantFirst")
                   });
                 }
               }}
