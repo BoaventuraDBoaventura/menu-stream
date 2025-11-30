@@ -8,11 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChefHat, Clock, CheckCircle2, ArrowLeft, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Kitchen = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { t, setActiveRestaurant } = useLanguage();
   const [user, setUser] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +58,7 @@ const Kitchen = () => {
       if (error) {
         console.error("Auth error:", error);
         toast({
-          title: "Erro de autenticação",
+          title: t("kitchen.authError"),
           description: error.message,
           variant: "destructive",
         });
@@ -98,8 +100,8 @@ const Kitchen = () => {
 
         if (accessibleRestaurants.length === 0) {
           toast({
-            title: "Sem acesso",
-            description: "Você não tem permissão para acessar a cozinha",
+            title: t("kitchen.noAccess"),
+            description: t("kitchen.noAccessDesc"),
             variant: "destructive",
           });
           navigate("/dashboard");
@@ -123,6 +125,10 @@ const Kitchen = () => {
       }
 
       setRestaurantId(restaurantIdFromParams);
+      // Set active restaurant for language context
+      if (restaurantIdFromParams) {
+        setActiveRestaurant(restaurantIdFromParams);
+      }
     } catch (error: any) {
       console.error("Auth error:", error);
       navigate("/login");
@@ -161,7 +167,7 @@ const Kitchen = () => {
     } catch (error: any) {
       console.error("Error loading orders:", error);
       toast({
-        title: "Erro ao carregar pedidos",
+        title: t("kitchen.errorLoading"),
         description: error.message,
         variant: "destructive",
       });
@@ -180,13 +186,13 @@ const Kitchen = () => {
       if (error) throw error;
 
       toast({
-        title: "Status atualizado!",
-        description: `Pedido marcado como ${getStatusLabel(newStatus)}`,
+        title: t("kitchen.statusUpdated"),
+        description: `${t("kitchen.statusUpdatedDesc")} ${getStatusLabel(newStatus)}`,
       });
     } catch (error: any) {
       console.error("Error updating order:", error);
       toast({
-        title: "Erro ao atualizar status",
+        title: t("kitchen.errorUpdating"),
         description: error.message,
         variant: "destructive",
       });
@@ -195,11 +201,11 @@ const Kitchen = () => {
 
   const getStatusLabel = (status: string) => {
     const labels: any = {
-      new: "Novo",
-      preparing: "Em Preparação",
-      ready: "Pronto",
-      delivered: "Entregue",
-      cancelled: "Cancelado",
+      new: t("kitchen.new"),
+      preparing: t("kitchen.preparing"),
+      ready: t("kitchen.ready"),
+      delivered: t("kitchen.delivered"),
+      cancelled: t("kitchen.cancelled"),
     };
     return labels[status] || status;
   };
@@ -253,7 +259,7 @@ const Kitchen = () => {
             <div className="flex items-center gap-2">
               <ChefHat className="h-6 w-6 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold">Cozinha</h1>
+                <h1 className="text-2xl font-bold">{t("kitchen.title")}</h1>
                 {restaurantName && (
                   <p className="text-sm text-muted-foreground">{restaurantName}</p>
                 )}
@@ -270,16 +276,16 @@ const Kitchen = () => {
         <Tabs defaultValue="new" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="new">
-              Novos ({newOrders.length})
+              {t("kitchen.newOrders")} ({newOrders.length})
             </TabsTrigger>
             <TabsTrigger value="preparing">
-              Preparando ({preparingOrders.length})
+              {t("kitchen.preparing")} ({preparingOrders.length})
             </TabsTrigger>
             <TabsTrigger value="ready">
-              Prontos ({readyOrders.length})
+              {t("kitchen.ready")} ({readyOrders.length})
             </TabsTrigger>
             <TabsTrigger value="completed">
-              Finalizados ({deliveredOrders.length})
+              {t("kitchen.delivered")} ({deliveredOrders.length})
             </TabsTrigger>
           </TabsList>
 
@@ -288,7 +294,8 @@ const Kitchen = () => {
               orders={newOrders}
               onUpdateStatus={updateOrderStatus}
               nextStatus="preparing"
-              nextStatusLabel="Iniciar Preparo"
+              nextStatusLabel={t("kitchen.markPreparing")}
+              t={t}
             />
           </TabsContent>
 
@@ -297,7 +304,8 @@ const Kitchen = () => {
               orders={preparingOrders}
               onUpdateStatus={updateOrderStatus}
               nextStatus="ready"
-              nextStatusLabel="Marcar como Pronto"
+              nextStatusLabel={t("kitchen.markReady")}
+              t={t}
             />
           </TabsContent>
 
@@ -306,7 +314,8 @@ const Kitchen = () => {
               orders={readyOrders}
               onUpdateStatus={updateOrderStatus}
               nextStatus="delivered"
-              nextStatusLabel="Marcar como Entregue"
+              nextStatusLabel={t("kitchen.markDelivered")}
+              t={t}
             />
           </TabsContent>
 
@@ -314,6 +323,7 @@ const Kitchen = () => {
             <OrdersList
               orders={deliveredOrders}
               onUpdateStatus={updateOrderStatus}
+              t={t}
             />
           </TabsContent>
         </Tabs>
@@ -326,17 +336,19 @@ const OrdersList = ({
   orders, 
   onUpdateStatus,
   nextStatus,
-  nextStatusLabel 
+  nextStatusLabel,
+  t
 }: { 
   orders: any[];
   onUpdateStatus: (orderId: string, status: string) => void;
   nextStatus?: string;
   nextStatusLabel?: string;
+  t: (key: string) => string;
 }) => {
   if (orders.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Nenhum pedido nesta categoria</p>
+        <p className="text-muted-foreground">{t("kitchen.noOrders")}</p>
       </div>
     );
   }
@@ -357,8 +369,8 @@ const OrdersList = ({
               </Badge>
             </div>
             <div className="text-sm text-muted-foreground space-y-1">
-              <p>Cliente: {order.customer_name}</p>
-              {order.tables && <p>Mesa: {order.tables.name}</p>}
+              <p>{t("kitchen.customer")}: {order.customer_name}</p>
+              {order.tables && <p>{t("kitchen.table")}: {order.tables.name}</p>}
             </div>
           </CardHeader>
           <CardContent>
@@ -372,9 +384,9 @@ const OrdersList = ({
                     </span>
                     {item.options && (
                       <div className="text-xs text-muted-foreground mt-1">
-                        {item.options.size && <p>Tamanho: {item.options.size.name}</p>}
+                        {item.options.size && <p>{t("kitchen.size")}: {item.options.size.name}</p>}
                         {item.options.extras && item.options.extras.length > 0 && (
-                          <p>Extras: {item.options.extras.map((e: any) => e.name).join(", ")}</p>
+                          <p>{t("kitchen.extras")}: {item.options.extras.map((e: any) => e.name).join(", ")}</p>
                         )}
                       </div>
                     )}
@@ -385,7 +397,7 @@ const OrdersList = ({
               {/* Notes */}
               {order.notes && (
                 <div className="text-sm bg-muted p-2 rounded">
-                  <p className="font-medium text-xs text-muted-foreground mb-1">Observações:</p>
+                  <p className="font-medium text-xs text-muted-foreground mb-1">{t("kitchen.notes")}:</p>
                   <p>{order.notes}</p>
                 </div>
               )}
