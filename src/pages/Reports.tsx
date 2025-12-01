@@ -44,6 +44,8 @@ const Reports = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth() + 1).toString());
   const [selectedDay, setSelectedDay] = useState<string>(new Date().getDate().toString());
   const [selectedHour, setSelectedHour] = useState<string>("all");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("all");
+  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
 
   useEffect(() => {
     fetchUserRestaurants();
@@ -57,7 +59,13 @@ const Reports = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [filterType, selectedYear, selectedMonth, selectedDay, selectedHour, orders]);
+  }, [filterType, selectedYear, selectedMonth, selectedDay, selectedHour, selectedPaymentMethod, orders]);
+
+  useEffect(() => {
+    // Extract unique payment methods from orders
+    const uniqueMethods = Array.from(new Set(orders.map(o => o.payment_method).filter(Boolean)));
+    setPaymentMethods(uniqueMethods);
+  }, [orders]);
 
   const fetchUserRestaurants = async () => {
     try {
@@ -184,6 +192,11 @@ const Reports = () => {
       });
     }
 
+    // Apply payment method filter
+    if (selectedPaymentMethod !== "all") {
+      filtered = filtered.filter((order) => order.payment_method === selectedPaymentMethod);
+    }
+
     setFilteredOrders(filtered);
   };
 
@@ -307,7 +320,7 @@ const Reports = () => {
         <Card>
           <CardHeader>
             <CardTitle>Filtros</CardTitle>
-            <CardDescription>Filtre os pedidos por restaurante e período</CardDescription>
+            <CardDescription>Filtre os pedidos por restaurante, período e método de pagamento</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-6">
@@ -399,6 +412,20 @@ const Reports = () => {
                   </SelectContent>
                 </Select>
               )}
+
+              <Select value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Método de pagamento" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os métodos</SelectItem>
+                  {paymentMethods.map((method) => (
+                    <SelectItem key={method} value={method}>
+                      {method}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
