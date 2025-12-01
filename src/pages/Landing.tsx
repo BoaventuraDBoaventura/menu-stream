@@ -271,7 +271,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 PratoDigital. {t("landing.footer.copyright")}</p>
+            <p>&copy; {new Date().getFullYear()} PratoDigital. {t("landing.footer.copyright")}</p>
           </div>
         </div>
       </footer>
