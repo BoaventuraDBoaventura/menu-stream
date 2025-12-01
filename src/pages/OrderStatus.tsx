@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, ChefHat, Package, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { playSoundNotification } from "@/utils/soundNotification";
 
 const OrderStatus = () => {
   const [searchParams] = useSearchParams();
@@ -34,10 +35,16 @@ const OrderStatus = () => {
             filter: `order_number=eq.${orderNumber}`,
           },
           (payload) => {
+            console.log('Order status updated:', payload);
             setOrder(payload.new);
+            
+            // Play sound notification when status changes
+            playSoundNotification('status-change');
+            
             toast({
-              title: "Status atualizado!",
+              title: "🔔 Status atualizado!",
               description: getStatusMessage(payload.new.order_status),
+              duration: 5000,
             });
           }
         )
