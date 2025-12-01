@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -21,10 +23,39 @@ const Checkout = () => {
   const [customerPhone, setCustomerPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
   const restaurantId = searchParams.get("restaurant");
   const tableToken = searchParams.get("table");
   const currency = searchParams.get("currency") || "USD";
+
+  useEffect(() => {
+    if (restaurantId) {
+      fetchPaymentMethods();
+    }
+  }, [restaurantId]);
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("payment_methods")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .eq("is_enabled", true)
+        .order("position", { ascending: true });
+
+      if (error) throw error;
+      setPaymentMethods(data || []);
+      
+      // Auto-select first method if available
+      if (data && data.length > 0) {
+        setSelectedPaymentMethod(data[0].id);
+      }
+    } catch (error) {
+      console.error("Error fetching payment methods:", error);
+    }
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -38,6 +69,15 @@ const Checkout = () => {
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha seu nome e telefone",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedPaymentMethod) {
+      toast({
+        title: "Método de pagamento obrigatório",
+        description: "Por favor, selecione um método de pagamento",
         variant: "destructive",
       });
       return;
@@ -72,6 +112,9 @@ const Checkout = () => {
       const { data: orderNumberData } = await supabase
         .rpc("generate_order_number", { restaurant_id: restaurantId });
 
+      // Get payment method name
+      const selectedMethod = paymentMethods.find(m => m.id === selectedPaymentMethod);
+      
       // Create order
       const { data: orderData, error: orderError } = await supabase
         .from("orders")
@@ -85,7 +128,7 @@ const Checkout = () => {
           total_amount: getTotalPrice(),
           order_status: "new",
           payment_status: "pending",
-          payment_method: "cash",
+          payment_method: selectedMethod?.name || "Não especificado",
         })
         .select()
         .single();
@@ -195,6 +238,33 @@ const Checkout = () => {
                 rows={3}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Payment Method */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Método de Pagamento *</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {paymentMethods.length > 0 ? (
+              <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
+                <div className="space-y-3">
+                  {paymentMethods.map((method) => (
+                    <div key={method.id} className="flex items-center space-x-3">
+                      <RadioGroupItem value={method.id} id={method.id} />
+                      <Label htmlFor={method.id} className="cursor-pointer flex-1">
+                        {method.name}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Nenhum método de pagamento disponível
+              </p>
+            )}
           </CardContent>
         </Card>
 
