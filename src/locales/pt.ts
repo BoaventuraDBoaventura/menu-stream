@@ -20,6 +20,69 @@ export default {
     phone: "Telefone",
     address: "Endereço",
   },
+  landing: {
+    header: {
+      features: "Funcionalidades",
+      pricing: "Preços",
+      contact: "Contato",
+      login: "Entrar",
+    },
+    hero: {
+      badge: "🚀 Transforme Seu Restaurante",
+      title: "Menus Digitais,",
+      titleHighlight: "Sem Complicação",
+      description: "Crie menus digitais deslumbrantes, gere códigos QR para mesas e receba pedidos diretamente dos clientes. Gerencie tudo a partir de um painel poderoso.",
+      loginButton: "Entrar",
+      demoButton: "Ver Demo",
+      noCreditCard: "Sem cartão de crédito",
+      freeTrial: "14 dias de teste",
+      interactivePreview: "Visualização Interativa do Menu",
+    },
+    features: {
+      title: "Tudo Que Você Precisa",
+      subtitle: "Funcionalidades poderosas projetadas especificamente para restaurantes modernos",
+      qrMenus: {
+        title: "Menus com QR Code",
+        description: "Gere códigos QR únicos para cada mesa. Os clientes escaneiam e fazem pedidos instantaneamente sem esperar pelo atendimento.",
+      },
+      mobileFirst: {
+        title: "Design Mobile-First",
+        description: "Menus bonitos e responsivos que funcionam perfeitamente em qualquer dispositivo. Sem necessidade de instalar aplicativo.",
+      },
+      realtime: {
+        title: "Pedidos em Tempo Real",
+        description: "Receba pedidos instantaneamente no seu painel com atualizações ao vivo. Nunca mais perca um pedido.",
+      },
+      analytics: {
+        title: "Análises e Relatórios",
+        description: "Acompanhe seus itens mais vendidos, horários de pico e receita com análises detalhadas.",
+      },
+      easyUpdates: {
+        title: "Atualizações Fáceis do Menu",
+        description: "Atualize preços, adicione itens ou marque pratos como indisponíveis em segundos de qualquer lugar.",
+      },
+      kitchenManagement: {
+        title: "Gestão de Cozinha",
+        description: "Imprima tickets automaticamente e atualize o status do pedido da preparação à entrega.",
+      },
+    },
+    cta: {
+      title: "Pronto para Digitalizar?",
+      subtitle: "Junte-se a centenas de restaurantes que já usam PratoDigital",
+      button: "Entrar Agora",
+    },
+    footer: {
+      description: "Soluções modernas de menu digital para restaurantes.",
+      product: "Produto",
+      company: "Empresa",
+      legal: "Legal",
+      about: "Sobre",
+      support: "Suporte",
+      privacy: "Privacidade",
+      terms: "Termos",
+      copyright: "Todos os direitos reservados.",
+    },
+  },
   dashboard: {
     title: "Painel",
     subtitle: "Gerencie a presença digital do seu restaurante",

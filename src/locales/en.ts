@@ -20,6 +20,69 @@ export default {
     phone: "Phone",
     address: "Address",
   },
+  landing: {
+    header: {
+      features: "Features",
+      pricing: "Pricing",
+      contact: "Contact",
+      login: "Login",
+    },
+    hero: {
+      badge: "🚀 Transform Your Restaurant",
+      title: "Digital Menus,",
+      titleHighlight: "Made Simple",
+      description: "Create stunning digital menus, generate QR codes for tables and receive orders directly from customers. Manage everything from a powerful dashboard.",
+      loginButton: "Login",
+      demoButton: "View Demo",
+      noCreditCard: "No credit card required",
+      freeTrial: "14-day free trial",
+      interactivePreview: "Interactive Menu Preview",
+    },
+    features: {
+      title: "Everything You Need",
+      subtitle: "Powerful features designed specifically for modern restaurants",
+      qrMenus: {
+        title: "QR Code Menus",
+        description: "Generate unique QR codes for each table. Customers scan and order instantly without waiting for service.",
+      },
+      mobileFirst: {
+        title: "Mobile-First Design",
+        description: "Beautiful, responsive menus that work perfectly on any device. No app installation required.",
+      },
+      realtime: {
+        title: "Real-Time Orders",
+        description: "Receive orders instantly on your dashboard with live updates. Never miss an order again.",
+      },
+      analytics: {
+        title: "Analytics & Reports",
+        description: "Track your best-selling items, peak hours, and revenue with detailed analytics.",
+      },
+      easyUpdates: {
+        title: "Easy Menu Updates",
+        description: "Update prices, add items, or mark dishes as unavailable in seconds from anywhere.",
+      },
+      kitchenManagement: {
+        title: "Kitchen Management",
+        description: "Print tickets automatically and update order status from preparation to delivery.",
+      },
+    },
+    cta: {
+      title: "Ready to Go Digital?",
+      subtitle: "Join hundreds of restaurants already using PratoDigital",
+      button: "Get Started Now",
+    },
+    footer: {
+      description: "Modern digital menu solutions for restaurants.",
+      product: "Product",
+      company: "Company",
+      legal: "Legal",
+      about: "About",
+      support: "Support",
+      privacy: "Privacy",
+      terms: "Terms",
+      copyright: "All rights reserved.",
+    },
+  },
   dashboard: {
     title: "Dashboard",
     subtitle: "Manage your restaurant's digital presence",

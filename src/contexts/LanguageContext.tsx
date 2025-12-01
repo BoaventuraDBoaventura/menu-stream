@@ -57,6 +57,12 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   };
 
   const loadUserLanguagePreference = async () => {
+    // First check localStorage for saved preference
+    const savedLang = localStorage.getItem("preferredLanguage");
+    if (savedLang && (savedLang === "pt" || savedLang === "en")) {
+      setLanguageState(savedLang as Language);
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
