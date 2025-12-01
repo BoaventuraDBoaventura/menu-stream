@@ -29,12 +29,20 @@ interface LanguageProviderProps {
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>("pt");
-  const [translations, setTranslations] = useState<Record<string, any>>({});
+  const [translations, setTranslations] = useState<Record<string, any>>({
+    pt: {},
+    en: {},
+  });
   const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadTranslations();
-    loadUserLanguagePreference();
+    const initialize = async () => {
+      await loadTranslations();
+      await loadUserLanguagePreference();
+      setIsLoading(false);
+    };
+    initialize();
   }, []);
 
   useEffect(() => {
@@ -45,8 +53,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const loadTranslations = async () => {
     try {
-      const pt = await import("@/locales/pt");
-      const en = await import("@/locales/en");
+      const [pt, en] = await Promise.all([
+        import("@/locales/pt"),
+        import("@/locales/en"),
+      ]);
       setTranslations({
         pt: pt.default,
         en: en.default,
@@ -131,6 +141,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     
     return typeof value === "string" ? value : key;
   };
+
+  if (isLoading) {
+    return null; // or a loading spinner if you prefer
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, setActiveRestaurant, t }}>
