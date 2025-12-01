@@ -10,6 +10,11 @@ import { LogOut, ArrowLeft, Loader2, FileText, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+interface Restaurant {
+  id: string;
+  name: string;
+}
+
 interface Order {
   id: string;
   order_number: string;
@@ -24,15 +29,15 @@ interface Order {
 
 const Reports = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [restaurantName, setRestaurantName] = useState<string>("");
   const [currency, setCurrency] = useState<string>("MZN");
-  
-  const restaurantId = searchParams.get("restaurant");
   
   const [filterType, setFilterType] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
@@ -41,16 +46,20 @@ const Reports = () => {
   const [selectedHour, setSelectedHour] = useState<string>("all");
 
   useEffect(() => {
-    if (restaurantId) {
-      checkAccess();
+    fetchUserRestaurants();
+  }, []);
+
+  useEffect(() => {
+    if (selectedRestaurantId) {
+      loadRestaurantData();
     }
-  }, [restaurantId]);
+  }, [selectedRestaurantId]);
 
   useEffect(() => {
     applyFilters();
   }, [filterType, selectedYear, selectedMonth, selectedDay, selectedHour, orders]);
 
-  const checkAccess = async () => {
+  const fetchUserRestaurants = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -58,20 +67,41 @@ const Reports = () => {
         return;
       }
 
-      if (!restaurantId) {
-        toast({
-          title: "Erro",
-          description: "Nenhum restaurante selecionado",
-          variant: "destructive",
-        });
-        navigate("/dashboard");
-        return;
-      }
+      const { data: restaurantsData, error } = await supabase
+        .from("restaurants")
+        .select("id, name")
+        .order("name");
+
+      if (error) throw error;
+
+      setRestaurants(restaurantsData || []);
       
+      // Set initial restaurant from URL or first available
+      const urlRestaurantId = searchParams.get("restaurant");
+      if (urlRestaurantId && restaurantsData?.some(r => r.id === urlRestaurantId)) {
+        setSelectedRestaurantId(urlRestaurantId);
+      } else if (restaurantsData && restaurantsData.length > 0) {
+        setSelectedRestaurantId(restaurantsData[0].id);
+        setSearchParams({ restaurant: restaurantsData[0].id });
+      }
+    } catch (error: any) {
+      console.error("Error fetching restaurants:", error);
+      toast({
+        title: "Erro ao carregar restaurantes",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRestaurantData = async () => {
+    try {
       const { data: restaurant } = await supabase
         .from("restaurants")
         .select("name, currency")
-        .eq("id", restaurantId)
+        .eq("id", selectedRestaurantId)
         .single();
 
       if (restaurant) {
@@ -79,17 +109,20 @@ const Reports = () => {
         setCurrency(restaurant.currency || "MZN");
       }
 
-      await fetchOrders(restaurantId);
+      await fetchOrders(selectedRestaurantId);
     } catch (error: any) {
-      console.error("Error checking access:", error);
+      console.error("Error loading restaurant data:", error);
       toast({
         title: "Erro",
         description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const handleRestaurantChange = (restaurantId: string) => {
+    setSelectedRestaurantId(restaurantId);
+    setSearchParams({ restaurant: restaurantId });
   };
 
   const fetchOrders = async (restaurantId: string) => {
@@ -274,10 +307,25 @@ const Reports = () => {
         <Card>
           <CardHeader>
             <CardTitle>Filtros</CardTitle>
-            <CardDescription>Filtre os pedidos por período</CardDescription>
+            <CardDescription>Filtre os pedidos por restaurante e período</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-6">
+              {restaurants.length > 1 && (
+                <Select value={selectedRestaurantId} onValueChange={handleRestaurantChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o restaurante" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {restaurants.map((restaurant) => (
+                      <SelectItem key={restaurant.id} value={restaurant.id}>
+                        {restaurant.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger>
                   <SelectValue placeholder="Tipo de filtro" />
