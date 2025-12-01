@@ -201,9 +201,16 @@ const Kitchen = () => {
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
+      const updateData: any = { order_status: newStatus };
+      
+      // When order is marked as delivered, also mark payment as completed
+      if (newStatus === 'delivered') {
+        updateData.payment_status = 'completed';
+      }
+      
       const { error } = await supabase
         .from("orders")
-        .update({ order_status: newStatus })
+        .update(updateData)
         .eq("id", orderId);
 
       if (error) throw error;
