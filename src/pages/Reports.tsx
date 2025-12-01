@@ -45,7 +45,7 @@ const Reports = () => {
   const [selectedDay, setSelectedDay] = useState<string>(new Date().getDate().toString());
   const [selectedHour, setSelectedHour] = useState<string>("all");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("all");
-  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     fetchUserRestaurants();
@@ -54,6 +54,7 @@ const Reports = () => {
   useEffect(() => {
     if (selectedRestaurantId) {
       loadRestaurantData();
+      fetchPaymentMethods();
     }
   }, [selectedRestaurantId]);
 
@@ -61,11 +62,20 @@ const Reports = () => {
     applyFilters();
   }, [filterType, selectedYear, selectedMonth, selectedDay, selectedHour, selectedPaymentMethod, orders]);
 
-  useEffect(() => {
-    // Extract unique payment methods from orders
-    const uniqueMethods = Array.from(new Set(orders.map(o => o.payment_method).filter(Boolean)));
-    setPaymentMethods(uniqueMethods);
-  }, [orders]);
+  const fetchPaymentMethods = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("payment_methods")
+        .select("id, name")
+        .eq("restaurant_id", selectedRestaurantId)
+        .order("position", { ascending: true });
+
+      if (error) throw error;
+      setPaymentMethods(data || []);
+    } catch (error) {
+      console.error("Error fetching payment methods:", error);
+    }
+  };
 
   const fetchUserRestaurants = async () => {
     try {
@@ -420,8 +430,8 @@ const Reports = () => {
                 <SelectContent>
                   <SelectItem value="all">Todos os métodos</SelectItem>
                   {paymentMethods.map((method) => (
-                    <SelectItem key={method} value={method}>
-                      {method}
+                    <SelectItem key={method.id} value={method.name}>
+                      {method.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
