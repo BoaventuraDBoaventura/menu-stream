@@ -412,11 +412,11 @@ const Reports = () => {
       },
       columnStyles: {
         0: { cellWidth: 25, fontStyle: 'bold' },
-        1: { cellWidth: 50 },
-        2: { halign: 'center', cellWidth: 28 },
-        3: { halign: 'center', cellWidth: 24 },
-        4: { cellWidth: 28 },
-        5: { halign: 'right', fontStyle: 'bold', cellWidth: 28 }
+        1: { cellWidth: 42 },
+        2: { halign: 'center', cellWidth: 26 },
+        3: { halign: 'center', cellWidth: 22 },
+        4: { cellWidth: 25 },
+        5: { halign: 'right', fontStyle: 'bold', cellWidth: 35 }
       },
       margin: { left: 40, right: 15 },
       didDrawPage: (data) => {
