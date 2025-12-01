@@ -239,77 +239,158 @@ const Reports = () => {
   const generatePDF = async () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     
-    // Header with system logo
-    doc.setFontSize(20);
+    // ===== HEADER SECTION WITH GRADIENT BACKGROUND =====
+    // Gradient background (simulated with rectangles)
+    doc.setFillColor(99, 102, 241); // Primary color
+    doc.rect(0, 0, pageWidth, 45, 'F');
+    
+    // System branding
+    doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
+    doc.setTextColor(255, 255, 255);
     doc.text("PratoDigital", 15, 20);
     
-    // Restaurant logo if available
-    let yPosition = 30;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(255, 255, 255);
+    doc.text("Sistema de Gestão de Restaurantes", 15, 27);
+    
+    // Restaurant logo (right side)
     if (restaurantLogo) {
       try {
-        doc.addImage(restaurantLogo, "PNG", pageWidth - 45, 10, 30, 30);
+        doc.addImage(restaurantLogo, "PNG", pageWidth - 50, 8, 35, 35);
       } catch (error) {
         console.error("Error adding restaurant logo:", error);
       }
     }
     
-    // Restaurant name and report title
-    doc.setFontSize(16);
+    let yPosition = 55;
+    
+    // ===== RESTAURANT INFO & TITLE =====
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.text(restaurantName, 15, yPosition);
-    yPosition += 10;
-    
-    doc.setFontSize(14);
-    doc.text("Relatório de Vendas", 15, yPosition);
     yPosition += 8;
     
-    // Filter information
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    let filterText = "Período: ";
-    if (filterType === "all") {
-      filterText += "Todos os pedidos";
-    } else if (filterType === "year") {
-      filterText += `Ano ${selectedYear}`;
-    } else if (filterType === "month") {
-      filterText += `${format(new Date(parseInt(selectedYear), parseInt(selectedMonth) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })}`;
-    } else if (filterType === "day") {
-      filterText += `${selectedDay}/${selectedMonth}/${selectedYear}`;
-    } else if (filterType === "hour") {
-      filterText += `${selectedDay}/${selectedMonth}/${selectedYear} - ${selectedHour === "all" ? "Todas as horas" : `${selectedHour}:00-${selectedHour}:59`}`;
-    }
+    doc.setFontSize(14);
+    doc.setTextColor(79, 70, 229);
+    doc.text("📊 Relatório de Vendas", 15, yPosition);
+    yPosition += 12;
     
-    if (selectedPaymentMethod !== "all") {
-      filterText += ` | Método: ${selectedPaymentMethod}`;
-    }
+    // ===== FILTER INFO BOX =====
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(15, yPosition, pageWidth - 30, 20, 3, 3, 'FD');
     
-    doc.text(filterText, 15, yPosition);
-    yPosition += 6;
-    
-    doc.text(`Data de geração: ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`, 15, yPosition);
-    yPosition += 10;
-    
-    // Summary statistics
-    doc.setFontSize(11);
+    yPosition += 7;
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    doc.text("Resumo:", 15, yPosition);
-    yPosition += 6;
+    doc.setTextColor(71, 85, 105);
+    doc.text("Período:", 20, yPosition);
     
     doc.setFont("helvetica", "normal");
-    doc.text(`Total de Vendas: ${formatPrice(totals.total)}`, 15, yPosition);
-    yPosition += 5;
-    doc.text(`Total de Pedidos: ${totals.count}`, 15, yPosition);
-    yPosition += 5;
-    doc.text(`Pedidos Completos: ${totals.completed}`, 15, yPosition);
-    yPosition += 5;
-    doc.text(`Pedidos Pendentes: ${totals.pending}`, 15, yPosition);
-    yPosition += 5;
-    doc.text(`Ticket Médio: ${totals.count > 0 ? formatPrice(totals.total / totals.count) : formatPrice(0)}`, 15, yPosition);
-    yPosition += 10;
+    let filterText = "";
+    if (filterType === "all") {
+      filterText = "Todos os pedidos";
+    } else if (filterType === "year") {
+      filterText = `Ano ${selectedYear}`;
+    } else if (filterType === "month") {
+      filterText = `${format(new Date(parseInt(selectedYear), parseInt(selectedMonth) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })}`;
+    } else if (filterType === "day") {
+      filterText = `${selectedDay}/${selectedMonth}/${selectedYear}`;
+    } else if (filterType === "hour") {
+      filterText = `${selectedDay}/${selectedMonth}/${selectedYear} - ${selectedHour === "all" ? "Todas as horas" : `${selectedHour}:00-${selectedHour}:59`}`;
+    }
+    doc.text(filterText, 38, yPosition);
     
-    // Orders table
+    yPosition += 5;
+    if (selectedPaymentMethod !== "all") {
+      doc.setFont("helvetica", "bold");
+      doc.text("Pagamento:", 20, yPosition);
+      doc.setFont("helvetica", "normal");
+      doc.text(selectedPaymentMethod, 44, yPosition);
+      yPosition += 5;
+    }
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Gerado em:", 20, yPosition);
+    doc.setFont("helvetica", "normal");
+    doc.text(format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR }), 42, yPosition);
+    yPosition += 12;
+    
+    // ===== SUMMARY STATISTICS CARDS =====
+    const cardWidth = (pageWidth - 40) / 4;
+    const cardHeight = 22;
+    const cardY = yPosition;
+    
+    // Card 1: Total Sales
+    doc.setFillColor(16, 185, 129);
+    doc.roundedRect(15, cardY, cardWidth - 2, cardHeight, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text("💰 Total de Vendas", 17, cardY + 5);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(formatPrice(totals.total), 17, cardY + 13);
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${totals.count} pedidos`, 17, cardY + 18);
+    
+    // Card 2: Completed Orders
+    doc.setFillColor(59, 130, 246);
+    doc.roundedRect(15 + cardWidth, cardY, cardWidth - 2, cardHeight, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.text("✓ Pedidos Completos", 17 + cardWidth, cardY + 5);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(totals.completed.toString(), 17 + cardWidth, cardY + 13);
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    const completedPercent = totals.count > 0 ? ((totals.completed / totals.count) * 100).toFixed(1) : "0";
+    doc.text(`${completedPercent}% do total`, 17 + cardWidth, cardY + 18);
+    
+    // Card 3: Pending Orders
+    doc.setFillColor(251, 146, 60);
+    doc.roundedRect(15 + cardWidth * 2, cardY, cardWidth - 2, cardHeight, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.text("⏳ Pedidos Pendentes", 17 + cardWidth * 2, cardY + 5);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(totals.pending.toString(), 17 + cardWidth * 2, cardY + 13);
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    doc.text("Em preparação", 17 + cardWidth * 2, cardY + 18);
+    
+    // Card 4: Average Ticket
+    doc.setFillColor(168, 85, 247);
+    doc.roundedRect(15 + cardWidth * 3, cardY, cardWidth - 2, cardHeight, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.text("📈 Ticket Médio", 17 + cardWidth * 3, cardY + 5);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    const avgTicket = totals.count > 0 ? formatPrice(totals.total / totals.count) : formatPrice(0);
+    doc.text(avgTicket, 17 + cardWidth * 3, cardY + 13);
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    doc.text("Por pedido", 17 + cardWidth * 3, cardY + 18);
+    
+    yPosition = cardY + cardHeight + 15;
+    
+    // ===== ORDERS TABLE TITLE =====
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(`📋 Lista de Pedidos (${filteredOrders.length})`, 15, yPosition);
+    yPosition += 8;
+    
+    // ===== ORDERS TABLE =====
     const tableData = filteredOrders.map(order => [
       order.order_number,
       order.customer_name,
@@ -324,28 +405,57 @@ const Reports = () => {
     
     autoTable(doc, {
       startY: yPosition,
-      head: [['Nº', 'Cliente', 'Data/Hora', 'Status', 'Pagamento', 'Total']],
+      head: [['Nº Pedido', 'Cliente', 'Data/Hora', 'Status', 'Pagamento', 'Total']],
       body: tableData,
-      theme: 'striped',
-      headStyles: { fillColor: [79, 70, 229] },
-      styles: { fontSize: 8 },
+      theme: 'grid',
+      headStyles: { 
+        fillColor: [79, 70, 229],
+        textColor: [255, 255, 255],
+        fontSize: 9,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      styles: { 
+        fontSize: 8,
+        cellPadding: 3,
+        lineColor: [226, 232, 240],
+        lineWidth: 0.1
+      },
       columnStyles: {
-        5: { halign: 'right' }
-      }
+        0: { halign: 'center', cellWidth: 25 },
+        1: { cellWidth: 40 },
+        2: { halign: 'center', cellWidth: 30 },
+        3: { halign: 'center', cellWidth: 25 },
+        4: { cellWidth: 30 },
+        5: { halign: 'right', fontStyle: 'bold', cellWidth: 28 }
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252]
+      },
+      margin: { left: 15, right: 15 }
     });
     
-    // Footer
+    // ===== FOOTER =====
     const finalY = (doc as any).lastAutoTable.finalY || yPosition;
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text(`Processado por PratoDigital - ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`, 15, doc.internal.pageSize.getHeight() - 10);
     
-    // Save PDF
+    // Footer background
+    doc.setFillColor(248, 250, 252);
+    doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+    
+    // Footer text
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.setFont("helvetica", "normal");
+    const footerText = `Processado por PratoDigital • ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`;
+    const footerTextWidth = doc.getTextWidth(footerText);
+    doc.text(footerText, (pageWidth - footerTextWidth) / 2, pageHeight - 10);
+    
+    // ===== SAVE PDF =====
     const filename = `relatorio_${restaurantName.replace(/\s+/g, '_')}_${format(new Date(), "yyyyMMdd_HHmmss")}.pdf`;
     doc.save(filename);
     
     toast({
-      title: "PDF gerado com sucesso",
+      title: "✓ PDF gerado com sucesso",
       description: `O relatório foi baixado como ${filename}`,
     });
   };
