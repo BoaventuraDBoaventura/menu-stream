@@ -10,6 +10,7 @@ import { ChefHat, ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { PaymentMethodsManagement } from "@/components/settings/PaymentMethodsManagement";
 
 const RestaurantSettings = () => {
   const navigate = useNavigate();
@@ -248,6 +249,11 @@ const RestaurantSettings = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Payment Methods Management */}
+        <div className="mt-6">
+          <PaymentMethodsManagement restaurantId={restaurantId!} />
+        </div>
       </main>
     </div>
   );
