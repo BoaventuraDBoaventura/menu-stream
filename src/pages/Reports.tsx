@@ -241,186 +241,141 @@ const Reports = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     
-    // ===== HEADER SECTION =====
-    // Header background - azul suave
-    doc.setFillColor(239, 246, 255); // Light blue background
-    doc.rect(0, 0, pageWidth, 50, 'F');
-    
-    // System branding
-    doc.setFontSize(26);
+    // ===== VERTICAL TITLE (LEFT SIDE) =====
+    doc.setFontSize(28);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(37, 99, 235); // Blue
-    doc.text("PratoDigital", 15, 22);
+    doc.setTextColor(220, 38, 38); // Red
+    doc.text("Relatório", 12, 60, { angle: 90 });
     
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(71, 85, 105);
-    doc.text("Sistema de Gestão de Restaurantes", 15, 30);
+    // ===== HEADER - RESTAURANT NAME =====
+    let yPosition = 20;
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(220, 38, 38); // Red
+    doc.text(restaurantName, 40, yPosition);
     
     // Restaurant logo (right side)
     if (restaurantLogo) {
       try {
-        doc.addImage(restaurantLogo, "PNG", pageWidth - 48, 10, 33, 33);
+        doc.addImage(restaurantLogo, "PNG", pageWidth - 45, 10, 30, 30);
       } catch (error) {
         console.error("Error adding restaurant logo:", error);
       }
     }
     
-    let yPosition = 60;
-    
-    // ===== RESTAURANT INFO & TITLE =====
-    doc.setTextColor(15, 23, 42);
-    doc.setFontSize(20);
-    doc.setFont("helvetica", "bold");
-    doc.text(restaurantName, 15, yPosition);
     yPosition += 10;
     
-    doc.setFontSize(16);
-    doc.setTextColor(37, 99, 235);
-    doc.text("Relatório de Vendas", 15, yPosition);
-    yPosition += 15;
-    
-    // ===== FILTER INFO BOX =====
-    doc.setFillColor(255, 255, 255);
-    doc.setDrawColor(191, 219, 254);
+    // Filter info section
+    doc.setDrawColor(229, 231, 235);
     doc.setLineWidth(0.5);
-    doc.roundedRect(15, yPosition, pageWidth - 30, 24, 3, 3, 'FD');
-    
+    doc.line(40, yPosition, pageWidth - 15, yPosition);
     yPosition += 8;
+    
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(30, 58, 138);
-    doc.text("Período do Relatório:", 20, yPosition);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Período:", 40, yPosition);
     
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(51, 65, 85);
+    doc.setTextColor(60, 60, 60);
     let filterText = "";
     if (filterType === "all") {
-      filterText = "Todos os pedidos registrados";
+      filterText = "Todos os pedidos";
     } else if (filterType === "year") {
-      filterText = `Ano completo de ${selectedYear}`;
+      filterText = `Ano ${selectedYear}`;
     } else if (filterType === "month") {
-      filterText = `${format(new Date(parseInt(selectedYear), parseInt(selectedMonth) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })}`;
+      filterText = `${format(new Date(parseInt(selectedYear), parseInt(selectedMonth) - 1, 1), "MMMM yyyy", { locale: ptBR })}`;
     } else if (filterType === "day") {
-      filterText = `Dia ${selectedDay} de ${format(new Date(parseInt(selectedYear), parseInt(selectedMonth) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })}`;
+      filterText = `${selectedDay}/${selectedMonth}/${selectedYear}`;
     } else if (filterType === "hour") {
-      filterText = `${selectedDay}/${selectedMonth}/${selectedYear} - ${selectedHour === "all" ? "Todas as horas" : `Período: ${selectedHour}:00 até ${selectedHour}:59`}`;
+      filterText = `${selectedDay}/${selectedMonth}/${selectedYear} - ${selectedHour === "all" ? "Todas as horas" : `${selectedHour}:00-${selectedHour}:59`}`;
     }
-    doc.text(filterText, 20, yPosition + 5);
+    doc.text(filterText, 65, yPosition);
+    
+    // Right side - dates
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(220, 38, 38);
+    doc.text("Data do relatório", pageWidth - 60, yPosition, { align: 'right' });
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(60, 60, 60);
+    doc.text(format(new Date(), "dd/MM/yyyy", { locale: ptBR }), pageWidth - 15, yPosition, { align: 'right' });
+    
+    yPosition += 6;
     
     if (selectedPaymentMethod !== "all") {
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(30, 58, 138);
-      doc.text("Método de Pagamento:", 20, yPosition + 10);
+      doc.setTextColor(0, 0, 0);
+      doc.text("Pagamento:", 40, yPosition);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(51, 65, 85);
-      doc.text(selectedPaymentMethod, 64, yPosition + 10);
+      doc.setTextColor(60, 60, 60);
+      doc.text(selectedPaymentMethod, 65, yPosition);
     }
     
-    doc.setFont("helvetica", "italic");
-    doc.setFontSize(9);
-    doc.setTextColor(100, 116, 139);
-    doc.text(`Relatório gerado em ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, 20, yPosition + 15);
-    yPosition += 30;
-    
-    // ===== SUMMARY STATISTICS CARDS =====
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(30, 58, 138);
-    doc.text("Resumo Executivo", 15, yPosition);
     yPosition += 10;
+    doc.setDrawColor(229, 231, 235);
+    doc.line(40, yPosition, pageWidth - 15, yPosition);
+    yPosition += 12;
     
-    const cardWidth = (pageWidth - 40) / 2;
-    const cardHeight = 28;
-    const cardSpacing = 5;
+    // ===== SUMMARY STATISTICS =====
+    const summaryBoxWidth = (pageWidth - 55) / 4;
+    const boxHeight = 22;
     
-    // Card 1: Total de Vendas
-    doc.setFillColor(255, 255, 255);
-    doc.setDrawColor(191, 219, 254);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(15, yPosition, cardWidth - 2.5, cardHeight, 2, 2, 'FD');
-    
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(71, 85, 105);
-    doc.text("Total de Vendas", 20, yPosition + 8);
-    
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(37, 99, 235);
-    doc.text(formatPrice(totals.total), 20, yPosition + 18);
+    // Box 1: Total Sales
+    doc.setDrawColor(220, 38, 38);
+    doc.setLineWidth(0.8);
+    doc.rect(40, yPosition, summaryBoxWidth - 3, boxHeight);
     
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139);
-    doc.text(`Baseado em ${totals.count} pedido${totals.count !== 1 ? 's' : ''}`, 20, yPosition + 24);
+    doc.setTextColor(80, 80, 80);
+    doc.text("Total de Vendas", 42, yPosition + 6);
     
-    // Card 2: Ticket Médio
-    doc.roundedRect(15 + cardWidth + 2.5, yPosition, cardWidth - 2.5, cardHeight, 2, 2, 'FD');
-    
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(71, 85, 105);
-    doc.text("Ticket Médio", 20 + cardWidth + 2.5, yPosition + 8);
-    
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(37, 99, 235);
-    const avgTicket = totals.count > 0 ? formatPrice(totals.total / totals.count) : formatPrice(0);
-    doc.text(avgTicket, 20 + cardWidth + 2.5, yPosition + 18);
-    
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139);
-    doc.text("Valor médio por pedido", 20 + cardWidth + 2.5, yPosition + 24);
-    
-    yPosition += cardHeight + cardSpacing;
-    
-    // Card 3: Pedidos Completos
-    doc.roundedRect(15, yPosition, cardWidth - 2.5, cardHeight, 2, 2, 'FD');
-    
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(71, 85, 105);
-    doc.text("Pedidos Concluídos", 20, yPosition + 8);
-    
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(37, 99, 235);
-    doc.text(totals.completed.toString(), 20, yPosition + 18);
-    
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139);
-    const completedPercent = totals.count > 0 ? ((totals.completed / totals.count) * 100).toFixed(1) : "0";
-    doc.text(`${completedPercent}% dos pedidos finalizados`, 20, yPosition + 24);
-    
-    // Card 4: Pedidos Pendentes
-    doc.roundedRect(15 + cardWidth + 2.5, yPosition, cardWidth - 2.5, cardHeight, 2, 2, 'FD');
-    
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(71, 85, 105);
-    doc.text("Pedidos em Andamento", 20 + cardWidth + 2.5, yPosition + 8);
-    
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(37, 99, 235);
-    doc.text(totals.pending.toString(), 20 + cardWidth + 2.5, yPosition + 18);
-    
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 116, 139);
-    doc.text("Novos ou em preparação", 20 + cardWidth + 2.5, yPosition + 24);
-    
-    yPosition += cardHeight + 18;
-    
-    // ===== ORDERS TABLE TITLE =====
-    doc.setTextColor(30, 58, 138);
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text(`Detalhamento dos Pedidos (${filteredOrders.length})`, 15, yPosition);
-    yPosition += 8;
+    doc.setTextColor(220, 38, 38);
+    doc.text(formatPrice(totals.total), 42, yPosition + 15);
+    
+    // Box 2: Orders Count
+    doc.rect(40 + summaryBoxWidth, yPosition, summaryBoxWidth - 3, boxHeight);
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80);
+    doc.text("Total de Pedidos", 42 + summaryBoxWidth, yPosition + 6);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(220, 38, 38);
+    doc.text(totals.count.toString(), 42 + summaryBoxWidth, yPosition + 15);
+    
+    // Box 3: Average Ticket
+    doc.rect(40 + (summaryBoxWidth * 2), yPosition, summaryBoxWidth - 3, boxHeight);
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80);
+    doc.text("Ticket Médio", 42 + (summaryBoxWidth * 2), yPosition + 6);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(220, 38, 38);
+    const avgTicket = totals.count > 0 ? formatPrice(totals.total / totals.count) : formatPrice(0);
+    doc.text(avgTicket, 42 + (summaryBoxWidth * 2), yPosition + 15);
+    
+    // Box 4: Completed Orders
+    doc.rect(40 + (summaryBoxWidth * 3), yPosition, summaryBoxWidth - 3, boxHeight);
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80);
+    doc.text("Concluídos", 42 + (summaryBoxWidth * 3), yPosition + 6);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(220, 38, 38);
+    doc.text(totals.completed.toString(), 42 + (summaryBoxWidth * 3), yPosition + 15);
+    
+    yPosition += boxHeight + 15;
     
     // ===== ORDERS TABLE =====
     const tableData = filteredOrders.map(order => [
@@ -437,67 +392,82 @@ const Reports = () => {
     
     autoTable(doc, {
       startY: yPosition,
-      head: [['Nº Pedido', 'Cliente', 'Data/Hora', 'Status', 'Pagamento', 'Valor Total']],
+      head: [['Nº Pedido', 'Cliente', 'Data/Hora', 'Status', 'Pagamento', 'Valor']],
       body: tableData,
       theme: 'plain',
       headStyles: { 
-        fillColor: [37, 99, 235],
+        fillColor: [220, 38, 38], // Red header
         textColor: [255, 255, 255],
         fontSize: 10,
         fontStyle: 'bold',
         halign: 'left',
-        cellPadding: 4
+        cellPadding: { top: 5, right: 4, bottom: 5, left: 4 }
       },
       styles: { 
         fontSize: 9,
-        cellPadding: 4,
-        lineColor: [226, 232, 240],
+        cellPadding: { top: 4, right: 4, bottom: 4, left: 4 },
+        lineColor: [220, 220, 220],
         lineWidth: 0.1,
-        textColor: [51, 65, 85]
+        textColor: [40, 40, 40]
       },
       columnStyles: {
-        0: { cellWidth: 28, fontStyle: 'bold', textColor: [37, 99, 235] },
-        1: { cellWidth: 45 },
+        0: { cellWidth: 25, fontStyle: 'bold' },
+        1: { cellWidth: 50 },
         2: { halign: 'center', cellWidth: 28 },
-        3: { halign: 'center', cellWidth: 26 },
-        4: { cellWidth: 30 },
-        5: { halign: 'right', fontStyle: 'bold', cellWidth: 30, textColor: [37, 99, 235] }
+        3: { halign: 'center', cellWidth: 24 },
+        4: { cellWidth: 28 },
+        5: { halign: 'right', fontStyle: 'bold', cellWidth: 28 }
       },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252]
-      },
-      margin: { left: 15, right: 15 },
+      margin: { left: 40, right: 15 },
       didDrawPage: (data) => {
-        // Add page numbers
+        // Page numbers
         doc.setFontSize(8);
-        doc.setTextColor(148, 163, 184);
+        doc.setTextColor(120, 120, 120);
         doc.text(
           `Página ${data.pageNumber}`,
           pageWidth / 2,
-          pageHeight - 10,
+          pageHeight - 15,
           { align: 'center' }
         );
       }
     });
     
-    // ===== FOOTER =====
+    // ===== TOTALS SECTION =====
     const finalY = (doc as any).lastAutoTable.finalY || yPosition;
+    const totalsY = finalY + 10;
     
-    // Footer background
-    doc.setFillColor(239, 246, 255);
-    doc.rect(0, pageHeight - 25, pageWidth, 25, 'F');
+    // Total line
+    doc.setDrawColor(220, 38, 38);
+    doc.setLineWidth(1);
+    doc.line(pageWidth - 70, totalsY, pageWidth - 15, totalsY);
     
-    // Footer text
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("Total", pageWidth - 68, totalsY + 8, { align: 'right' });
+    
+    doc.setFontSize(14);
+    doc.setTextColor(220, 38, 38);
+    doc.text(formatPrice(totals.total), pageWidth - 15, totalsY + 8, { align: 'right' });
+    
+    // ===== FOOTER - TERMS =====
+    const footerY = totalsY + 25;
+    
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.5);
+    doc.line(40, footerY, pageWidth - 15, footerY);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(220, 38, 38);
+    doc.text("Informações", 40, footerY + 8);
+    
     doc.setFontSize(9);
-    doc.setTextColor(71, 85, 105);
     doc.setFont("helvetica", "normal");
-    const footerText = `Processado por PratoDigital em ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`;
-    const footerTextWidth = doc.getTextWidth(footerText);
-    doc.text(footerText, (pageWidth - footerTextWidth) / 2, pageHeight - 12);
-    
-    doc.setFontSize(8);
-    doc.setTextColor(148, 163, 184);
-    doc.text("Sistema de Gestão de Restaurantes", pageWidth / 2, pageHeight - 7, { align: 'center' });
+    doc.setTextColor(80, 80, 80);
+    doc.text(`Relatório gerado automaticamente pelo sistema PratoDigital`, 40, footerY + 14);
+    doc.text(`Data de geração: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, 40, footerY + 20);
+    doc.text(`Documento válido sem assinatura`, 40, footerY + 26);
     
     // ===== SAVE PDF =====
     const filename = `relatorio_${restaurantName.replace(/\s+/g, '_')}_${format(new Date(), "yyyyMMdd_HHmmss")}.pdf`;
