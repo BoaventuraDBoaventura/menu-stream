@@ -15,6 +15,7 @@ const OrderStatus = () => {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrency] = useState<string>("USD");
+  const [tableToken, setTableToken] = useState<string>("");
 
   const orderNumber = searchParams.get("order");
   const restaurantId = searchParams.get("restaurant");
@@ -71,13 +72,18 @@ const OrderStatus = () => {
 
       const { data, error } = await supabase
         .from("orders")
-        .select("*, tables(name)")
+        .select("*, tables(name, qr_code_token)")
         .eq("order_number", orderNumber)
         .eq("restaurant_id", restaurantId)
         .single();
 
       if (error) throw error;
       setOrder(data);
+      
+      // Store table token for navigation
+      if (data?.tables?.qr_code_token) {
+        setTableToken(data.tables.qr_code_token);
+      }
     } catch (error: any) {
       console.error("Error loading order:", error);
       toast({
@@ -246,12 +252,18 @@ const OrderStatus = () => {
         </Card>
 
         <Button
-          onClick={() => navigate("/")}
+          onClick={() => {
+            if (tableToken && restaurantId) {
+              navigate(`/menu?restaurant=${restaurantId}&table=${tableToken}`);
+            } else {
+              navigate("/");
+            }
+          }}
           variant="outline"
           className="w-full"
         >
           <Home className="h-4 w-4 mr-2" />
-          Voltar ao Início
+          Voltar ao Menu
         </Button>
       </div>
     </div>
