@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChefHat, Clock, CheckCircle2, ArrowLeft, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { playSoundNotification } from "@/utils/soundNotification";
 
 const Kitchen = () => {
   const navigate = useNavigate();
@@ -35,7 +36,29 @@ const Kitchen = () => {
         .on(
           'postgres_changes',
           {
-            event: '*',
+            event: 'INSERT',
+            schema: 'public',
+            table: 'orders',
+            filter: `restaurant_id=eq.${restaurantId}`,
+          },
+          (payload) => {
+            console.log('New order received:', payload);
+            // Play sound notification for new order
+            playSoundNotification('new-order');
+            
+            toast({
+              title: "🔔 Novo Pedido!",
+              description: `Pedido #${payload.new.order_number} recebido`,
+              duration: 5000,
+            });
+            
+            loadOrders();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
             schema: 'public',
             table: 'orders',
             filter: `restaurant_id=eq.${restaurantId}`,
