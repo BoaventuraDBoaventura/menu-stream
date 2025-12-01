@@ -6,9 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut, ArrowLeft, Loader2, FileText, TrendingUp } from "lucide-react";
+import { LogOut, ArrowLeft, Loader2, FileText, TrendingUp, Download } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface Restaurant {
   id: string;
@@ -37,6 +39,7 @@ const Reports = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [restaurantName, setRestaurantName] = useState<string>("");
+  const [restaurantLogo, setRestaurantLogo] = useState<string>("");
   const [currency, setCurrency] = useState<string>("MZN");
   
   const [filterType, setFilterType] = useState<string>("all");
@@ -118,13 +121,14 @@ const Reports = () => {
     try {
       const { data: restaurant } = await supabase
         .from("restaurants")
-        .select("name, currency")
+        .select("name, currency, logo_url")
         .eq("id", selectedRestaurantId)
         .single();
 
       if (restaurant) {
         setRestaurantName(restaurant.name);
         setCurrency(restaurant.currency || "MZN");
+        setRestaurantLogo(restaurant.logo_url || "");
       }
 
       await fetchOrders(selectedRestaurantId);
@@ -232,6 +236,120 @@ const Reports = () => {
 
   const totals = calculateTotals();
 
+  const generatePDF = async () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Header with system logo
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("PratoDigital", 15, 20);
+    
+    // Restaurant logo if available
+    let yPosition = 30;
+    if (restaurantLogo) {
+      try {
+        doc.addImage(restaurantLogo, "PNG", pageWidth - 45, 10, 30, 30);
+      } catch (error) {
+        console.error("Error adding restaurant logo:", error);
+      }
+    }
+    
+    // Restaurant name and report title
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(restaurantName, 15, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(14);
+    doc.text("Relatório de Vendas", 15, yPosition);
+    yPosition += 8;
+    
+    // Filter information
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    let filterText = "Período: ";
+    if (filterType === "all") {
+      filterText += "Todos os pedidos";
+    } else if (filterType === "year") {
+      filterText += `Ano ${selectedYear}`;
+    } else if (filterType === "month") {
+      filterText += `${format(new Date(parseInt(selectedYear), parseInt(selectedMonth) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })}`;
+    } else if (filterType === "day") {
+      filterText += `${selectedDay}/${selectedMonth}/${selectedYear}`;
+    } else if (filterType === "hour") {
+      filterText += `${selectedDay}/${selectedMonth}/${selectedYear} - ${selectedHour === "all" ? "Todas as horas" : `${selectedHour}:00-${selectedHour}:59`}`;
+    }
+    
+    if (selectedPaymentMethod !== "all") {
+      filterText += ` | Método: ${selectedPaymentMethod}`;
+    }
+    
+    doc.text(filterText, 15, yPosition);
+    yPosition += 6;
+    
+    doc.text(`Data de geração: ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`, 15, yPosition);
+    yPosition += 10;
+    
+    // Summary statistics
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Resumo:", 15, yPosition);
+    yPosition += 6;
+    
+    doc.setFont("helvetica", "normal");
+    doc.text(`Total de Vendas: ${formatPrice(totals.total)}`, 15, yPosition);
+    yPosition += 5;
+    doc.text(`Total de Pedidos: ${totals.count}`, 15, yPosition);
+    yPosition += 5;
+    doc.text(`Pedidos Completos: ${totals.completed}`, 15, yPosition);
+    yPosition += 5;
+    doc.text(`Pedidos Pendentes: ${totals.pending}`, 15, yPosition);
+    yPosition += 5;
+    doc.text(`Ticket Médio: ${totals.count > 0 ? formatPrice(totals.total / totals.count) : formatPrice(0)}`, 15, yPosition);
+    yPosition += 10;
+    
+    // Orders table
+    const tableData = filteredOrders.map(order => [
+      order.order_number,
+      order.customer_name,
+      format(new Date(order.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR }),
+      order.order_status === 'new' ? 'Novo' :
+        order.order_status === 'preparing' ? 'Preparando' :
+        order.order_status === 'ready' ? 'Pronto' :
+        order.order_status === 'completed' ? 'Completo' : 'Cancelado',
+      order.payment_method === 'cash' ? 'Dinheiro' : order.payment_method,
+      formatPrice(Number(order.total_amount))
+    ]);
+    
+    autoTable(doc, {
+      startY: yPosition,
+      head: [['Nº', 'Cliente', 'Data/Hora', 'Status', 'Pagamento', 'Total']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [79, 70, 229] },
+      styles: { fontSize: 8 },
+      columnStyles: {
+        5: { halign: 'right' }
+      }
+    });
+    
+    // Footer
+    const finalY = (doc as any).lastAutoTable.finalY || yPosition;
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text(`Processado por PratoDigital - ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`, 15, doc.internal.pageSize.getHeight() - 10);
+    
+    // Save PDF
+    const filename = `relatorio_${restaurantName.replace(/\s+/g, '_')}_${format(new Date(), "yyyyMMdd_HHmmss")}.pdf`;
+    doc.save(filename);
+    
+    toast({
+      title: "PDF gerado com sucesso",
+      description: `O relatório foi baixado como ${filename}`,
+    });
+  };
+
   const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -329,8 +447,16 @@ const Reports = () => {
         {/* Filters */}
         <Card>
           <CardHeader>
-            <CardTitle>Filtros</CardTitle>
-            <CardDescription>Filtre os pedidos por restaurante, período e método de pagamento</CardDescription>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle>Filtros</CardTitle>
+                <CardDescription>Filtre os pedidos por restaurante, período e método de pagamento</CardDescription>
+              </div>
+              <Button onClick={generatePDF} variant="default">
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-6">
