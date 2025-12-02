@@ -3,24 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ChefHat, Plus, QrCode, LayoutDashboard, LogOut, Crown, Users, Settings, BarChart3 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { ChefHat, LayoutDashboard, Crown, Settings } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
-import { RestaurantCard } from "@/components/dashboard/RestaurantCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { t, setActiveRestaurant } = useLanguage();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [restaurantPermissions, setRestaurantPermissions] = useState<Record<string, any>>({});
-  const [maxRestaurants, setMaxRestaurants] = useState<number | null>(null);
-  const { role, isSuperAdmin } = useUserRole(user?.id);
+  const { isSuperAdmin } = useUserRole(user?.id);
 
   useEffect(() => {
     checkUser();
@@ -45,22 +40,13 @@ const Dashboard = () => {
 
       setProfile(profileData);
 
-      // Fetch user's max_restaurants limit
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("max_restaurants")
-        .eq("user_id", user.id)
-        .single();
-      
-      setMaxRestaurants(roleData?.max_restaurants ?? null);
-
-      // Fetch user's restaurants (owned or with permissions)
+      // Fetch user's restaurants
       const { data: restaurantsData } = await supabase
         .from("restaurants")
         .select("*")
         .order("created_at", { ascending: false });
 
-      // Fetch user permissions for each restaurant
+      // Fetch user permissions
       const { data: permissionsData } = await supabase
         .from("restaurant_permissions")
         .select("restaurant_id, permissions")
@@ -73,7 +59,6 @@ const Dashboard = () => {
       });
       setRestaurantPermissions(permissionsMap);
 
-      // Add ownership info to each restaurant
       const restaurantsWithOwnership = restaurantsData?.map(restaurant => ({
         ...restaurant,
         isOwner: restaurant.owner_id === user.id,
@@ -84,20 +69,13 @@ const Dashboard = () => {
 
       setRestaurants(restaurantsWithOwnership);
 
-      // Set the first restaurant as active to load its language
+      // Set the first restaurant as active
       if (restaurantsWithOwnership.length > 0) {
         setActiveRestaurant(restaurantsWithOwnership[0].id);
       }
-    } catch (error) {
-      console.error("Error checking user:", error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
   };
 
   if (loading) {
@@ -109,214 +87,111 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ChefHat className="h-7 w-7 text-primary" />
-            <span className="text-xl font-bold">PratoDigital</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{t("common.welcome")}, {profile?.name}</span>
-              {isSuperAdmin && (
-                <Badge className="gradient-primary text-white">
-                  <Crown className="h-3 w-3 mr-1" />
-                  {t("dashboard.superAdmin")}
-                </Badge>
-              )}
-            </div>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              {t("common.logout")}
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">{t("dashboard.title")}</h1>
-          <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
-        </div>
-
-        {/* My Restaurants Section */}
-        {restaurants.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">{t("dashboard.myRestaurants")}</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {restaurants.map((restaurant) => (
-                <RestaurantCard key={restaurant.id} restaurant={restaurant} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Quick Actions */}
-        <div>
-          <h2 className="text-2xl font-bold mb-4">{t("dashboard.quickActions")}</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isSuperAdmin && (
-            <>
-              <DashboardCard
-                icon={<Users className="h-8 w-8 text-primary" />}
-                title={t("dashboard.adminPanel.title")}
-                description={t("dashboard.adminPanel.description")}
-                action={t("dashboard.adminPanel.action")}
-                onClick={() => navigate("/admin")}
-              />
-              <DashboardCard
-                icon={<Settings className="h-8 w-8 text-primary" />}
-                title={t("dashboard.platformSettings.title")}
-                description={t("dashboard.platformSettings.description")}
-                action={t("dashboard.platformSettings.action")}
-                onClick={() => navigate("/platform-settings")}
-              />
-            </>
-          )}
-          {(isSuperAdmin || role === 'restaurant_admin') && (() => {
-            // Count restaurants owned by the user
-            const ownedRestaurantsCount = restaurants.filter(r => r.owner_id === user?.id).length;
-            const canCreateMore = maxRestaurants === null || ownedRestaurantsCount < maxRestaurants;
-            
-            // Only show create button if user can create more restaurants
-            if (!canCreateMore && !isSuperAdmin) {
-              return null;
-            }
-            
-            return (
-              <DashboardCard
-                icon={<Plus className="h-8 w-8 text-primary" />}
-                title={t("dashboard.createRestaurant.title")}
-                description={t("dashboard.createRestaurant.description")}
-                action={t("dashboard.createRestaurant.action")}
-                onClick={() => navigate("/restaurant/create")}
-              />
-            );
-          })()}
-          {(isSuperAdmin || restaurants[0]?.permissions?.menu_editor) && (
-            <DashboardCard
-              icon={<LayoutDashboard className="h-8 w-8 text-primary" />}
-              title={t("dashboard.manageMenus.title")}
-              description={t("dashboard.manageMenus.description")}
-              action={t("dashboard.manageMenus.action")}
-              onClick={() => {
-                if (restaurants.length > 0) {
-                  navigate(`/menu/editor?restaurant=${restaurants[0].id}`);
-                } else {
-                  toast({ 
-                    title: t("dashboard.noRestaurant"), 
-                    description: t("dashboard.createRestaurantFirst")
-                  });
-                }
-              }}
-            />
-          )}
-          {(isSuperAdmin || restaurants[0]?.permissions?.qr_codes) && (
-            <DashboardCard
-              icon={<QrCode className="h-8 w-8 text-primary" />}
-              title={t("dashboard.qrCodes.title")}
-              description={t("dashboard.qrCodes.description")}
-              action={t("dashboard.qrCodes.action")}
-              onClick={() => {
-                if (restaurants.length > 0) {
-                  navigate(`/qr-codes?restaurant=${restaurants[0].id}`);
-                } else {
-                  toast({ 
-                    title: t("dashboard.noRestaurant"), 
-                    description: t("dashboard.createRestaurantFirst")
-                  });
-                }
-              }}
-            />
-          )}
-          {(isSuperAdmin || restaurants[0]?.permissions?.kitchen) && (
-            <DashboardCard
-              icon={<ChefHat className="h-8 w-8 text-primary" />}
-              title={t("dashboard.kitchen.title")}
-              description={t("dashboard.kitchen.description")}
-              action={t("dashboard.kitchen.action")}
-              onClick={() => {
-                if (restaurants.length > 0) {
-                  navigate(`/kitchen?restaurant=${restaurants[0].id}`);
-                } else {
-                  toast({ 
-                    title: t("dashboard.noRestaurant"), 
-                    description: t("dashboard.createRestaurantFirst")
-                  });
-                }
-              }}
-            />
-          )}
-          {(isSuperAdmin || restaurants[0]?.permissions?.reports) && (
-            <DashboardCard
-              icon={<BarChart3 className="h-8 w-8 text-primary" />}
-              title={t("dashboard.reports.title")}
-              description={t("dashboard.reports.description")}
-              action={t("dashboard.reports.action")}
-              onClick={() => {
-                if (restaurants.length > 0) {
-                  navigate(`/reports?restaurant=${restaurants[0].id}`);
-                } else {
-                  toast({ 
-                    title: t("dashboard.noRestaurant"), 
-                    description: t("dashboard.createRestaurantFirst")
-                  });
-                }
-              }}
-            />
-          )}
-          {(isSuperAdmin || restaurants[0]?.permissions?.settings) && (
-            <DashboardCard
-              icon={<Settings className="h-8 w-8 text-primary" />}
-              title={t("dashboard.restaurantSettings.title")}
-              description={t("dashboard.restaurantSettings.description")}
-              action={t("dashboard.restaurantSettings.action")}
-              onClick={() => {
-                if (restaurants.length > 0) {
-                  navigate(`/restaurant/settings?restaurant=${restaurants[0].id}`);
-                } else {
-                  toast({ 
-                    title: t("dashboard.noRestaurant"), 
-                    description: t("dashboard.createRestaurantFirst")
-                  });
-                }
-              }}
-            />
-          )}
-        </div>
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Welcome Section */}
+      <div>
+        <h1 className="text-4xl font-bold mb-2">{t("dashboard.title")}</h1>
+        <p className="text-muted-foreground text-lg">{t("dashboard.subtitle")}</p>
       </div>
-      </main>
-    </div>
-  );
-};
 
-const DashboardCard = ({ 
-  icon, 
-  title, 
-  description, 
-  action, 
-  onClick 
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
-  action: string;
-  onClick: () => void;
-}) => {
-  return (
-    <Card className="hover:shadow-medium transition-smooth cursor-pointer" onClick={onClick}>
-      <CardHeader>
-        <div className="mb-4">{icon}</div>
-        <CardTitle className="text-xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button className="w-full gradient-primary">{action}</Button>
-      </CardContent>
-    </Card>
+      {/* Stats Overview */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total de Restaurantes</CardTitle>
+            <ChefHat className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{restaurants.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Restaurantes ativos
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Acesso Rápido</CardTitle>
+            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{Object.keys(restaurantPermissions).length}</div>
+            <p className="text-xs text-muted-foreground">
+              Módulos disponíveis
+            </p>
+          </CardContent>
+        </Card>
+
+        {isSuperAdmin && (
+          <>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Painel Admin</CardTitle>
+                <Crown className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-2" 
+                  onClick={() => navigate("/admin")}
+                >
+                  Acessar
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Configurações</CardTitle>
+                <Settings className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-2"
+                  onClick={() => navigate("/platform-settings")}
+                >
+                  Acessar
+                </Button>
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </div>
+
+      {/* Recent Activity or Welcome Message */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Bem-vindo ao PratoDigital</CardTitle>
+          <CardDescription>
+            Use o menu lateral para navegar entre os diferentes módulos do sistema
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Você está logado como <span className="font-medium text-foreground">{profile?.name}</span>
+            </p>
+            {restaurants.length === 0 && (
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg bg-muted/50">
+                <div>
+                  <p className="font-medium">Comece criando seu primeiro restaurante</p>
+                  <p className="text-sm text-muted-foreground">
+                    Acesse a página de Restaurantes no menu lateral
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => navigate("/restaurants")}
+                  className="gradient-primary"
+                >
+                  Ver Restaurantes
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

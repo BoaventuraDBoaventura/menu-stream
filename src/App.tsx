@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { AppLayout } from "@/components/AppLayout";
 import Landing from "./pages/Landing";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
@@ -11,6 +12,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
+import Restaurants from "./pages/Restaurants";
 import AdminPanel from "./pages/AdminPanel";
 import CreateRestaurant from "./pages/CreateRestaurant";
 import MenuEditor from "./pages/MenuEditor";
@@ -36,37 +38,46 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/contato" element={<Contact />} />
-          <Route path="/precos" element={<Pricing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/platform-settings" element={<PlatformSettings />} />
-          <Route path="/team-management" element={<TeamManagement />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/restaurant/create" element={<CreateRestaurant />} />
-          <Route path="/restaurant/settings" element={<RestaurantSettings />} />
-          <Route path="/menu/editor" element={<MenuEditor />} />
-          <Route path="/qr-codes" element={<QRCodeManager />} />
-          <Route path="/menu/:slug" element={
-            <CartProvider>
-              <CustomerMenu />
-            </CartProvider>
-          } />
-          <Route path="/checkout" element={
-            <CartProvider>
-              <Checkout />
-            </CartProvider>
-          } />
-          <Route path="/order-status" element={<OrderStatus />} />
-          <Route path="/kitchen" element={<Kitchen />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+            {/* Public Routes */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/contato" element={<Contact />} />
+            <Route path="/precos" element={<Pricing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            
+            {/* Customer Routes (without sidebar) */}
+            <Route path="/menu/:slug" element={
+              <CartProvider>
+                <CustomerMenu />
+              </CartProvider>
+            } />
+            <Route path="/checkout" element={
+              <CartProvider>
+                <Checkout />
+              </CartProvider>
+            } />
+            <Route path="/order-status" element={<OrderStatus />} />
+
+            {/* Protected Routes (with sidebar) */}
+            <Route element={<AppLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/restaurants" element={<Restaurants />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/platform-settings" element={<PlatformSettings />} />
+              <Route path="/team-management" element={<TeamManagement />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/restaurant/create" element={<CreateRestaurant />} />
+              <Route path="/restaurant/settings" element={<RestaurantSettings />} />
+              <Route path="/menu/editor" element={<MenuEditor />} />
+              <Route path="/qr-codes" element={<QRCodeManager />} />
+              <Route path="/kitchen" element={<Kitchen />} />
+            </Route>
+
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
     </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>
