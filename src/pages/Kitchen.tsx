@@ -203,9 +203,9 @@ const Kitchen = () => {
     try {
       const updateData: any = { order_status: newStatus };
       
-      // When order is marked as delivered, also mark payment as completed
+      // When order is marked as delivered, also mark payment as paid
       if (newStatus === 'delivered') {
-        updateData.payment_status = 'completed';
+        updateData.payment_status = 'paid';
       }
       
       const { error } = await supabase
