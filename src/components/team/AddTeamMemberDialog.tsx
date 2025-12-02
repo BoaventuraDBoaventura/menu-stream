@@ -33,6 +33,7 @@ const createMemberSchema = z.object({
     orders: z.boolean(),
     kitchen: z.boolean(),
     settings: z.boolean(),
+    reports: z.boolean(),
   }),
 });
 
@@ -66,6 +67,7 @@ export const AddTeamMemberDialog = ({
         orders: true,
         kitchen: true,
         settings: false,
+        reports: true,
       },
     },
   });
@@ -358,6 +360,24 @@ export const AddTeamMemberDialog = ({
                       <FormLabel className="text-base">Configurações</FormLabel>
                       <FormDescription>
                         Pode editar configurações do restaurante
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="permissions.reports"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Relatórios</FormLabel>
+                      <FormDescription>
+                        Pode visualizar e exportar relatórios de vendas
                       </FormDescription>
                     </div>
                     <FormControl>
