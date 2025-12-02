@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PaymentMethodsManagement } from "@/components/settings/PaymentMethodsManagement";
+import { DataManagement } from "@/components/settings/DataManagement";
 
 const RestaurantSettings = () => {
   const navigate = useNavigate();
@@ -253,6 +254,11 @@ const RestaurantSettings = () => {
         {/* Payment Methods Management */}
         <div className="mt-6">
           <PaymentMethodsManagement restaurantId={restaurantId!} />
+        </div>
+
+        {/* Data Management - Danger Zone */}
+        <div className="mt-6">
+          <DataManagement restaurantId={restaurantId!} />
         </div>
       </main>
     </div>
