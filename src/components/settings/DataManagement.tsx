@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, AlertTriangle } from "lucide-react";
-import { subDays, subMonths, subYears } from "date-fns";
+import { Trash2, AlertTriangle, CalendarIcon } from "lucide-react";
+import { subDays, subMonths, subYears, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface DataManagementProps {
   restaurantId: string;
@@ -17,6 +21,7 @@ export const DataManagement = ({ restaurantId }: DataManagementProps) => {
   const { toast } = useToast();
   const [deleting, setDeleting] = useState(false);
   const [deleteRange, setDeleteRange] = useState<string>("all");
+  const [customDate, setCustomDate] = useState<Date>();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDeleteOrders = async () => {
@@ -32,24 +37,31 @@ export const DataManagement = ({ restaurantId }: DataManagementProps) => {
         const now = new Date();
         let cutoffDate: Date;
 
-        switch (deleteRange) {
-          case "7days":
-            cutoffDate = subDays(now, 7);
-            break;
-          case "30days":
-            cutoffDate = subDays(now, 30);
-            break;
-          case "3months":
-            cutoffDate = subMonths(now, 3);
-            break;
-          case "6months":
-            cutoffDate = subMonths(now, 6);
-            break;
-          case "1year":
-            cutoffDate = subYears(now, 1);
-            break;
-          default:
-            cutoffDate = new Date(0); // Beginning of time
+        if (deleteRange === "custom" && customDate) {
+          // Use custom selected date
+          cutoffDate = new Date(customDate);
+          cutoffDate.setHours(23, 59, 59, 999);
+        } else {
+          // Use predefined ranges
+          switch (deleteRange) {
+            case "7days":
+              cutoffDate = subDays(now, 7);
+              break;
+            case "30days":
+              cutoffDate = subDays(now, 30);
+              break;
+            case "3months":
+              cutoffDate = subMonths(now, 3);
+              break;
+            case "6months":
+              cutoffDate = subMonths(now, 6);
+              break;
+            case "1year":
+              cutoffDate = subYears(now, 1);
+              break;
+            default:
+              cutoffDate = new Date(0); // Beginning of time
+          }
         }
 
         query = query.lte("created_at", cutoffDate.toISOString());
@@ -91,6 +103,10 @@ export const DataManagement = ({ restaurantId }: DataManagementProps) => {
         return "pedidos com mais de 6 meses";
       case "1year":
         return "pedidos com mais de 1 ano";
+      case "custom":
+        return customDate 
+          ? `pedidos até ${format(customDate, "dd/MM/yyyy", { locale: ptBR })}`
+          : "data personalizada";
       default:
         return "os dados selecionados";
     }
@@ -130,13 +146,56 @@ export const DataManagement = ({ restaurantId }: DataManagementProps) => {
                 <SelectItem value="3months">Mais de 3 meses</SelectItem>
                 <SelectItem value="6months">Mais de 6 meses</SelectItem>
                 <SelectItem value="1year">Mais de 1 ano</SelectItem>
+                <SelectItem value="custom">Data específica</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {deleteRange === "custom" && (
+            <div className="space-y-2">
+              <Label>Selecione a data limite</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !customDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {customDate ? (
+                      format(customDate, "dd/MM/yyyy", { locale: ptBR })
+                    ) : (
+                      <span>Escolha uma data</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={customDate}
+                    onSelect={setCustomDate}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                    locale={ptBR}
+                  />
+                </PopoverContent>
+              </Popover>
+              <p className="text-xs text-muted-foreground">
+                Serão deletados todos os pedidos criados até esta data (inclusive)
+              </p>
+            </div>
+          )}
+
           <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="w-full">
+              <Button 
+                variant="destructive" 
+                className="w-full"
+                disabled={deleteRange === "custom" && !customDate}
+              >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Limpar Dados de Vendas
               </Button>
