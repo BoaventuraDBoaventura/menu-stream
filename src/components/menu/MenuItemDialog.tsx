@@ -42,22 +42,38 @@ export const MenuItemDialog = ({
 }: MenuItemDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(item?.image_url || null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [options, setOptions] = useState<Array<{ name: string; price: number }>>(
-    item?.options || []
+    []
   );
   const { toast } = useToast();
 
   const form = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
-      name: item?.name || "",
-      description: item?.description || "",
-      price: item?.price || 0,
-      prep_time_minutes: item?.prep_time_minutes || 15,
-      is_available: item?.is_available ?? true,
+      name: "",
+      description: "",
+      price: 0,
+      prep_time_minutes: 15,
+      is_available: true,
     },
   });
+
+  // Reset form when dialog opens or item changes
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        name: item?.name || "",
+        description: item?.description || "",
+        price: item?.price || 0,
+        prep_time_minutes: item?.prep_time_minutes || 15,
+        is_available: item?.is_available ?? true,
+      });
+      setImagePreview(item?.image_url || null);
+      setImageFile(null);
+      setOptions(item?.options || []);
+    }
+  }, [open, item]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
