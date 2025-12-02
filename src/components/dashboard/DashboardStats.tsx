@@ -34,7 +34,7 @@ export const DashboardStats = ({
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Vendas Hoje</CardTitle>
+          <CardTitle className="text-sm font-medium">Vendas do Período</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -47,7 +47,7 @@ export const DashboardStats = ({
                 <TrendingDown className="h-4 w-4 text-red-500" />
               )}
               <p className={`text-xs ${salesChange > 0 ? "text-green-500" : "text-red-500"}`}>
-                {salesChange > 0 ? "+" : ""}{salesChange.toFixed(1)}% vs ontem
+                {salesChange > 0 ? "+" : ""}{salesChange.toFixed(1)}% vs período anterior
               </p>
             </div>
           )}
@@ -56,7 +56,7 @@ export const DashboardStats = ({
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pedidos Hoje</CardTitle>
+          <CardTitle className="text-sm font-medium">Pedidos do Período</CardTitle>
           <ShoppingCart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -69,7 +69,7 @@ export const DashboardStats = ({
                 <TrendingDown className="h-4 w-4 text-red-500" />
               )}
               <p className={`text-xs ${ordersChange > 0 ? "text-green-500" : "text-red-500"}`}>
-                {ordersChange > 0 ? "+" : ""}{ordersChange.toFixed(1)}% vs ontem
+                {ordersChange > 0 ? "+" : ""}{ordersChange.toFixed(1)}% vs período anterior
               </p>
             </div>
           )}

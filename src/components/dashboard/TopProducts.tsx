@@ -24,13 +24,13 @@ export const TopProducts = ({ products, currency }: TopProductsProps) => {
     <Card>
       <CardHeader>
         <CardTitle>Top 5 Produtos Mais Vendidos</CardTitle>
-        <CardDescription>Produtos mais populares hoje</CardDescription>
+        <CardDescription>Produtos mais populares do período</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {products.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              Nenhum produto vendido hoje
+              Nenhum produto vendido no período
             </p>
           ) : (
             products.map((product, index) => (
