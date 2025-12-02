@@ -60,7 +60,6 @@ const Dashboard = () => {
   const [salesChartData, setSalesChartData] = useState<Array<{ date: string; sales: number }>>([]);
   const [topProducts, setTopProducts] = useState<Array<{ name: string; quantity: number; total: number }>>([]);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [orderStatusFilter, setOrderStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     checkUser();
@@ -71,7 +70,7 @@ const Dashboard = () => {
       loadDashboardData();
       setupRealtimeSubscription();
     }
-  }, [activeRestaurantId, dateRange, orderStatusFilter]);
+  }, [activeRestaurantId, dateRange]);
 
   const checkUser = async () => {
     try {
@@ -228,19 +227,12 @@ const Dashboard = () => {
     setTopProducts(topProductsArray);
 
     // Fetch recent orders from selected period
-    let ordersQuery = supabase
+    const { data: recentOrdersData } = await supabase
       .from("orders")
       .select("*")
       .eq("restaurant_id", activeRestaurantId)
       .gte("created_at", startDate.toISOString())
-      .lte("created_at", endDate.toISOString());
-
-    // Apply status filter if not "all"
-    if (orderStatusFilter !== "all") {
-      ordersQuery = ordersQuery.eq("order_status", orderStatusFilter);
-    }
-
-    const { data: recentOrdersData } = await ordersQuery
+      .lte("created_at", endDate.toISOString())
       .order("created_at", { ascending: false })
       .limit(5);
 
@@ -367,50 +359,6 @@ const Dashboard = () => {
             onDateRangeChange={setDateRange}
           />
         </div>
-        
-        {/* Order Status Filter */}
-        <Card className="p-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Filtrar por Status:</span>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                variant={orderStatusFilter === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setOrderStatusFilter("all")}
-              >
-                Todos
-              </Button>
-              <Button
-                variant={orderStatusFilter === "new" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setOrderStatusFilter("new")}
-              >
-                Novo
-              </Button>
-              <Button
-                variant={orderStatusFilter === "preparing" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setOrderStatusFilter("preparing")}
-              >
-                Preparando
-              </Button>
-              <Button
-                variant={orderStatusFilter === "ready" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setOrderStatusFilter("ready")}
-              >
-                Pronto
-              </Button>
-              <Button
-                variant={orderStatusFilter === "delivered" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setOrderStatusFilter("delivered")}
-              >
-                Entregue
-              </Button>
-            </div>
-          </div>
-        </Card>
       </div>
 
       {/* Stats */}
