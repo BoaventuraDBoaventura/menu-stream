@@ -22,8 +22,8 @@ export const SalesChart = ({ data, currency }: SalesChartProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Vendas dos Últimos 7 Dias</CardTitle>
-        <CardDescription>Acompanhe o desempenho das vendas</CardDescription>
+        <CardTitle>Vendas do Período</CardTitle>
+        <CardDescription>Acompanhe o desempenho das vendas por dia</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

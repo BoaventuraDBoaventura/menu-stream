@@ -12,8 +12,11 @@ import { SalesChart } from "@/components/dashboard/SalesChart";
 import { TopProducts } from "@/components/dashboard/TopProducts";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { QuickActions } from "@/components/dashboard/QuickActions";
+import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { useToast } from "@/hooks/use-toast";
 import { playSoundNotification } from "@/utils/soundNotification";
+import { DateRange } from "react-day-picker";
+import { subDays } from "date-fns";
 
 interface Restaurant {
   id: string;
@@ -34,6 +37,16 @@ const Dashboard = () => {
   const [activeRestaurantId, setActiveRestaurantIdState] = useState<string>("");
   const [activeRestaurant, setActiveRestaurantData] = useState<Restaurant | null>(null);
   const { isSuperAdmin } = useUserRole(user?.id);
+  
+  // Date range filter - default to last 7 days
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return {
+      from: today,
+      to: new Date()
+    };
+  });
 
   // Dashboard data
   const [todaySales, setTodaySales] = useState(0);
@@ -51,11 +64,11 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (activeRestaurantId) {
+    if (activeRestaurantId && dateRange?.from) {
       loadDashboardData();
       setupRealtimeSubscription();
     }
-  }, [activeRestaurantId]);
+  }, [activeRestaurantId, dateRange]);
 
   const checkUser = async () => {
     try {
@@ -116,71 +129,72 @@ const Dashboard = () => {
   };
 
   const loadDashboardData = async () => {
-    if (!activeRestaurantId) return;
+    if (!activeRestaurantId || !dateRange?.from) return;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const startDate = new Date(dateRange.from);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = dateRange.to ? new Date(dateRange.to) : new Date();
+    endDate.setHours(23, 59, 59, 999);
 
-    // Fetch today's orders
-    const { data: todayOrdersData } = await supabase
+    // Calculate previous period for comparison
+    const periodDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const previousStart = subDays(startDate, periodDays);
+    const previousEnd = subDays(endDate, periodDays);
+
+    // Fetch current period orders
+    const { data: currentPeriodOrdersData } = await supabase
       .from("orders")
-      .select("total_amount, order_status")
+      .select("total_amount, order_status, created_at")
       .eq("restaurant_id", activeRestaurantId)
-      .gte("created_at", today.toISOString());
+      .gte("created_at", startDate.toISOString())
+      .lte("created_at", endDate.toISOString());
 
-    const todaySalesTotal = todayOrdersData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
-    const todayOrdersCount = todayOrdersData?.length || 0;
-    const pendingCount = todayOrdersData?.filter(o => o.order_status === 'new' || o.order_status === 'preparing').length || 0;
+    const currentSalesTotal = currentPeriodOrdersData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+    const currentOrdersCount = currentPeriodOrdersData?.length || 0;
+    const pendingCount = currentPeriodOrdersData?.filter(o => o.order_status === 'new' || o.order_status === 'preparing').length || 0;
 
-    setTodaySales(todaySalesTotal);
-    setTodayOrders(todayOrdersCount);
+    setTodaySales(currentSalesTotal);
+    setTodayOrders(currentOrdersCount);
     setPendingOrders(pendingCount);
-    setAverageTicket(todayOrdersCount > 0 ? todaySalesTotal / todayOrdersCount : 0);
+    setAverageTicket(currentOrdersCount > 0 ? currentSalesTotal / currentOrdersCount : 0);
 
-    // Fetch yesterday's orders
-    const { data: yesterdayOrdersData } = await supabase
+    // Fetch previous period orders for comparison
+    const { data: previousPeriodOrdersData } = await supabase
       .from("orders")
       .select("total_amount")
       .eq("restaurant_id", activeRestaurantId)
-      .gte("created_at", yesterday.toISOString())
-      .lt("created_at", today.toISOString());
+      .gte("created_at", previousStart.toISOString())
+      .lte("created_at", previousEnd.toISOString());
 
-    setYesterdaySales(yesterdayOrdersData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0);
-    setYesterdayOrders(yesterdayOrdersData?.length || 0);
+    setYesterdaySales(previousPeriodOrdersData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0);
+    setYesterdayOrders(previousPeriodOrdersData?.length || 0);
 
-    // Fetch last 7 days for chart
-    const { data: weekOrdersData } = await supabase
-      .from("orders")
-      .select("total_amount, created_at")
-      .eq("restaurant_id", activeRestaurantId)
-      .gte("created_at", sevenDaysAgo.toISOString())
-      .order("created_at", { ascending: true });
-
+    // Fetch orders for chart (group by day within the selected period)
     const chartData = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-      
-      const dayStart = new Date(date);
+    const currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+      const dayStart = new Date(currentDate);
       dayStart.setHours(0, 0, 0, 0);
-      const dayEnd = new Date(date);
+      const dayEnd = new Date(currentDate);
       dayEnd.setHours(23, 59, 59, 999);
 
-      const daySales = weekOrdersData?.filter(order => {
-        const orderDate = new Date(order.created_at);
-        return orderDate >= dayStart && orderDate <= dayEnd;
-      }).reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+      const { data: dayOrdersData } = await supabase
+        .from("orders")
+        .select("total_amount")
+        .eq("restaurant_id", activeRestaurantId)
+        .gte("created_at", dayStart.toISOString())
+        .lte("created_at", dayEnd.toISOString());
 
+      const daySales = dayOrdersData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+      const dateStr = currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      
       chartData.push({ date: dateStr, sales: daySales });
+      currentDate.setDate(currentDate.getDate() + 1);
     }
     setSalesChartData(chartData);
 
-    // Fetch top products
+    // Fetch top products for selected period
     const { data: orderItemsData } = await supabase
       .from("order_items")
       .select(`
@@ -192,7 +206,8 @@ const Dashboard = () => {
         orders!inner(restaurant_id, created_at)
       `)
       .eq("orders.restaurant_id", activeRestaurantId)
-      .gte("orders.created_at", today.toISOString());
+      .gte("orders.created_at", startDate.toISOString())
+      .lte("orders.created_at", endDate.toISOString());
 
     const productsMap: Record<string, { name: string; quantity: number; total: number }> = {};
     orderItemsData?.forEach((item: any) => {
@@ -209,12 +224,13 @@ const Dashboard = () => {
       .slice(0, 5);
     setTopProducts(topProductsArray);
 
-    // Fetch recent orders
+    // Fetch recent orders from selected period
     const { data: recentOrdersData } = await supabase
       .from("orders")
       .select("*")
       .eq("restaurant_id", activeRestaurantId)
-      .gte("created_at", today.toISOString())
+      .gte("created_at", startDate.toISOString())
+      .lte("created_at", endDate.toISOString())
       .order("created_at", { ascending: false })
       .limit(5);
 
@@ -299,19 +315,14 @@ const Dashboard = () => {
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Olá, {profile?.name}! Acompanhe o desempenho do seu restaurante
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <RestaurantSelector
-            restaurants={restaurants}
-            activeRestaurantId={activeRestaurantId}
-            onRestaurantChange={handleRestaurantChange}
-          />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Dashboard</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Olá, {profile?.name}! Acompanhe o desempenho do seu restaurante
+            </p>
+          </div>
           {isSuperAdmin && (
             <div className="flex gap-2">
               <Button 
@@ -332,6 +343,19 @@ const Dashboard = () => {
               </Button>
             </div>
           )}
+        </div>
+        
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <RestaurantSelector
+            restaurants={restaurants}
+            activeRestaurantId={activeRestaurantId}
+            onRestaurantChange={handleRestaurantChange}
+          />
+          <DateRangePicker
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+          />
         </div>
       </div>
 

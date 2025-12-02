@@ -53,13 +53,13 @@ export const RecentOrders = ({ orders, currency }: RecentOrdersProps) => {
     <Card>
       <CardHeader>
         <CardTitle>Pedidos Recentes</CardTitle>
-        <CardDescription>Últimos 5 pedidos recebidos</CardDescription>
+        <CardDescription>Últimos 5 pedidos do período</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {orders.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              Nenhum pedido hoje
+              Nenhum pedido no período selecionado
             </p>
           ) : (
             orders.map((order) => (
