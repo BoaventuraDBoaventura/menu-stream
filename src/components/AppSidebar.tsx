@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useUserRole } from "@/hooks/useUserRole";
 import { usePlatformSettings } from "@/hooks/usePlatformSettings";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ export function AppSidebar() {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const { isSuperAdmin, loading: roleLoading } = useUserRole(user?.id);
   const { platformName } = usePlatformSettings();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkUser();
@@ -71,7 +73,7 @@ export function AppSidebar() {
   };
 
   const mainItems = [
-    { title: "Dashboard", url: "/dashboard", icon: Home, show: true },
+    { title: t('dashboard.title'), url: "/dashboard", icon: Home, show: true },
     { title: "Restaurantes", url: "/restaurants", icon: Store, show: true },
     { title: "Menu", url: `/menu/editor${restaurants[0] ? `?restaurant=${restaurants[0].id}` : ''}`, icon: LayoutDashboard, show: hasAnyRestaurantPermission('menu_editor') },
     { title: "Código QR", url: `/qr-codes${restaurants[0] ? `?restaurant=${restaurants[0].id}` : ''}`, icon: QrCode, show: hasAnyRestaurantPermission('qr_codes') },
