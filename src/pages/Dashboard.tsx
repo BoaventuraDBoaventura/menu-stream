@@ -320,7 +320,7 @@ const Dashboard = () => {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">{t('dashboard.title')}</h1>
             <p className="text-muted-foreground text-sm sm:text-base">
               Olá, {profile?.name}! Acompanhe o desempenho do seu restaurante
             </p>
