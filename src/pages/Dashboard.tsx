@@ -3,23 +3,59 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, LayoutDashboard, Crown, Settings } from "lucide-react";
+import { Crown, Settings } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { RestaurantSelector } from "@/components/dashboard/RestaurantSelector";
+import { DashboardStats } from "@/components/dashboard/DashboardStats";
+import { SalesChart } from "@/components/dashboard/SalesChart";
+import { TopProducts } from "@/components/dashboard/TopProducts";
+import { RecentOrders } from "@/components/dashboard/RecentOrders";
+import { QuickActions } from "@/components/dashboard/QuickActions";
+import { useToast } from "@/hooks/use-toast";
+import { playSoundNotification } from "@/utils/soundNotification";
+
+interface Restaurant {
+  id: string;
+  name: string;
+  logo_url?: string;
+  currency: string;
+  owner_id: string;
+}
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { t, setActiveRestaurant } = useLanguage();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [restaurants, setRestaurants] = useState<any[]>([]);
-  const [restaurantPermissions, setRestaurantPermissions] = useState<Record<string, any>>({});
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [activeRestaurantId, setActiveRestaurantIdState] = useState<string>("");
+  const [activeRestaurant, setActiveRestaurantData] = useState<Restaurant | null>(null);
   const { isSuperAdmin } = useUserRole(user?.id);
+
+  // Dashboard data
+  const [todaySales, setTodaySales] = useState(0);
+  const [yesterdaySales, setYesterdaySales] = useState(0);
+  const [todayOrders, setTodayOrders] = useState(0);
+  const [yesterdayOrders, setYesterdayOrders] = useState(0);
+  const [averageTicket, setAverageTicket] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [salesChartData, setSalesChartData] = useState<Array<{ date: string; sales: number }>>([]);
+  const [topProducts, setTopProducts] = useState<Array<{ name: string; quantity: number; total: number }>>([]);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
   useEffect(() => {
     checkUser();
   }, []);
+
+  useEffect(() => {
+    if (activeRestaurantId) {
+      loadDashboardData();
+      setupRealtimeSubscription();
+    }
+  }, [activeRestaurantId]);
 
   const checkUser = async () => {
     try {
@@ -52,12 +88,10 @@ const Dashboard = () => {
         .select("restaurant_id, permissions")
         .eq("user_id", user.id);
 
-      // Create permissions map
       const permissionsMap: Record<string, any> = {};
       permissionsData?.forEach(perm => {
         permissionsMap[perm.restaurant_id] = perm.permissions;
       });
-      setRestaurantPermissions(permissionsMap);
 
       const restaurantsWithOwnership = restaurantsData?.map(restaurant => ({
         ...restaurant,
@@ -71,10 +105,168 @@ const Dashboard = () => {
 
       // Set the first restaurant as active
       if (restaurantsWithOwnership.length > 0) {
-        setActiveRestaurant(restaurantsWithOwnership[0].id);
+        const firstRestaurant = restaurantsWithOwnership[0];
+        setActiveRestaurantIdState(firstRestaurant.id);
+        setActiveRestaurantData(firstRestaurant);
+        setActiveRestaurant(firstRestaurant.id);
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadDashboardData = async () => {
+    if (!activeRestaurantId) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // Fetch today's orders
+    const { data: todayOrdersData } = await supabase
+      .from("orders")
+      .select("total_amount, order_status")
+      .eq("restaurant_id", activeRestaurantId)
+      .gte("created_at", today.toISOString());
+
+    const todaySalesTotal = todayOrdersData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+    const todayOrdersCount = todayOrdersData?.length || 0;
+    const pendingCount = todayOrdersData?.filter(o => o.order_status === 'new' || o.order_status === 'preparing').length || 0;
+
+    setTodaySales(todaySalesTotal);
+    setTodayOrders(todayOrdersCount);
+    setPendingOrders(pendingCount);
+    setAverageTicket(todayOrdersCount > 0 ? todaySalesTotal / todayOrdersCount : 0);
+
+    // Fetch yesterday's orders
+    const { data: yesterdayOrdersData } = await supabase
+      .from("orders")
+      .select("total_amount")
+      .eq("restaurant_id", activeRestaurantId)
+      .gte("created_at", yesterday.toISOString())
+      .lt("created_at", today.toISOString());
+
+    setYesterdaySales(yesterdayOrdersData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0);
+    setYesterdayOrders(yesterdayOrdersData?.length || 0);
+
+    // Fetch last 7 days for chart
+    const { data: weekOrdersData } = await supabase
+      .from("orders")
+      .select("total_amount, created_at")
+      .eq("restaurant_id", activeRestaurantId)
+      .gte("created_at", sevenDaysAgo.toISOString())
+      .order("created_at", { ascending: true });
+
+    const chartData = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      
+      const dayStart = new Date(date);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      const daySales = weekOrdersData?.filter(order => {
+        const orderDate = new Date(order.created_at);
+        return orderDate >= dayStart && orderDate <= dayEnd;
+      }).reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+
+      chartData.push({ date: dateStr, sales: daySales });
+    }
+    setSalesChartData(chartData);
+
+    // Fetch top products
+    const { data: orderItemsData } = await supabase
+      .from("order_items")
+      .select(`
+        quantity,
+        price,
+        menu_item_id,
+        menu_items(name),
+        order_id,
+        orders!inner(restaurant_id, created_at)
+      `)
+      .eq("orders.restaurant_id", activeRestaurantId)
+      .gte("orders.created_at", today.toISOString());
+
+    const productsMap: Record<string, { name: string; quantity: number; total: number }> = {};
+    orderItemsData?.forEach((item: any) => {
+      const name = item.menu_items?.name || 'Produto desconhecido';
+      if (!productsMap[name]) {
+        productsMap[name] = { name, quantity: 0, total: 0 };
+      }
+      productsMap[name].quantity += item.quantity;
+      productsMap[name].total += Number(item.price) * item.quantity;
+    });
+
+    const topProductsArray = Object.values(productsMap)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
+    setTopProducts(topProductsArray);
+
+    // Fetch recent orders
+    const { data: recentOrdersData } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("restaurant_id", activeRestaurantId)
+      .gte("created_at", today.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    setRecentOrders(recentOrdersData || []);
+  };
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('dashboard-orders')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'orders',
+          filter: `restaurant_id=eq.${activeRestaurantId}`
+        },
+        (payload) => {
+          console.log('New order received:', payload);
+          playSoundNotification('new-order');
+          toast({
+            title: "Novo Pedido!",
+            description: `Pedido #${payload.new.order_number} recebido`,
+          });
+          loadDashboardData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `restaurant_id=eq.${activeRestaurantId}`
+        },
+        () => {
+          loadDashboardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
+  const handleRestaurantChange = (restaurantId: string) => {
+    setActiveRestaurantIdState(restaurantId);
+    setActiveRestaurant(restaurantId);
+    const restaurant = restaurants.find(r => r.id === restaurantId);
+    if (restaurant) {
+      setActiveRestaurantData(restaurant);
     }
   };
 
@@ -86,111 +278,98 @@ const Dashboard = () => {
     );
   }
 
+  if (restaurants.length === 0) {
+    return (
+      <div className="container mx-auto p-4 sm:p-6 max-w-7xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>Bem-vindo ao PratoDigital</CardTitle>
+            <CardDescription>Comece criando seu primeiro restaurante</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate("/restaurants")} className="gradient-primary">
+              Criar Restaurante
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-7xl">
-      {/* Welcome Section */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">{t("dashboard.title")}</h1>
-        <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">{t("dashboard.subtitle")}</p>
+    <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-7xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            Olá, {profile?.name}! Acompanhe o desempenho do seu restaurante
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <RestaurantSelector
+            restaurants={restaurants}
+            activeRestaurantId={activeRestaurantId}
+            onRestaurantChange={handleRestaurantChange}
+          />
+          {isSuperAdmin && (
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate("/admin")}
+              >
+                <Crown className="h-4 w-4 mr-2" />
+                Admin
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate("/platform-settings")}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Config
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Restaurantes</CardTitle>
-            <ChefHat className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{restaurants.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Restaurantes ativos
-            </p>
-          </CardContent>
-        </Card>
+      {/* Stats */}
+      <DashboardStats
+        todaySales={todaySales}
+        yesterdaySales={yesterdaySales}
+        todayOrders={todayOrders}
+        yesterdayOrders={yesterdayOrders}
+        averageTicket={averageTicket}
+        pendingOrders={pendingOrders}
+        currency={activeRestaurant?.currency || 'BRL'}
+      />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Acesso Rápido</CardTitle>
-            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Object.keys(restaurantPermissions).length}</div>
-            <p className="text-xs text-muted-foreground">
-              Módulos disponíveis
-            </p>
-          </CardContent>
-        </Card>
-
-        {isSuperAdmin && (
-          <>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Painel Admin</CardTitle>
-                <Crown className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-2" 
-                  onClick={() => navigate("/admin")}
-                >
-                  Acessar
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Configurações</CardTitle>
-                <Settings className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-2"
-                  onClick={() => navigate("/platform-settings")}
-                >
-                  Acessar
-                </Button>
-              </CardContent>
-            </Card>
-          </>
-        )}
+      {/* Charts and Top Products */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SalesChart 
+          data={salesChartData} 
+          currency={activeRestaurant?.currency || 'BRL'} 
+        />
+        <TopProducts 
+          products={topProducts} 
+          currency={activeRestaurant?.currency || 'BRL'} 
+        />
       </div>
 
-      {/* Recent Activity or Welcome Message */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Bem-vindo ao PratoDigital</CardTitle>
-          <CardDescription>
-            Use o menu lateral para navegar entre os diferentes módulos do sistema
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Você está logado como <span className="font-medium text-foreground">{profile?.name}</span>
-            </p>
-            {restaurants.length === 0 && (
-              <div className="flex items-center justify-between p-4 border border-border rounded-lg bg-muted/50">
-                <div>
-                  <p className="font-medium">Comece criando seu primeiro restaurante</p>
-                  <p className="text-sm text-muted-foreground">
-                    Acesse a página de Restaurantes no menu lateral
-                  </p>
-                </div>
-                <Button 
-                  onClick={() => navigate("/restaurants")}
-                  className="gradient-primary"
-                >
-                  Ver Restaurantes
-                </Button>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Recent Orders and Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RecentOrders 
+            orders={recentOrders} 
+            currency={activeRestaurant?.currency || 'BRL'} 
+          />
+        </div>
+        <div>
+          <QuickActions />
+        </div>
+      </div>
     </div>
   );
 };
