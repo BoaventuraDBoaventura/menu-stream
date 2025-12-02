@@ -32,10 +32,10 @@ const PlatformSettings = () => {
   }, []);
 
   useEffect(() => {
-    if (!loading && !roleLoading && role && !isSuperAdmin) {
+    if (!loading && !roleLoading && user && role && !isSuperAdmin) {
       navigate("/dashboard");
     }
-  }, [loading, roleLoading, role, isSuperAdmin, navigate]);
+  }, [loading, roleLoading, user, role, isSuperAdmin, navigate]);
 
   const checkUser = async () => {
     try {
@@ -67,7 +67,7 @@ const PlatformSettings = () => {
     });
   };
 
-  if (loading || roleLoading) {
+  if (loading || roleLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -75,7 +75,7 @@ const PlatformSettings = () => {
     );
   }
 
-  if (!isSuperAdmin) {
+  if (role && !isSuperAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
