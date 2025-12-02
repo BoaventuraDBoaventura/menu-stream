@@ -71,37 +71,37 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <div className="flex items-center gap-2">
-              <ChefHat className="h-7 w-7 text-primary" />
-              <span className="text-xl font-bold">PratoDigital</span>
+              <ChefHat className="h-6 w-6 sm:h-7 sm:w-7 text-primary shrink-0" />
+              <span className="text-lg sm:text-xl font-bold truncate">PratoDigital</span>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
               <Crown className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Painel Super Admin</span>
+              <span className="text-sm font-medium text-primary whitespace-nowrap">Painel Super Admin</span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="hidden sm:inline-flex">
               Dashboard
             </Button>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Painel Administrativo</h1>
-          <p className="text-muted-foreground">Gerencie todos os usuários, restaurantes e configurações da plataforma</p>
+      <main className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-7xl">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Painel Administrativo</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Gerencie todos os usuários, restaurantes e configurações da plataforma</p>
         </div>
 
-        <Tabs defaultValue="users" className="space-y-6">
+        <Tabs defaultValue="users" className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />

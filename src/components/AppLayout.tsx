@@ -57,28 +57,28 @@ export const AppLayout = () => {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col w-full">
           {/* Top Header */}
-          <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
+          <header className="h-14 border-b border-border bg-card flex items-center justify-between px-2 sm:px-4 shrink-0">
             <SidebarTrigger>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
               </Button>
             </SidebarTrigger>
             
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">
                 Olá, {profile?.name}
               </span>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sair
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-xs sm:text-sm">
+                <LogOut className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Sair</span>
               </Button>
             </div>
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto w-full">
             <Outlet />
           </main>
         </div>

@@ -96,18 +96,18 @@ const Restaurants = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Meus Restaurantes</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Meus Restaurantes</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Gerencie todos os seus restaurantes em um só lugar
           </p>
         </div>
         
         {canCreateRestaurant() && (
-          <Button onClick={() => navigate("/restaurant/create")} size="lg">
+          <Button onClick={() => navigate("/restaurant/create")} size="lg" className="w-full sm:w-auto">
             <Plus className="h-5 w-5 mr-2" />
             Novo Restaurante
           </Button>
@@ -129,7 +129,7 @@ const Restaurants = () => {
 
       {/* Restaurants Grid */}
       {restaurants.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {restaurants.map((restaurant) => (
             <RestaurantCard key={restaurant.id} restaurant={restaurant} />
           ))}
