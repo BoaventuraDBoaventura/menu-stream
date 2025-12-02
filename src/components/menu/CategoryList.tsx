@@ -66,12 +66,12 @@ const SortableCategory = ({
               <GripVertical className="h-5 w-5" />
             </button>
             <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold">{category.name}</h4>
-                {category.item_count !== undefined && (
-                  <Badge variant="secondary">{category.item_count} items</Badge>
-                )}
-              </div>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <h4 className="font-semibold">{category.name}</h4>
+                  {category.item_count !== undefined && (
+                    <Badge variant="secondary" className="shrink-0">{category.item_count} items</Badge>
+                  )}
+                </div>
               {category.description && (
                 <p className="text-sm text-muted-foreground mt-1">{category.description}</p>
               )}
