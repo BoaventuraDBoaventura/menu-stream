@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Crown, Settings } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { RestaurantSelector } from "@/components/dashboard/RestaurantSelector";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, setActiveRestaurant } = useLanguage();
+  const { platformName } = usePlatformSettings();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -299,7 +301,7 @@ const Dashboard = () => {
       <div className="container mx-auto p-4 sm:p-6 max-w-7xl">
         <Card>
           <CardHeader>
-            <CardTitle>Bem-vindo ao PratoDigital</CardTitle>
+            <CardTitle>Bem-vindo ao {platformName}</CardTitle>
             <CardDescription>Comece criando seu primeiro restaurante</CardDescription>
           </CardHeader>
           <CardContent>

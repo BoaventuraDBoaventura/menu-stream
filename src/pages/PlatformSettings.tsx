@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChefHat, LogOut, Crown, Settings, Database, Shield, Loader2, ArrowLeft } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -19,13 +20,30 @@ const PlatformSettings = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { role, loading: roleLoading, isSuperAdmin } = useUserRole(user?.id);
+  const { settings, loading: settingsLoading, updateSettings, platformName } = usePlatformSettings();
   
-  // Platform settings state
-  const [platformName, setPlatformName] = useState("PratoDigital");
-  const [supportEmail, setSupportEmail] = useState("suporte@pratodigital.com");
-  const [enableRegistration, setEnableRegistration] = useState(true);
-  const [requireEmailVerification, setRequireEmailVerification] = useState(false);
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  // Local form state
+  const [formData, setFormData] = useState({
+    platform_name: "",
+    support_email: "",
+    enable_registration: true,
+    require_email_verification: false,
+    maintenance_mode: false,
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Update form data when settings are loaded
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        platform_name: settings.platform_name,
+        support_email: settings.support_email,
+        enable_registration: settings.enable_registration,
+        require_email_verification: settings.require_email_verification,
+        maintenance_mode: settings.maintenance_mode,
+      });
+    }
+  }, [settings]);
 
   useEffect(() => {
     checkUser();
@@ -60,14 +78,26 @@ const PlatformSettings = () => {
     navigate("/");
   };
 
-  const handleSaveSettings = () => {
-    toast({
-      title: "Configurações salvas",
-      description: "As configurações da plataforma foram atualizadas com sucesso.",
-    });
+  const handleSaveSettings = async () => {
+    setIsSaving(true);
+    const { error } = await updateSettings(formData);
+    
+    if (error) {
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar as configurações. Tente novamente.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Configurações salvas",
+        description: "As configurações da plataforma foram atualizadas com sucesso.",
+      });
+    }
+    setIsSaving(false);
   };
 
-  if (loading || roleLoading || !user) {
+  if (loading || roleLoading || settingsLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -93,9 +123,9 @@ const PlatformSettings = () => {
       <header className="border-b border-border bg-card sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
               <ChefHat className="h-7 w-7 text-primary" />
-              <span className="text-xl font-bold">PratoDigital</span>
+              <span className="text-xl font-bold">{platformName}</span>
             </div>
             <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
               <Settings className="h-4 w-4 text-primary" />
@@ -149,9 +179,10 @@ const PlatformSettings = () => {
                   <Label htmlFor="platformName">Nome da Plataforma</Label>
                   <Input
                     id="platformName"
-                    value={platformName}
-                    onChange={(e) => setPlatformName(e.target.value)}
+                    value={formData.platform_name}
+                    onChange={(e) => setFormData({ ...formData, platform_name: e.target.value })}
                     placeholder="PratoDigital"
+                    maxLength={100}
                   />
                   <p className="text-sm text-muted-foreground">Nome exibido em toda a plataforma</p>
                 </div>
@@ -163,9 +194,10 @@ const PlatformSettings = () => {
                   <Input
                     id="supportEmail"
                     type="email"
-                    value={supportEmail}
-                    onChange={(e) => setSupportEmail(e.target.value)}
+                    value={formData.support_email}
+                    onChange={(e) => setFormData({ ...formData, support_email: e.target.value })}
                     placeholder="suporte@pratodigital.com"
+                    maxLength={255}
                   />
                   <p className="text-sm text-muted-foreground">Email para contato de suporte técnico</p>
                 </div>
@@ -180,13 +212,17 @@ const PlatformSettings = () => {
                     </p>
                   </div>
                   <Switch
-                    checked={enableRegistration}
-                    onCheckedChange={setEnableRegistration}
+                    checked={formData.enable_registration}
+                    onCheckedChange={(checked) => setFormData({ ...formData, enable_registration: checked })}
                   />
                 </div>
 
-                <Button onClick={handleSaveSettings} className="w-full gradient-primary">
-                  Salvar Configurações
+                <Button 
+                  onClick={handleSaveSettings} 
+                  className="w-full gradient-primary"
+                  disabled={isSaving}
+                >
+                  {isSaving ? "Salvando..." : "Salvar Configurações"}
                 </Button>
               </CardContent>
             </Card>
@@ -210,8 +246,8 @@ const PlatformSettings = () => {
                     </p>
                   </div>
                   <Switch
-                    checked={requireEmailVerification}
-                    onCheckedChange={setRequireEmailVerification}
+                    checked={formData.require_email_verification}
+                    onCheckedChange={(checked) => setFormData({ ...formData, require_email_verification: checked })}
                   />
                 </div>
 
@@ -231,8 +267,12 @@ const PlatformSettings = () => {
                   </Button>
                 </div>
 
-                <Button onClick={handleSaveSettings} className="w-full gradient-primary">
-                  Salvar Configurações
+                <Button 
+                  onClick={handleSaveSettings} 
+                  className="w-full gradient-primary"
+                  disabled={isSaving}
+                >
+                  {isSaving ? "Salvando..." : "Salvar Configurações"}
                 </Button>
               </CardContent>
             </Card>
@@ -256,8 +296,8 @@ const PlatformSettings = () => {
                     </p>
                   </div>
                   <Switch
-                    checked={maintenanceMode}
-                    onCheckedChange={setMaintenanceMode}
+                    checked={formData.maintenance_mode}
+                    onCheckedChange={(checked) => setFormData({ ...formData, maintenance_mode: checked })}
                   />
                 </div>
 
@@ -301,8 +341,12 @@ const PlatformSettings = () => {
                   </div>
                 </div>
 
-                <Button onClick={handleSaveSettings} className="w-full gradient-primary">
-                  Salvar Configurações
+                <Button 
+                  onClick={handleSaveSettings} 
+                  className="w-full gradient-primary"
+                  disabled={isSaving}
+                >
+                  {isSaving ? "Salvando..." : "Salvar Configurações"}
                 </Button>
               </CardContent>
             </Card>
