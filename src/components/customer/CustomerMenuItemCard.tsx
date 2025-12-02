@@ -25,7 +25,7 @@ export const CustomerMenuItemCard = ({ item, currency, language }: CustomerMenuI
     <>
       <Card className="overflow-hidden hover:shadow-medium transition-smooth cursor-pointer group" onClick={() => setDialogOpen(true)}>
         {item.image_url && (
-          <div className="aspect-video overflow-hidden bg-muted">
+          <div className="h-48 overflow-hidden bg-muted">
             <img
               src={item.image_url}
               alt={item.name}
