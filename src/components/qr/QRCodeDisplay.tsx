@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Edit, Trash2, ExternalLink } from "lucide-react";
+import { Download, Edit, Trash2, ExternalLink, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -87,6 +87,22 @@ export const QRCodeDisplay = ({ table, restaurant, onEdit, onDelete }: QRCodeDis
     });
   };
 
+  const copyLinkToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(qrUrl);
+      toast({
+        title: "Link copiado!",
+        description: "O link do QR code foi copiado para a área de transferência",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao copiar",
+        description: "Não foi possível copiar o link",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* QR Code Display */}
@@ -133,15 +149,26 @@ export const QRCodeDisplay = ({ table, restaurant, onEdit, onDelete }: QRCodeDis
 
       {/* Action buttons */}
       <div className="space-y-2">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => window.open(qrUrl, '_blank')}
-          className="w-full"
-        >
-          <ExternalLink className="h-4 w-4 mr-2" />
-          Abrir Link do Menu
-        </Button>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => window.open(qrUrl, '_blank')}
+            className="w-full"
+          >
+            <ExternalLink className="h-4 w-4 mr-2" />
+            Abrir Link
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={copyLinkToClipboard}
+            className="w-full"
+          >
+            <Copy className="h-4 w-4 mr-2" />
+            Copiar Link
+          </Button>
+        </div>
 
         <div className="grid grid-cols-2 gap-2">
           <Button
