@@ -19,10 +19,10 @@ const AdminPanel = () => {
   }, []);
 
   useEffect(() => {
-    if (!loading && !roleLoading && role && !isSuperAdmin) {
+    if (!loading && !roleLoading && user && role && !isSuperAdmin) {
       navigate("/dashboard");
     }
-  }, [loading, roleLoading, role, isSuperAdmin, navigate]);
+  }, [loading, roleLoading, user, role, isSuperAdmin, navigate]);
 
   const checkUser = async () => {
     try {
@@ -47,7 +47,7 @@ const AdminPanel = () => {
     navigate("/");
   };
 
-  if (loading || roleLoading || !role) {
+  if (loading || roleLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -55,7 +55,7 @@ const AdminPanel = () => {
     );
   }
 
-  if (!isSuperAdmin) {
+  if (role && !isSuperAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
