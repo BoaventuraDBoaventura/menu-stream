@@ -87,15 +87,15 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-7xl">
       {/* Welcome Section */}
       <div>
-        <h1 className="text-4xl font-bold mb-2">{t("dashboard.title")}</h1>
-        <p className="text-muted-foreground text-lg">{t("dashboard.subtitle")}</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">{t("dashboard.title")}</h1>
+        <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">{t("dashboard.subtitle")}</p>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Restaurantes</CardTitle>
