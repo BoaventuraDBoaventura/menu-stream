@@ -14,6 +14,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUserRole } from "@/hooks/useUserRole";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ export function AppSidebar() {
   const [user, setUser] = useState<any>(null);
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const { isSuperAdmin, loading: roleLoading } = useUserRole(user?.id);
+  const { platformName } = usePlatformSettings();
 
   useEffect(() => {
     checkUser();
@@ -97,7 +99,7 @@ export function AppSidebar() {
             <ChefHat className="h-6 w-6 text-primary" />
             {!collapsed && (
               <div>
-                <span className="text-lg font-bold">PratoDigital</span>
+                <span className="text-lg font-bold">{platformName}</span>
                 {isSuperAdmin && (
                   <Badge variant="default" className="ml-2 text-xs">
                     <Crown className="h-3 w-3 mr-1" />

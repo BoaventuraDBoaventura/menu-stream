@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChefHat, LogOut, Crown, Users, Store, Loader2 } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { RestaurantManagement } from "@/components/admin/RestaurantManagement";
 
@@ -13,6 +14,7 @@ const AdminPanel = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { role, loading: roleLoading, isSuperAdmin } = useUserRole(user?.id);
+  const { platformName } = usePlatformSettings();
 
   useEffect(() => {
     checkUser();
@@ -75,7 +77,7 @@ const AdminPanel = () => {
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <div className="flex items-center gap-2">
               <ChefHat className="h-6 w-6 sm:h-7 sm:w-7 text-primary shrink-0" />
-              <span className="text-lg sm:text-xl font-bold truncate">PratoDigital</span>
+              <span className="text-lg sm:text-xl font-bold truncate">{platformName}</span>
             </div>
             <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
               <Crown className="h-4 w-4 text-primary" />

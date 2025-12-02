@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { QrCode, Smartphone, TrendingUp, Zap, CheckCircle2, ChefHat, Menu, X, Globe } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,7 @@ import {
 const Landing = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { platformName } = usePlatformSettings();
 
   return (
     <div className="min-h-screen">
@@ -22,7 +24,7 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <ChefHat className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
-            <span className="text-lg sm:text-xl font-bold">PratoDigital</span>
+            <span className="text-lg sm:text-xl font-bold">{platformName}</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 lg:gap-8">
             <a href="#features" className="text-sm font-medium hover:text-primary transition-smooth">
@@ -240,7 +242,7 @@ const Landing = () => {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <ChefHat className="h-6 w-6 text-primary" />
-                <span className="font-bold">PratoDigital</span>
+                <span className="font-bold">{platformName}</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 {t("landing.footer.description")}
@@ -271,7 +273,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} PratoDigital. {t("landing.footer.copyright")}</p>
+            <p>&copy; {new Date().getFullYear()} {platformName}. {t("landing.footer.copyright")}</p>
           </div>
         </div>
       </footer>

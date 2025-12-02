@@ -296,6 +296,39 @@ export type Database = {
           },
         ]
       }
+      platform_settings: {
+        Row: {
+          created_at: string | null
+          enable_registration: boolean | null
+          id: string
+          maintenance_mode: boolean | null
+          platform_name: string
+          require_email_verification: boolean | null
+          support_email: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enable_registration?: boolean | null
+          id?: string
+          maintenance_mode?: boolean | null
+          platform_name?: string
+          require_email_verification?: boolean | null
+          support_email?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enable_registration?: boolean | null
+          id?: string
+          maintenance_mode?: boolean | null
+          platform_name?: string
+          require_email_verification?: boolean | null
+          support_email?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
