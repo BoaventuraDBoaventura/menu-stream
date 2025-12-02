@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PaymentMethodsManagement } from "@/components/settings/PaymentMethodsManagement";
 import { DataManagement } from "@/components/settings/DataManagement";
+import { LogoUpload } from "@/components/settings/LogoUpload";
 
 const RestaurantSettings = () => {
   const navigate = useNavigate();
@@ -170,7 +171,14 @@ const RestaurantSettings = () => {
           </p>
         </div>
 
-        <Card>
+        {/* Logo Upload */}
+        <LogoUpload
+          restaurantId={restaurantId!}
+          currentLogoUrl={restaurant?.logo_url}
+          onLogoUpdate={(newUrl) => setRestaurant({ ...restaurant, logo_url: newUrl })}
+        />
+
+        <Card className="mt-6">
           <CardHeader>
             <CardTitle>{t("restaurantSettings.generalInfo")}</CardTitle>
             <CardDescription>
