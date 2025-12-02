@@ -12,17 +12,17 @@ const AdminPanel = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { role, isSuperAdmin } = useUserRole(user?.id);
+  const { role, loading: roleLoading, isSuperAdmin } = useUserRole(user?.id);
 
   useEffect(() => {
     checkUser();
   }, []);
 
   useEffect(() => {
-    if (!loading && role && !isSuperAdmin) {
+    if (!loading && !roleLoading && role && !isSuperAdmin) {
       navigate("/dashboard");
     }
-  }, [loading, role, isSuperAdmin, navigate]);
+  }, [loading, roleLoading, role, isSuperAdmin, navigate]);
 
   const checkUser = async () => {
     try {
@@ -47,7 +47,7 @@ const AdminPanel = () => {
     navigate("/");
   };
 
-  if (loading || !role) {
+  if (loading || roleLoading || !role) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

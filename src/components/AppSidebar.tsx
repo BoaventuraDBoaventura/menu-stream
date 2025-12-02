@@ -25,7 +25,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const [user, setUser] = useState<any>(null);
   const [restaurants, setRestaurants] = useState<any[]>([]);
-  const { isSuperAdmin } = useUserRole(user?.id);
+  const { isSuperAdmin, loading: roleLoading } = useUserRole(user?.id);
 
   useEffect(() => {
     checkUser();
@@ -133,7 +133,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Admin Menu */}
-        {isSuperAdmin && (
+        {!roleLoading && isSuperAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>Administração</SidebarGroupLabel>
             <SidebarGroupContent>
