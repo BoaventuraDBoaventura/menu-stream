@@ -42,16 +42,16 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
                 <Store className="h-6 w-6 text-primary" />
               </div>
             )}
-            <div>
-              <div className="flex items-center gap-2 mb-1">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <CardTitle className="text-xl">{restaurant.name}</CardTitle>
                 {restaurant.isOwner ? (
-                  <Badge variant="default" className="flex items-center gap-1">
+                  <Badge variant="default" className="flex items-center gap-1 shrink-0">
                     <Crown className="h-3 w-3" />
-                    Proprietário
+                    Propr.
                   </Badge>
                 ) : (
-                  <Badge variant="secondary" className="flex items-center gap-1">
+                  <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
                     <UserCheck className="h-3 w-3" />
                     Equipe
                   </Badge>
@@ -60,7 +60,7 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               <CardDescription>/{restaurant.slug}</CardDescription>
             </div>
           </div>
-          <Badge variant={restaurant.is_active ? "default" : "secondary"}>
+          <Badge variant={restaurant.is_active ? "default" : "secondary"} className="shrink-0 ml-2">
             {restaurant.is_active ? "Active" : "Inactive"}
           </Badge>
         </div>
