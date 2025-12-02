@@ -48,6 +48,7 @@ const Reports = () => {
   const [selectedDay, setSelectedDay] = useState<string>(new Date().getDate().toString());
   const [selectedHour, setSelectedHour] = useState<string>("all");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("all");
+  const [selectedOrderStatus, setSelectedOrderStatus] = useState<string>("all");
   const [paymentMethods, setPaymentMethods] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
@@ -63,7 +64,7 @@ const Reports = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [filterType, selectedYear, selectedMonth, selectedDay, selectedHour, selectedPaymentMethod, orders]);
+  }, [filterType, selectedYear, selectedMonth, selectedDay, selectedHour, selectedPaymentMethod, selectedOrderStatus, orders]);
 
   const fetchPaymentMethods = async () => {
     try {
@@ -211,6 +212,11 @@ const Reports = () => {
       filtered = filtered.filter((order) => order.payment_method === selectedPaymentMethod);
     }
 
+    // Apply order status filter
+    if (selectedOrderStatus !== "all") {
+      filtered = filtered.filter((order) => order.order_status === selectedOrderStatus);
+    }
+
     setFilteredOrders(filtered);
   };
 
@@ -228,7 +234,7 @@ const Reports = () => {
 
   const calculateTotals = () => {
     const total = filteredOrders.reduce((sum, order) => sum + Number(order.total_amount), 0);
-    const completed = filteredOrders.filter(o => o.order_status === 'completed').length;
+    const completed = filteredOrders.filter(o => o.order_status === 'delivered').length;
     const pending = filteredOrders.filter(o => o.order_status === 'new' || o.order_status === 'preparing').length;
     
     return { total, count: filteredOrders.length, completed, pending };
@@ -385,7 +391,7 @@ const Reports = () => {
       order.order_status === 'new' ? 'Novo' :
         order.order_status === 'preparing' ? 'Preparando' :
         order.order_status === 'ready' ? 'Pronto' :
-        order.order_status === 'completed' ? 'Concluído' : 'Cancelado',
+        order.order_status === 'delivered' ? 'Entregue' : 'Cancelado',
       order.payment_method === 'cash' ? 'Dinheiro' : order.payment_method,
       formatPrice(Number(order.total_amount))
     ]);
@@ -691,6 +697,20 @@ const Reports = () => {
                   ))}
                 </SelectContent>
               </Select>
+
+              <Select value={selectedOrderStatus} onValueChange={setSelectedOrderStatus}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Status do pedido" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  <SelectItem value="new">Novo</SelectItem>
+                  <SelectItem value="preparing">Preparando</SelectItem>
+                  <SelectItem value="ready">Pronto</SelectItem>
+                  <SelectItem value="delivered">Entregue</SelectItem>
+                  <SelectItem value="cancelled">Cancelado</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -735,14 +755,15 @@ const Reports = () => {
                       </TableCell>
                       <TableCell>
                         <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                          order.order_status === 'completed' ? 'bg-green-100 text-green-700' :
+                          order.order_status === 'delivered' ? 'bg-green-100 text-green-700' :
+                          order.order_status === 'ready' ? 'bg-blue-100 text-blue-700' :
                           order.order_status === 'cancelled' ? 'bg-red-100 text-red-700' :
                           'bg-yellow-100 text-yellow-700'
                         }`}>
                           {order.order_status === 'new' ? 'Novo' :
                            order.order_status === 'preparing' ? 'Preparando' :
                            order.order_status === 'ready' ? 'Pronto' :
-                           order.order_status === 'completed' ? 'Completo' :
+                           order.order_status === 'delivered' ? 'Entregue' :
                            'Cancelado'}
                         </span>
                       </TableCell>
