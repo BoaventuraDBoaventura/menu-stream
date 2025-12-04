@@ -6,10 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChefHat, Clock, CheckCircle2, ArrowLeft, RefreshCw } from "lucide-react";
+import { ChefHat, Clock, CheckCircle2, ArrowLeft, RefreshCw, Calendar, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { playSoundNotification } from "@/utils/soundNotification";
+import { format, startOfDay, endOfDay } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const Kitchen = () => {
   const navigate = useNavigate();
@@ -21,6 +26,7 @@ const Kitchen = () => {
   const [loading, setLoading] = useState(true);
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [restaurantName, setRestaurantName] = useState<string>("");
+  const [completedFilterDate, setCompletedFilterDate] = useState<Date>(new Date());
 
   useEffect(() => {
     checkAuth();
@@ -249,6 +255,21 @@ const Kitchen = () => {
   const preparingOrders = useMemo(() => filterOrders(["preparing"]), [orders]);
   const readyOrders = useMemo(() => filterOrders(["ready"]), [orders]);
   const deliveredOrders = useMemo(() => filterOrders(["delivered"]), [orders]);
+  
+  // Filter delivered orders by selected date
+  const filteredDeliveredOrders = useMemo(() => {
+    const dayStart = startOfDay(completedFilterDate);
+    const dayEnd = endOfDay(completedFilterDate);
+    return deliveredOrders.filter(order => {
+      const orderDate = new Date(order.created_at);
+      return orderDate >= dayStart && orderDate <= dayEnd;
+    });
+  }, [deliveredOrders, completedFilterDate]);
+  
+  // Calculate total for filtered delivered orders
+  const deliveredTotal = useMemo(() => {
+    return filteredDeliveredOrders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0);
+  }, [filteredDeliveredOrders]);
 
   if (loading) {
     return (
@@ -315,7 +336,7 @@ const Kitchen = () => {
               {t("kitchen.ready")} ({readyOrders.length})
             </TabsTrigger>
             <TabsTrigger value="completed">
-              {t("kitchen.delivered")} ({deliveredOrders.length})
+              {t("kitchen.delivered")} ({filteredDeliveredOrders.length})
             </TabsTrigger>
           </TabsList>
 
@@ -350,11 +371,63 @@ const Kitchen = () => {
           </TabsContent>
 
           <TabsContent value="completed">
-            <OrdersList
-              orders={deliveredOrders}
-              onUpdateStatus={updateOrderStatus}
-              t={t}
-            />
+            <div className="space-y-4">
+              {/* Date Filter and Summary */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card rounded-lg border border-border">
+                <div className="flex items-center gap-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !completedFilterDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {completedFilterDate
+                          ? format(completedFilterDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+                          : "Selecionar data"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={completedFilterDate}
+                        onSelect={(date) => date && setCompletedFilterDate(date)}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <Package className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Pedidos</p>
+                      <p className="text-lg font-bold">{filteredDeliveredOrders.length}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-success" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Total do Dia</p>
+                      <p className="text-lg font-bold text-success">
+                        MZN {deliveredTotal.toLocaleString("pt-MZ", { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <OrdersList
+                orders={filteredDeliveredOrders}
+                onUpdateStatus={updateOrderStatus}
+                t={t}
+              />
+            </div>
           </TabsContent>
         </Tabs>
       </main>
