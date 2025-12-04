@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/contexts/CartContext";
@@ -9,15 +9,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { ArrowLeft, ShoppingBag, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useCustomerSession } from "@/hooks/useCustomerSession";
 
 const Checkout = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { items, getTotalPrice, clearCart } = useCart();
+  const { getSession, saveSession } = useCustomerSession();
   
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -25,16 +26,39 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [hasExistingSession, setHasExistingSession] = useState(false);
+  const [restaurantSlug, setRestaurantSlug] = useState("");
 
   const restaurantId = searchParams.get("restaurant");
   const tableToken = searchParams.get("table");
   const currency = searchParams.get("currency") || "USD";
 
   useEffect(() => {
+    // Check for existing customer session
+    const session = getSession();
+    if (session && session.restaurantId === restaurantId) {
+      setCustomerName(session.customerName);
+      setCustomerPhone(session.customerPhone);
+      setHasExistingSession(true);
+    }
+
     if (restaurantId) {
       fetchPaymentMethods();
+      fetchRestaurantSlug();
     }
   }, [restaurantId]);
+
+  const fetchRestaurantSlug = async () => {
+    const { data } = await supabase
+      .from("restaurants")
+      .select("slug")
+      .eq("id", restaurantId)
+      .single();
+    
+    if (data) {
+      setRestaurantSlug(data.slug);
+    }
+  };
 
   const fetchPaymentMethods = async () => {
     try {
@@ -150,6 +174,15 @@ const Checkout = () => {
 
       if (itemsError) throw itemsError;
 
+      // Save customer session for future orders
+      saveSession({
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim() || "Não informado",
+        restaurantId: restaurantId,
+        tableToken: tableToken || "",
+        restaurantSlug: restaurantSlug,
+      });
+
       // Clear cart
       clearCart();
 
@@ -158,8 +191,8 @@ const Checkout = () => {
         description: `Número do pedido: ${orderData.order_number}`,
       });
 
-      // Navigate to order status page
-      navigate(`/order-status?order=${orderData.order_number}&restaurant=${restaurantId}`);
+      // Navigate to order status page with customer info for viewing all orders
+      navigate(`/order-status?restaurant=${restaurantId}&customer=${encodeURIComponent(customerName.trim())}`);
     } catch (error: any) {
       console.error("Error submitting order:", error);
       toast({
@@ -207,27 +240,42 @@ const Checkout = () => {
         {/* Customer Information */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Suas Informações</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Suas Informações
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="name">Nome *</Label>
-              <Input
-                id="name"
-                placeholder="Seu nome"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">Telefone (opcional)</Label>
-              <Input
-                id="phone"
-                placeholder="(00) 00000-0000"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-              />
-            </div>
+            {hasExistingSession ? (
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Cliente identificado:</p>
+                <p className="font-medium text-lg">{customerName}</p>
+                {customerPhone && customerPhone !== "Não informado" && (
+                  <p className="text-sm text-muted-foreground">{customerPhone}</p>
+                )}
+              </div>
+            ) : (
+              <>
+                <div>
+                  <Label htmlFor="name">Nome *</Label>
+                  <Input
+                    id="name"
+                    placeholder="Seu nome"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Telefone (opcional)</Label>
+                  <Input
+                    id="phone"
+                    placeholder="(00) 00000-0000"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
             <div>
               <Label htmlFor="notes">Observações</Label>
               <Textarea
