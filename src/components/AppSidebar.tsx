@@ -1,4 +1,4 @@
-import { Home, Store, LayoutDashboard, QrCode, ChefHat, BarChart3, Settings, Crown, Users, Cog } from "lucide-react";
+import { Home, Store, LayoutDashboard, QrCode, ChefHat, BarChart3, Settings, Crown, Users, Cog, X } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -10,7 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -19,9 +18,12 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
+  const isMobile = useIsMobile();
   const location = useLocation();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
@@ -96,19 +98,31 @@ export function AppSidebar() {
     >
       <SidebarContent>
         {/* Logo Header */}
-        <div className="px-4 py-6 border-b border-border">
-          <div className="flex items-center gap-2">
-            <ChefHat className="h-6 w-6 text-primary" />
-            {!collapsed && (
-              <div>
-                <span className="text-lg font-bold">{platformName}</span>
-                {isSuperAdmin && (
-                  <Badge variant="default" className="ml-2 text-xs">
-                    <Crown className="h-3 w-3 mr-1" />
-                    Admin
-                  </Badge>
-                )}
-              </div>
+        <div className="px-4 py-6 border-b border-sidebar-border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ChefHat className="h-6 w-6 text-sidebar-primary" />
+              {!collapsed && (
+                <div>
+                  <span className="text-lg font-bold">{platformName}</span>
+                  {isSuperAdmin && (
+                    <Badge variant="default" className="ml-2 text-xs">
+                      <Crown className="h-3 w-3 mr-1" />
+                      Admin
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </div>
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setOpenMobile(false)}
+                className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <X className="h-5 w-5" />
+              </Button>
             )}
           </div>
         </div>
