@@ -65,10 +65,10 @@ const Checkout = () => {
   };
 
   const handleSubmitOrder = async () => {
-    if (!customerName.trim() || !customerPhone.trim()) {
+    if (!customerName.trim()) {
       toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha seu nome e telefone",
+        title: "Campo obrigatório",
+        description: "Por favor, preencha seu nome",
         variant: "destructive",
       });
       return;
@@ -122,7 +122,7 @@ const Checkout = () => {
           restaurant_id: restaurantId,
           table_id: tableId,
           customer_name: customerName.trim(),
-          customer_phone: customerPhone.trim(),
+          customer_phone: customerPhone.trim() || "Não informado",
           notes: notes.trim() || null,
           order_number: orderNumberData,
           total_amount: getTotalPrice(),
@@ -220,7 +220,7 @@ const Checkout = () => {
               />
             </div>
             <div>
-              <Label htmlFor="phone">Telefone *</Label>
+              <Label htmlFor="phone">Telefone (opcional)</Label>
               <Input
                 id="phone"
                 placeholder="(00) 00000-0000"
