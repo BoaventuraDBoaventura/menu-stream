@@ -91,6 +91,12 @@ export function AppSidebar() {
 
   const isActive = (path: string) => currentPath === path || currentPath.startsWith(path + "?");
 
+  const handleMenuItemClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   return (
     <Sidebar
       className={collapsed ? "w-14" : "w-64"}
@@ -139,6 +145,7 @@ export function AppSidebar() {
                       to={item.url}
                       className="hover:bg-muted/50"
                       activeClassName="bg-muted text-primary font-medium"
+                      onClick={handleMenuItemClick}
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
@@ -163,6 +170,7 @@ export function AppSidebar() {
                         to={item.url}
                         className="hover:bg-muted/50"
                         activeClassName="bg-muted text-primary font-medium"
+                        onClick={handleMenuItemClick}
                       >
                         <item.icon className="h-4 w-4" />
                         {!collapsed && <span>{item.title}</span>}
