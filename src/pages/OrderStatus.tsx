@@ -16,6 +16,7 @@ const OrderStatus = () => {
   const [loading, setLoading] = useState(true);
   const [currency, setCurrency] = useState<string>("USD");
   const [tableToken, setTableToken] = useState<string>("");
+  const [restaurantSlug, setRestaurantSlug] = useState<string>("");
 
   const orderNumber = searchParams.get("order");
   const restaurantId = searchParams.get("restaurant");
@@ -59,15 +60,16 @@ const OrderStatus = () => {
 
   const loadOrder = async () => {
     try {
-      // Load restaurant to get currency
+      // Load restaurant to get currency and slug
       const { data: restaurantData } = await supabase
         .from("restaurants")
-        .select("currency")
+        .select("currency, slug")
         .eq("id", restaurantId)
         .single();
 
       if (restaurantData) {
         setCurrency(restaurantData.currency || "USD");
+        setRestaurantSlug(restaurantData.slug);
       }
 
       const { data, error } = await supabase
@@ -253,8 +255,9 @@ const OrderStatus = () => {
 
         <Button
           onClick={() => {
-            if (tableToken && restaurantId) {
-              navigate(`/menu?restaurant=${restaurantId}&table=${tableToken}`);
+            if (restaurantSlug) {
+              const tableParam = tableToken ? `?table=${tableToken}` : "";
+              navigate(`/menu/${restaurantSlug}${tableParam}`);
             } else {
               navigate("/");
             }
