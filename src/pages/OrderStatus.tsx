@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Clock, ChefHat, Package, Home } from "lucide-react";
+import { CheckCircle2, Clock, ChefHat, Package, Home, ShoppingBag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { playSoundNotification } from "@/utils/soundNotification";
 
@@ -253,21 +253,38 @@ const OrderStatus = () => {
           </CardContent>
         </Card>
 
-        <Button
-          onClick={() => {
-            if (restaurantSlug) {
-              const tableParam = tableToken ? `?table=${tableToken}` : "";
-              navigate(`/menu/${restaurantSlug}${tableParam}`);
-            } else {
-              navigate("/");
-            }
-          }}
-          variant="outline"
-          className="w-full"
-        >
-          <Home className="h-4 w-4 mr-2" />
-          Voltar ao Menu
-        </Button>
+        <div className="space-y-3">
+          <Button
+            onClick={() => {
+              if (restaurantSlug) {
+                const tableParam = tableToken ? `?table=${tableToken}` : "";
+                navigate(`/menu/${restaurantSlug}${tableParam}`);
+              } else {
+                navigate("/");
+              }
+            }}
+            className="w-full"
+          >
+            <ShoppingBag className="h-4 w-4 mr-2" />
+            Fazer Novo Pedido
+          </Button>
+          
+          <Button
+            onClick={() => {
+              if (restaurantSlug) {
+                const tableParam = tableToken ? `?table=${tableToken}` : "";
+                navigate(`/menu/${restaurantSlug}${tableParam}`);
+              } else {
+                navigate("/");
+              }
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            <Home className="h-4 w-4 mr-2" />
+            Voltar ao Menu
+          </Button>
+        </div>
       </div>
     </div>
   );
