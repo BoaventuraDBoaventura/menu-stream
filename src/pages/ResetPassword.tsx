@@ -13,6 +13,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isValidToken, setIsValidToken] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -25,19 +26,61 @@ const ResetPassword = () => {
   const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
         setIsValidToken(true);
+        setIsChecking(false);
       }
     });
 
     // Check URL hash for recovery token
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    if (hashParams.get("type") === "recovery") {
-      setIsValidToken(true);
+    const hash = window.location.hash.substring(1);
+    const hashParams = new URLSearchParams(hash);
+    const accessToken = hashParams.get("access_token");
+    const type = hashParams.get("type");
+
+    if (type === "recovery" && accessToken) {
+      // Let Supabase client process the tokens from the URL
+      // It will fire onAuthStateChange with PASSWORD_RECOVERY
+      timeout = setTimeout(() => {
+        // If after 5 seconds the event didn't fire, try setting session manually
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            setIsValidToken(true);
+          }
+          setIsChecking(false);
+        });
+      }, 5000);
+    } else {
+      // No recovery params in URL - check if there's already a session (e.g. from PKCE flow)
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        // Check if URL has query params from PKCE flow
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+        
+        if (code) {
+          // PKCE flow: exchange code for session
+          supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+            if (data?.session) {
+              setIsValidToken(true);
+            }
+            setIsChecking(false);
+          });
+        } else if (session) {
+          setIsValidToken(true);
+          setIsChecking(false);
+        } else {
+          setIsChecking(false);
+        }
+      });
     }
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (timeout) clearTimeout(timeout);
+    };
   }, []);
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -130,6 +173,17 @@ const ResetPassword = () => {
               <Button onClick={() => navigate("/login")} variant="outline" className="w-full">
                 Ir para o Login
               </Button>
+            </div>
+          ) : isChecking ? (
+            <div className="text-center py-6 space-y-4">
+              <div className="flex justify-center">
+                <div className="rounded-full bg-muted p-3">
+                  <Lock className="h-10 w-10 text-muted-foreground animate-pulse" />
+                </div>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                A verificar o link de redefinição...
+              </p>
             </div>
           ) : !isValidToken ? (
             <div className="text-center py-6 space-y-4">
