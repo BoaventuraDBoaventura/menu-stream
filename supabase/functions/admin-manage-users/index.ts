@@ -86,7 +86,12 @@ serve(async (req) => {
         user_metadata: { name, phone },
       });
 
-      if (createError) throw createError;
+      if (createError) {
+        return new Response(JSON.stringify({ error: createError.message }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       // Wait for trigger to create profile and role
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -110,7 +115,7 @@ serve(async (req) => {
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
