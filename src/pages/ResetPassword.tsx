@@ -174,6 +174,17 @@ const ResetPassword = () => {
                 Ir para o Login
               </Button>
             </div>
+          ) : isChecking ? (
+            <div className="text-center py-6 space-y-4">
+              <div className="flex justify-center">
+                <div className="rounded-full bg-muted p-3">
+                  <Lock className="h-10 w-10 text-muted-foreground animate-pulse" />
+                </div>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                A verificar o link de redefinição...
+              </p>
+            </div>
           ) : !isValidToken ? (
             <div className="text-center py-6 space-y-4">
               <div className="flex justify-center">
