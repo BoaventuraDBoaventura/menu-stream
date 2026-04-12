@@ -78,6 +78,19 @@ serve(async (req) => {
     if (action === "create") {
       const { email, password, name, phone, role } = params;
 
+      // Check if email already exists in auth.users
+      const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+      const emailExists = existingUsers?.users?.some(
+        (u: any) => u.email?.toLowerCase() === email.toLowerCase()
+      );
+
+      if (emailExists) {
+        return new Response(JSON.stringify({ error: "Este email já está registrado no sistema." }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       // Create user via admin API (doesn't affect current session)
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
