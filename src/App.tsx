@@ -11,6 +11,7 @@ import Pricing from "./pages/Pricing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
+import EmailConfirmation from "./pages/EmailConfirmation";
 import Dashboard from "./pages/Dashboard";
 import Restaurants from "./pages/Restaurants";
 import AdminPanel from "./pages/AdminPanel";
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/email-confirmation" element={<EmailConfirmation />} />
             
             {/* Customer Routes (without sidebar) */}
             <Route path="/menu/:slug" element={
