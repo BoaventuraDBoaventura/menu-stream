@@ -30,7 +30,7 @@ const Register = () => {
             name,
             phone,
           },
-          emailRedirectTo: "https://prato-digital.netlify.app/dashboard",
+          emailRedirectTo: `${window.location.origin}/email-confirmation?type=signup`,
         },
       });
 
@@ -40,8 +40,7 @@ const Register = () => {
         title: "Conta criada!",
         description: "Por favor, verifique seu email para confirmar sua conta.",
       });
-
-      navigate("/login");
+      navigate("/email-confirmation");
     } catch (error: any) {
       toast({
         title: "Falha no registro",
