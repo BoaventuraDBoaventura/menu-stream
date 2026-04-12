@@ -138,34 +138,19 @@ export const UserManagement = () => {
     try {
       setCreating(true);
 
-      // Create user with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            name: values.name,
-            phone: values.phone,
-          },
+      const { data, error } = await supabase.functions.invoke("admin-manage-users", {
+        body: {
+          action: "create",
+          email: values.email,
+          password: values.password,
+          name: values.name,
+          phone: values.phone,
+          role: values.role,
         },
       });
 
-      if (authError) throw authError;
-
-      if (!authData.user) {
-        throw new Error("Falha ao criar usuário");
-      }
-
-      // Wait for profile to be created by trigger
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Update the role created by the trigger
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .update({ role: values.role })
-        .eq("user_id", authData.user.id);
-
-      if (roleError) throw roleError;
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Usuário criado",
@@ -174,9 +159,6 @@ export const UserManagement = () => {
 
       setCreateDialogOpen(false);
       form.reset();
-      
-      // Wait a bit more before fetching to ensure all triggers completed
-      await new Promise(resolve => setTimeout(resolve, 500));
       await fetchUsers();
     } catch (error: any) {
       toast({
@@ -191,25 +173,19 @@ export const UserManagement = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      // First delete user role
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", userId);
+      const { data, error } = await supabase.functions.invoke("admin-manage-users", {
+        body: {
+          action: "delete",
+          userId,
+        },
+      });
 
-      if (roleError) throw roleError;
-
-      // Delete profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", userId);
-
-      if (profileError) throw profileError;
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Usuário deletado",
-        description: "O usuário foi removido do sistema.",
+        description: "O usuário foi removido completamente do sistema.",
       });
 
       fetchUsers();
