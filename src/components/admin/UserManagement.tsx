@@ -83,40 +83,33 @@ export const UserManagement = () => {
     try {
       setLoading(true);
       
-      // Fetch all profiles
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (profilesError) throw profilesError;
-
-      // Fetch all user roles
-      const { data: roles, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("user_id, role, max_restaurants");
-
-      if (rolesError) throw rolesError;
-
-      // Fetch auth users emails using the secure function
+      // Fetch auth users as primary source
       const { data: authUsersData, error: authError } = await supabase.rpc("get_all_users_for_admin");
+      if (authError) throw authError;
 
-      if (authError) {
-        console.error("Error fetching auth users:", authError);
-        throw authError;
-      }
+      // Fetch profiles and roles in parallel
+      const [profilesRes, rolesRes] = await Promise.all([
+        supabase.from("profiles").select("*"),
+        supabase.from("user_roles").select("user_id, role, max_restaurants"),
+      ]);
 
-      // Combine data
-      const usersWithRoles: UserWithRole[] = (profiles || []).map((profile: any) => {
-        const userRole = roles?.find((r: any) => r.user_id === profile.id);
-        const authUser = authUsersData?.find((u: any) => u.id === profile.id);
+      if (profilesRes.error) throw profilesRes.error;
+      if (rolesRes.error) throw rolesRes.error;
+
+      const profiles = profilesRes.data || [];
+      const roles = rolesRes.data || [];
+
+      // Use auth users as base to include ALL registered users
+      const usersWithRoles: UserWithRole[] = (authUsersData || []).map((authUser: any) => {
+        const profile = profiles.find((p: any) => p.id === authUser.id);
+        const userRole = roles.find((r: any) => r.user_id === authUser.id);
 
         return {
-          id: profile.id,
-          name: profile.name,
-          email: authUser?.email || "N/A",
-          phone: profile.phone,
-          created_at: profile.created_at,
+          id: authUser.id,
+          name: profile?.name || "Sem nome",
+          email: authUser.email,
+          phone: profile?.phone || null,
+          created_at: authUser.created_at,
           role: userRole?.role as UserRole || null,
           max_restaurants: userRole?.max_restaurants ?? null,
         };
