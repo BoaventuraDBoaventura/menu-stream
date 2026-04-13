@@ -96,10 +96,8 @@ const OrderStatus = () => {
       
       setOrders(ordersData || []);
       
-      // Store table token for navigation
-      if (ordersData && ordersData.length > 0 && ordersData[0]?.tables?.qr_code_token) {
-        setTableToken(ordersData[0].tables.qr_code_token);
-      } else if (session?.tableToken) {
+      // Store table token for navigation from session
+      if (session?.tableToken) {
         setTableToken(session.tableToken);
       }
     } catch (error: any) {
