@@ -79,7 +79,10 @@ const Restaurants = () => {
     }
   };
 
+  const isStaff = role === 'staff';
+
   const canCreateRestaurant = () => {
+    if (isStaff) return false;
     if (isSuperAdmin) return true;
     if (role !== 'restaurant_admin') return false;
     
@@ -115,7 +118,7 @@ const Restaurants = () => {
       </div>
 
       {/* Restaurant Limit Info */}
-      {!isSuperAdmin && maxRestaurants !== null && (
+      {!isStaff && !isSuperAdmin && maxRestaurants !== null && (
         <Card className="border-primary/20 bg-primary/5">
           <CardHeader>
             <CardTitle className="text-lg">Limite de Restaurantes</CardTitle>
