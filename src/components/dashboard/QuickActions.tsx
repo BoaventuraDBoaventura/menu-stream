@@ -3,8 +3,44 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChefHat, BarChart3, QrCode, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export const QuickActions = () => {
+interface QuickActionsProps {
+  permissions?: {
+    menu_editor?: boolean;
+    qr_codes?: boolean;
+    orders?: boolean;
+    kitchen?: boolean;
+    settings?: boolean;
+    reports?: boolean;
+    dashboard?: boolean;
+  };
+  restaurantId?: string;
+}
+
+export const QuickActions = ({ permissions, restaurantId }: QuickActionsProps) => {
   const navigate = useNavigate();
+
+  const allPermissions = permissions || {
+    menu_editor: true,
+    qr_codes: true,
+    orders: true,
+    kitchen: true,
+    settings: true,
+    reports: true,
+    dashboard: true,
+  };
+
+  const suffix = restaurantId ? `?restaurant=${restaurantId}` : "";
+
+  const actions = [
+    { key: "kitchen", label: "Cozinha", icon: ChefHat, path: `/kitchen${suffix}`, show: allPermissions.kitchen },
+    { key: "reports", label: "Relatórios", icon: BarChart3, path: `/reports${suffix}`, show: allPermissions.reports },
+    { key: "menu_editor", label: "Menu", icon: Menu, path: `/menu/editor${suffix}`, show: allPermissions.menu_editor },
+    { key: "qr_codes", label: "QR Codes", icon: QrCode, path: `/qr-codes${suffix}`, show: allPermissions.qr_codes },
+  ];
+
+  const visibleActions = actions.filter(a => a.show);
+
+  if (visibleActions.length === 0) return null;
 
   return (
     <Card>
@@ -14,38 +50,17 @@ export const QuickActions = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            className="h-auto flex-col gap-2 py-4"
-            onClick={() => navigate("/kitchen")}
-          >
-            <ChefHat className="h-6 w-6" />
-            <span className="text-sm">Cozinha</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="h-auto flex-col gap-2 py-4"
-            onClick={() => navigate("/reports")}
-          >
-            <BarChart3 className="h-6 w-6" />
-            <span className="text-sm">Relatórios</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="h-auto flex-col gap-2 py-4"
-            onClick={() => navigate("/menu")}
-          >
-            <Menu className="h-6 w-6" />
-            <span className="text-sm">Menu</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="h-auto flex-col gap-2 py-4"
-            onClick={() => navigate("/qr-codes")}
-          >
-            <QrCode className="h-6 w-6" />
-            <span className="text-sm">QR Codes</span>
-          </Button>
+          {visibleActions.map((action) => (
+            <Button
+              key={action.key}
+              variant="outline"
+              className="h-auto flex-col gap-2 py-4"
+              onClick={() => navigate(action.path)}
+            >
+              <action.icon className="h-6 w-6" />
+              <span className="text-sm">{action.label}</span>
+            </Button>
+          ))}
         </div>
       </CardContent>
     </Card>

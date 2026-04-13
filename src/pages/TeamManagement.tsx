@@ -28,6 +28,7 @@ interface TeamMember {
   email: string;
   role: string;
   permissions: {
+    dashboard: boolean;
     menu_editor: boolean;
     qr_codes: boolean;
     orders: boolean;
@@ -152,6 +153,7 @@ const TeamManagement = () => {
           email: authUser?.email || "N/A",
           role: userRole?.role || "staff",
           permissions: {
+            dashboard: perms.dashboard ?? true,
             menu_editor: perms.menu_editor ?? true,
             qr_codes: perms.qr_codes ?? true,
             orders: perms.orders ?? true,
@@ -296,6 +298,9 @@ const TeamManagement = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
+                            {member.permissions.dashboard && (
+                              <Badge variant="outline" className="text-xs">Painel</Badge>
+                            )}
                             {member.permissions.menu_editor && (
                               <Badge variant="outline" className="text-xs">Menu</Badge>
                             )}
