@@ -75,7 +75,7 @@ export function AppSidebar() {
   };
 
   const mainItems = [
-    { title: t('dashboard.title'), url: "/dashboard", icon: Home, show: true },
+    { title: t('dashboard.title'), url: "/dashboard", icon: Home, show: isSuperAdmin || restaurants.some(r => r.isOwner || r.permissions?.dashboard) },
     { title: "Restaurantes", url: "/restaurants", icon: Store, show: true },
     { title: "Menu", url: `/menu/editor${restaurants[0] ? `?restaurant=${restaurants[0].id}` : ''}`, icon: LayoutDashboard, show: hasAnyRestaurantPermission('menu_editor') },
     { title: "Código QR", url: `/qr-codes${restaurants[0] ? `?restaurant=${restaurants[0].id}` : ''}`, icon: QrCode, show: hasAnyRestaurantPermission('qr_codes') },
