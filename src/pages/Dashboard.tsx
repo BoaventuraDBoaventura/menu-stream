@@ -393,7 +393,10 @@ const Dashboard = () => {
           />
         </div>
         <div>
-          <QuickActions />
+          <QuickActions 
+            permissions={(activeRestaurant as any)?.permissions}
+            restaurantId={activeRestaurantId}
+          />
         </div>
       </div>
     </div>
