@@ -1,0 +1,2 @@
+ALTER TABLE public.restaurant_permissions 
+ALTER COLUMN permissions SET DEFAULT '{"orders": true, "kitchen": true, "qr_codes": true, "settings": false, "menu_editor": true, "reports": true, "dashboard": true}'::jsonb;
