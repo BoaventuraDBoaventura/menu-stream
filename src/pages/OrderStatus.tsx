@@ -85,26 +85,19 @@ const OrderStatus = () => {
         setRestaurantSlug(restaurantData.slug);
       }
 
-      // Load all orders for this customer at this restaurant (today only)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
+      // Load all orders for this customer at this restaurant (today only) via secure RPC
       const { data: ordersData, error } = await supabase
-        .from("orders")
-        .select("*, tables(name, qr_code_token)")
-        .eq("restaurant_id", restaurantId)
-        .eq("customer_name", customerName)
-        .gte("created_at", today.toISOString())
-        .order("created_at", { ascending: false });
+        .rpc("get_customer_orders", {
+          _restaurant_id: restaurantId,
+          _customer_name: customerName,
+        });
 
       if (error) throw error;
       
       setOrders(ordersData || []);
       
-      // Store table token for navigation
-      if (ordersData && ordersData.length > 0 && ordersData[0]?.tables?.qr_code_token) {
-        setTableToken(ordersData[0].tables.qr_code_token);
-      } else if (session?.tableToken) {
+      // Store table token for navigation from session
+      if (session?.tableToken) {
         setTableToken(session.tableToken);
       }
     } catch (error: any) {

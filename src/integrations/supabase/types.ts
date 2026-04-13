@@ -534,6 +534,31 @@ export type Database = {
           id: string
         }[]
       }
+      get_customer_orders: {
+        Args: { _customer_name: string; _restaurant_id: string }
+        Returns: {
+          created_at: string | null
+          customer_name: string
+          customer_phone: string
+          id: string
+          metadata: Json | null
+          notes: string | null
+          order_number: string
+          order_status: string | null
+          payment_method: string | null
+          payment_status: string | null
+          restaurant_id: string
+          table_id: string | null
+          total_amount: number
+          updated_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_user_restaurants: { Args: { _user_id: string }; Returns: string[] }
       has_restaurant_permission: {
         Args: { _restaurant_id: string; _user_id: string }
