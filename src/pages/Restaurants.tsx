@@ -79,7 +79,10 @@ const Restaurants = () => {
     }
   };
 
+  const isStaff = role === 'staff';
+
   const canCreateRestaurant = () => {
+    if (isStaff) return false;
     if (isSuperAdmin) return true;
     if (role !== 'restaurant_admin') return false;
     
