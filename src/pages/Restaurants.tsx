@@ -62,7 +62,7 @@ const Restaurants = () => {
         ...restaurant,
         isOwner: restaurant.owner_id === user.id,
         permissions: restaurant.owner_id === user.id 
-          ? { menu_editor: true, qr_codes: true, orders: true, kitchen: true, settings: true, reports: true }
+          ? { menu_editor: true, qr_codes: true, orders: true, kitchen: true, settings: true, reports: true, dashboard: true }
           : permissionsMap[restaurant.id] || {}
       })) || [];
 
