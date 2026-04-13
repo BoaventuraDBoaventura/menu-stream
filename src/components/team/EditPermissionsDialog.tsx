@@ -21,6 +21,7 @@ interface TeamMember {
   email: string;
   role: string;
   permissions: {
+    dashboard: boolean;
     menu_editor: boolean;
     qr_codes: boolean;
     orders: boolean;
@@ -88,6 +89,21 @@ export const EditPermissionsDialog = ({
         </DialogHeader>
         
         <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Painel</Label>
+              <p className="text-sm text-muted-foreground">
+                Pode acessar o painel de controle (dashboard)
+              </p>
+            </div>
+            <Switch
+              checked={permissions.dashboard ?? true}
+              onCheckedChange={(checked) =>
+                setPermissions({ ...permissions, dashboard: checked })
+              }
+            />
+          </div>
+
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <Label className="text-base">Editor de Menu</Label>
